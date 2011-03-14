@@ -4,11 +4,13 @@ from concurrent import futures
 from Queue import Queue, Empty
 
 from marrow.mail.exc import ManagerException, TransportFailedException, TransportExhaustedException
+from marrow.mail.manager.util import TransportPool
 
 
 __all__ = ['FuturesManager']
 
 log = __import__('logging').getLogger(__name__)
+
 
 
 class FuturesManager(object):
@@ -17,16 +19,20 @@ class FuturesManager(object):
         base.update(dict(config))
         self.config = Bunch(base)
         
-        self._Transport = transport
-        self.transports = Queue()
         self.executor = None
+        self.transport = TransportPool(transport)
         
         super(FuturesManager, self).__init__()
     
     def startup(self):
         log.info("Futures delivery manager starting.")
         
-        self.executor = ThreadPoolExecutor(self.config.workers)
+        log.debug("Initializing transport queue.")
+        self.transport.startup()
+        
+        workers = self.config.workers
+        log.debug("Starting thread pool with %d workers." % (workers, ))
+        self.executor = ThreadPoolExecutor(workers)
         
         log.info("Futures delivery manager started.")
     
@@ -37,50 +43,37 @@ class FuturesManager(object):
             # This may be non-obvious, but there are several conditions which
             # we trap later that require us to retry the entire delivery.
             while True:
-                # First we attempt to find an available transport.
-                transport = None
-                while not transport:
+                with self.transport() as transport:
                     try:
-                        # By consuming transports this way, we maintain thread safety.
-                        # Transports are only accessed by a single thread at a time.
-                        transport = self.transports.get(False)
+                        success = transport.deliver(message)
                     
-                    except Empty:
-                        # No transport is available, so we initialize another one.
-                        transport = self._Transport()
-                        transport.startup()
-                
-                try:
-                    success = transport.deliver(message)
-                
-                except TransportFailedException:
-                    # The transport likely timed out waiting for work, so we retry.
-                    continue
-                
-                except TransportExhaustedException:
-                    # The transport sent the message, but pre-emptively informed us
-                    # that future attempts will not be successful.
-                    pass
-                
-                else:
-                    # (Re-)Store the transport for use later.
-                    self.transports.put(transport)
+                    except TransportFailedException:
+                        # The transport likely timed out waiting for work, so we
+                        # toss out the current transport and retry.
+                        transport.ephemeral = True
+                        continue
+                    
+                    except TransportExhaustedException:
+                        # The transport sent the message, but pre-emptively
+                        # informed us that future attempts will not be successful.
+                        transport.ephemeral = True
                 
                 break
             
             return success
+        
+        # Return the Future object so the application can register callbacks.
+        # We pass the message so the executor can do what it needs to to make
+        # the message thread-local.
+        return self.executor.submit(inner, message)
     
     def shutdown(self, wait=True):
         log.info("Futures delivery manager stopping.")
         
+        log.debug("Stopping thread pool.")
         self.executor.shutdown(wait=wait)
         
-        try:
-            while True:
-                transport = self.transports.get(False)
-                transport.shutdown()
-        
-        except Empty:
-            pass
+        log.debug("Draining transport queue.")
+        self.transport.shutdown()
         
         log.info("Futures delivery manager stopped.")
