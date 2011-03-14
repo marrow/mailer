@@ -7,6 +7,8 @@ import logging
 import warnings
 import pkg_resources
 
+from functools import partial
+
 from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
@@ -48,7 +50,7 @@ class Delivery(object):
         if not self.Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.manager, ))
         
-        self.manager = self.Manager(manager_config, self.Transport, transport_config)
+        self.manager = self.Manager(manager_config, partial(self.Transport, transport_config))
     
     def _load(self, spec, group):
         if not isinstance(spec, str):
@@ -88,7 +90,12 @@ class Delivery(object):
         log.info("Mail delivery service stopped.")
     
     def send(self, message):
+        # TODO: Generate a 'Receipt' similar to a Future that you can use to
+        # register success/failure callbacks, read exceptions, and block on
+        # delivery.
+        
         if not self.running:
             raise Exception("Mail service not running.") # TODO: Need concrete exceptions of our own.
         
+        log.info("Attempting delivery of message %s." % message.id)
         return self.manager.deliver(message)
