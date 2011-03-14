@@ -1,25 +1,50 @@
 # encoding: utf-8
 
+from marrow.mail.exc import TransportExhaustedException
+
+
 __all__ = ['ImmediateManager']
 
 log = __import__('logging').getLogger(__name__)
 
 
+
 class ImmediateManager(object):
     def __init__(self, config, transport):
         self.config = config
-        self.transport = transport()
+        self._Transport = transport
+        self._transport = None
         
         super(ImmediateManager, self).__init__()
+    
+    @property
+    def transport(self):
+        if not self._transport:
+            self._transport = self._Transport()
+            self._transport.startup()
+        
+        return self._transport
     
     def startup(self):
         log.info("Immediate delivery manager starting.")
         
-        self.transport.startup()
+        self.transport # This will trigger startup automatically.
         
         log.info("Immediate delivery manager started.")
     
     def deliver(self, message):
+        try:
+            self.transport.deliver(message)
+        
+        except TransportExhaustedException:
+            log.debug("Transport exhausted, retrying.")
+            self.transport.shutdown()
+            self.deliver(message)
+        
+        except:
+            log.error("Delivery of message %s failed." % message.id)
+            raise
+        
         self.transport.deliver(message)
     
     def shutdown(self):
