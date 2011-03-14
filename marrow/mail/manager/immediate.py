@@ -44,8 +44,6 @@ class ImmediateManager(object):
         except:
             log.error("Delivery of message %s failed." % message.id)
             raise
-        
-        self.transport.deliver(message)
     
     def shutdown(self):
         log.info("Immediate delivery manager stopping.")

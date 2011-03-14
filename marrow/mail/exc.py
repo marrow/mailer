@@ -7,6 +7,7 @@ __all__ = [
         'MailException',
         'MailConfigurationException',
         'TransportException',
+        'TransportFailedException',
         'TransportExhaustedException',
         'ManagerException'
     ]
@@ -30,11 +31,17 @@ class TransportException(MailException):
     pass
 
 
-class TransportExhaustedException(TransportException):
-    """"""
+class TransportFailedException(TransportException):
+    """The transport has failed to deliver the message due to an internal
+    error; a new instance of the transport should be used to retry."""
     
-    def __str__(self):
-        return "This Transport instance is no longer capable of delivering mail."
+    pass
+
+class TransportExhaustedException(TransportException):
+    """The transport has successfully delivered the message, but can no longer
+    be used for message delivery."""
+    
+    pass
 
 
 class ManagerException(MailException):
