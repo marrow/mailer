@@ -42,13 +42,13 @@ class MockTransport(object):
         exhaustion = config.exhaustion
         
         if failure:
-            chance = random.randint(0,100000) / 100000.0
-            if chance <= failure:
+            chance = random.randint(0,100001) / 100000.0
+            if chance < failure:
                 raise TransportFailedException("Mock failure.")
         
         if exhaustion:
-            chance = random.randint(0,100000) / 100000.0
-            if chance <= exhaustion:
+            chance = random.randint(0,100001) / 100000.0
+            if chance < exhaustion:
                 raise TransportExhaustedException("Mock exhaustion.")
         
         if success == 1.0:
@@ -57,7 +57,7 @@ class MockTransport(object):
         if success == 0.0:
             return False
         
-        chance = random.randint(0,100000) / 100000.0
+        chance = random.randint(0,100001) / 100000.0
         if chance <= success:
             return True
         
