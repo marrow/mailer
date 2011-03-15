@@ -9,6 +9,8 @@ import pkg_resources
 
 from functools import partial
 
+from marrow.mail.exc import MailerNotRunning
+
 from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
@@ -85,14 +87,23 @@ class Delivery(object):
         
         log.info("Mail delivery service stopping.")
         
-        self.manager.stop()
+        self.manager.shutdown()
         self.running = False
         
         log.info("Mail delivery service stopped.")
     
     def send(self, message):
         if not self.running:
-            raise Exception("Mail service not running.") # TODO: Need concrete exceptions of our own.
+            raise MailerNotRunning("Mail service not running.") # TODO: Need concrete exceptions of our own.
         
-        log.info("Attempting delivery of message %s." % message.id)
-        return self.manager.deliver(message)
+        log.info("Attempting delivery of message %s.", message.id)
+        
+        try:
+            result = self.manager.deliver(message)
+        
+        except:
+            log.error("Delivery of message %s failed.", message.id)
+            raise
+        
+        log.debug("Message %s delivered.", message.id)
+        return result
