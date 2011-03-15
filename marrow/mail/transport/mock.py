@@ -4,6 +4,8 @@ import random
 
 from marrow.mail.exc import TransportFailedException, TransportExhaustedException
 
+from marrow.util.bunch import Bunch
+
 
 __all__ = ['MockTransport']
 
@@ -40,6 +42,9 @@ class MockTransport(object):
         success = config.success
         failure = config.failure
         exhaustion = config.exhaustion
+        
+        if getattr(message, 'die', False):
+            1/0
         
         if failure:
             chance = random.randint(0,100001) / 100000.0

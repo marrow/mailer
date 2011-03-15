@@ -34,16 +34,14 @@ class ImmediateManager(object):
     
     def deliver(self, message):
         try:
-            self.transport.deliver(message)
+            result = self.transport.deliver(message)
         
         except TransportExhaustedException:
             log.debug("Transport exhausted, retrying.")
             self.transport.shutdown()
             self.deliver(message)
         
-        except:
-            log.error("Delivery of message %s failed." % message.id)
-            raise
+        return result
     
     def shutdown(self):
         log.info("Immediate delivery manager stopping.")
