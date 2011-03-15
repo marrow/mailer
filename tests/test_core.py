@@ -14,6 +14,9 @@ from marrow.mail.transport.mock import MockTransport
 log = logging.getLogger('tests')
 
 
+base_config = {'manager': 'immediate', 'transport': 'mock'}
+
+
 
 class TestLookup(TestCase):
     def test_load_literal(self):
@@ -85,5 +88,43 @@ class TestInitialization(TestCase):
         log.info("Testing configuration: %r", dict(config))
         self.assertRaises(AttributeError, lambda: Delivery(config))
     
-    def test_transport_failure(self):
-        pass
+    def test_transport_entrypoint_failure(self):
+        config = {
+                'manager': 'immediate',
+                'transport': 'mock2'
+            }
+        
+        log.info("Testing configuration: %r", dict(config))
+        self.assertRaises(LookupError, lambda: Delivery(config))
+    
+    def test_transport_dotcolon_failure(self):
+        config = {
+                'manager': 'immediate',
+                'transport': 'marrow.mail.transport.foo:FooTransport'
+            }
+        
+        log.info("Testing configuration: %r", dict(config))
+        self.assertRaises(ImportError, lambda: Delivery(config))
+        
+        config['manager'] = 'marrow.mail.transport.mock:FooTransport'
+        log.info("Testing configuration: %r", dict(config))
+        self.assertRaises(AttributeError, lambda: Delivery(config))
+
+
+class TestStartupShutdown(TestCase):
+    def test_startup(self):
+        interface = Delivery(base_config)
+        
+        interface.start()
+        
+        messages = logging.getLogger().handlers[0].buffer
+        
+        self.assertEqual(len(messages), 4)
+        self.assertEqual(messages[0].getMessage(), "Mail delivery service starting.")
+        self.assertEqual(messages[-1].getMessage(), "Mail delivery service started.")
+        
+        interface.start()
+        
+        self.assertEqual(len(messages), 5)
+        self.assertEqual(messages[-1].getMessage(), "Attempt made to start an already running delivery service.")
+        
