@@ -64,7 +64,6 @@ class Delivery(object):
         
         # Load the entry point.
         for entrypoint in pkg_resources.iter_entry_points(group, spec):
-            log.
             return entrypoint.load()
     
     def start(self):
