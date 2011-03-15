@@ -7,8 +7,11 @@ import logging
 from unittest import TestCase
 
 from marrow.mail import Delivery
+from marrow.mail.exc import MailerNotRunning
 from marrow.mail.manager.immediate import ImmediateManager
 from marrow.mail.transport.mock import MockTransport
+
+from marrow.util.bunch import Bunch
 
 
 log = logging.getLogger('tests')
@@ -111,13 +114,12 @@ class TestInitialization(TestCase):
         self.assertRaises(AttributeError, lambda: Delivery(config))
 
 
-class TestStartupShutdown(TestCase):
+class TestMethods(TestCase):
     def test_startup(self):
-        interface = Delivery(base_config)
-        
-        interface.start()
-        
         messages = logging.getLogger().handlers[0].buffer
+        
+        interface = Delivery(base_config)
+        interface.start()
         
         self.assertEqual(len(messages), 4)
         self.assertEqual(messages[0].getMessage(), "Mail delivery service starting.")
@@ -128,3 +130,47 @@ class TestStartupShutdown(TestCase):
         self.assertEqual(len(messages), 5)
         self.assertEqual(messages[-1].getMessage(), "Attempt made to start an already running delivery service.")
         
+        interface.stop()
+    
+    def test_shutdown(self):
+        interface = Delivery(base_config)
+        interface.start()
+        
+        logging.getLogger().handlers[0].truncate()
+        messages = logging.getLogger().handlers[0].buffer
+        
+        interface.stop()
+        
+        self.assertEqual(len(messages), 4)
+        self.assertEqual(messages[0].getMessage(), "Mail delivery service stopping.")
+        self.assertEqual(messages[-1].getMessage(), "Mail delivery service stopped.")
+        
+        interface.stop()
+        
+        self.assertEqual(len(messages), 5)
+        self.assertEqual(messages[-1].getMessage(), "Attempt made to stop an already stopped delivery service.")
+    
+    def test_send(self):
+        message = Bunch(id='foo')
+        
+        interface = Delivery(base_config)
+        
+        self.assertRaises(MailerNotRunning, lambda: interface.send(message))
+        
+        interface.start()
+        
+        logging.getLogger().handlers[0].truncate()
+        messages = logging.getLogger().handlers[0].buffer
+        
+        self.assertEqual(interface.send(message), True)
+        
+        self.assertEqual(messages[0].getMessage(), "Attempting delivery of message foo.")
+        self.assertEqual(messages[-1].getMessage(), "Message foo delivered.")
+        
+        message_fail = Bunch(id='bar', die=True)
+        self.assertRaises(Exception, lambda: interface.send(message_fail))
+        
+        self.assertEqual(messages[-2].getMessage(), "Attempting delivery of message bar.")
+        self.assertEqual(messages[-1].getMessage(), "Delivery of message bar failed.")
+        
+        interface.stop()
