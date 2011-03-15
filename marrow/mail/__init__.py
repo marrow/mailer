@@ -34,11 +34,11 @@ class Delivery(object):
         config = self.config = Bunch(config)
         
         if prefix is not None:
-            for chunk in prefix.split('.'):
-                config = self.config = Bunch.partial(chunk, self.config)
+            config = self.config = Bunch.partial(prefix, config)
+            log.debug("New config: %r", dict(config))
         
-        manager_config = Bunch.partial('manager', self.config)
-        transport_config = Bunch.partial('transport', self.config)
+        manager_config = Bunch.partial('manager', config)
+        transport_config = Bunch.partial('transport', config)
         
         self.Manager = self._load(config.manager, 'marrow.mailer.manager')
         
@@ -91,10 +91,6 @@ class Delivery(object):
         log.info("Mail delivery service stopped.")
     
     def send(self, message):
-        # TODO: Generate a 'Receipt' similar to a Future that you can use to
-        # register success/failure callbacks, read exceptions, and block on
-        # delivery.
-        
         if not self.running:
             raise Exception("Mail service not running.") # TODO: Need concrete exceptions of our own.
         
