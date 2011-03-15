@@ -40,19 +40,20 @@ class Delivery(object):
         manager_config = Bunch.partial('manager', self.config)
         transport_config = Bunch.partial('transport', self.config)
         
-        self.Manager = self._load(config.manager, 'marrow.mail.manager')
+        self.Manager = self._load(config.manager, 'marrow.mailer.manager')
         
         if not self.Manager:
             raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
         
-        self.Transport = self.transport = self._load(config.transport, 'marrow.mail.transport')
+        self.Transport = self.transport = self._load(config.transport, 'marrow.mailer.transport')
         
         if not self.Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.manager, ))
         
         self.manager = self.Manager(manager_config, partial(self.Transport, transport_config))
     
-    def _load(self, spec, group):
+    @staticmethod
+    def _load(spec, group):
         if not isinstance(spec, str):
             # It's already an object, just use it.
             return spec
@@ -63,6 +64,7 @@ class Delivery(object):
         
         # Load the entry point.
         for entrypoint in pkg_resources.iter_entry_points(group, spec):
+            log.
             return entrypoint.load()
     
     def start(self):
