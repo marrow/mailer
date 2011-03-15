@@ -9,6 +9,8 @@ import pkg_resources
 
 from functools import partial
 
+from marrow.mail.exc import MailerNotRunning
+
 from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
@@ -34,25 +36,26 @@ class Delivery(object):
         config = self.config = Bunch(config)
         
         if prefix is not None:
-            for chunk in prefix.split('.'):
-                config = self.config = Bunch.partial(chunk, self.config)
+            config = self.config = Bunch.partial(prefix, config)
+            log.debug("New config: %r", dict(config))
         
-        manager_config = Bunch.partial('manager', self.config)
-        transport_config = Bunch.partial('transport', self.config)
+        manager_config = Bunch.partial('manager', config)
+        transport_config = Bunch.partial('transport', config)
         
-        self.Manager = self._load(config.manager, 'marrow.mail.manager')
+        self.Manager = self._load(config.manager, 'marrow.mailer.manager')
         
         if not self.Manager:
             raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
         
-        self.Transport = self.transport = self._load(config.transport, 'marrow.mail.transport')
+        self.Transport = self.transport = self._load(config.transport, 'marrow.mailer.transport')
         
         if not self.Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.manager, ))
         
         self.manager = self.Manager(manager_config, partial(self.Transport, transport_config))
     
-    def _load(self, spec, group):
+    @staticmethod
+    def _load(spec, group):
         if not isinstance(spec, str):
             # It's already an object, just use it.
             return spec
@@ -84,18 +87,23 @@ class Delivery(object):
         
         log.info("Mail delivery service stopping.")
         
-        self.manager.stop()
+        self.manager.shutdown()
         self.running = False
         
         log.info("Mail delivery service stopped.")
     
     def send(self, message):
-        # TODO: Generate a 'Receipt' similar to a Future that you can use to
-        # register success/failure callbacks, read exceptions, and block on
-        # delivery.
-        
         if not self.running:
-            raise Exception("Mail service not running.") # TODO: Need concrete exceptions of our own.
+            raise MailerNotRunning("Mail service not running.") # TODO: Need concrete exceptions of our own.
         
-        log.info("Attempting delivery of message %s." % message.id)
-        return self.manager.deliver(message)
+        log.info("Attempting delivery of message %s.", message.id)
+        
+        try:
+            result = self.manager.deliver(message)
+        
+        except:
+            log.error("Delivery of message %s failed.", message.id)
+            raise
+        
+        log.debug("Message %s delivered.", message.id)
+        return result
