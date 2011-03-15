@@ -19,6 +19,11 @@ class MailException(Exception):
     pass
 
 
+class MailerNotRunning(MailException):
+    """Raised when attempting to deliver messages using a dead interface."""
+    pass
+
+
 class MailConfigurationException(MailException):
     """There was an error in the configuration of marrow.mail."""
     
