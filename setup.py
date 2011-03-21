@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 if sys.version_info < (2, 6):
     raise SystemExit("Python 2.6 or later is required.")
 
-exec(open(os.path.join("marrow", "mail", "release.py")).read())
+exec(open(os.path.join("marrow", "mailer", "release.py")).read())
 
 
 setup(
