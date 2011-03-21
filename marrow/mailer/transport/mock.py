@@ -2,7 +2,7 @@
 
 import random
 
-from marrow.mail.exc import TransportFailedException, TransportExhaustedException
+from marrow.mailer.exc import TransportFailedException, TransportExhaustedException
 
 from marrow.util.bunch import Bunch
 

@@ -9,7 +9,7 @@ import pkg_resources
 
 from functools import partial
 
-from marrow.mail.exc import MailerNotRunning
+from marrow.mailer.exc import MailerNotRunning
 
 from marrow.util.bunch import Bunch
 from marrow.util.object import load_object

@@ -13,7 +13,7 @@ import os
 import time
 import warnings
 
-from marrow.mail.address import Address, AddressList, AutoConverter
+from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring
 
 __all__ = ['Message']

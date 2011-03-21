@@ -7,7 +7,7 @@ from smtplib import (SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused,
 import socket
 import sys
 
-from marrow.mail.exc import (MailConfigurationException,
+from marrow.mailer.exc import (MailConfigurationException,
     TransportExhaustedException, TransportException, TransportFailedException)
 
 log = __import__('logging').getLogger(__name__)
