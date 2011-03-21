@@ -94,7 +94,7 @@ class Delivery(object):
     
     def send(self, message):
         if not self.running:
-            raise MailerNotRunning("Mail service not running.") # TODO: Need concrete exceptions of our own.
+            raise MailerNotRunning("Mail service not running.")
         
         log.info("Attempting delivery of message %s.", message.id)
         
