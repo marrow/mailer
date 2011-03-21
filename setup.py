@@ -14,7 +14,7 @@ exec(open(os.path.join("marrow", "mail", "release.py")).read())
 
 
 setup(
-    name="marrow.mail",
+    name="marrow.mailer",
     version=version,
     
     description="""
@@ -57,12 +57,12 @@ Python 2.6+ and 3.1+, formerly called TurboMail.""",
     namespace_packages=["marrow"],
     entry_points = {
         'marrow.mailer.manager': [
-            "immediate = marrow.mail.manager.immediate:ImmediateManager",
-            "futures = marrow.mail.manager.futures:FuturesManager",
+            "immediate = marrow.mailer.manager.immediate:ImmediateManager",
+            "futures = marrow.mailer.manager.futures:FuturesManager",
         ],
         'marrow.mailer.transport': [
-            "mock = marrow.mail.transport.mock:MockTransport",
-            "smtp = marrow.mail.transport.smtp:SMTPTransport",
+            "mock = marrow.mailer.transport.mock:MockTransport",
+            "smtp = marrow.mailer.transport.smtp:SMTPTransport",
         ]
     }
 )

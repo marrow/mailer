@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from nose.tools import raises, eq_, assert_raises
 
-from marrow.mail.address import Address, AddressList, AutoConverter
+from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import unicode
 
 

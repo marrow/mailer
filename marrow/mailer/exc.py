@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-"""Exceptions used by marrow.mail to report common errors."""
+"""Exceptions used by marrow.mailer to report common errors."""
 
 
 __all__ = [
@@ -15,7 +15,7 @@ __all__ = [
 
 
 class MailException(Exception):
-    """The base for all marrow.mail exceptions."""
+    """The base for all marrow.mailer exceptions."""
     pass
 
 
@@ -25,13 +25,13 @@ class MailerNotRunning(MailException):
 
 
 class MailConfigurationException(MailException):
-    """There was an error in the configuration of marrow.mail."""
+    """There was an error in the configuration of marrow.mailer."""
     
     pass
 
 
 class TransportException(MailException):
-    """The base for all marrow.mail Transport exceptions."""
+    """The base for all marrow.mailer Transport exceptions."""
     
     pass
 
@@ -50,5 +50,5 @@ class TransportExhaustedException(TransportException):
 
 
 class ManagerException(MailException):
-    """The base for all marrow.mail Manager exceptions."""
+    """The base for all marrow.mailer Manager exceptions."""
     pass

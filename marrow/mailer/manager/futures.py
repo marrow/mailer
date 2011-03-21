@@ -3,8 +3,8 @@
 from concurrent import futures
 from Queue import Queue, Empty
 
-from marrow.mail.exc import ManagerException, TransportFailedException, TransportExhaustedException
-from marrow.mail.manager.util import TransportPool
+from marrow.mailer.exc import ManagerException, TransportFailedException, TransportExhaustedException
+from marrow.mailer.manager.util import TransportPool
 
 
 __all__ = ['FuturesManager']

@@ -8,7 +8,7 @@ import sys
 from email.utils import formataddr, parseaddr
 from email.header import Header
 
-from marrow.mail.validator import EmailValidator
+from marrow.mailer.validator import EmailValidator
 from marrow.util.compat import basestring, unicode, unicodestr
 
 __all__ = ['Address', 'AddressList']

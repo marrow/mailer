@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from marrow.mail.exc import TransportExhaustedException
+from marrow.mailer.exc import TransportExhaustedException
 
 
 __all__ = ['ImmediateManager']
