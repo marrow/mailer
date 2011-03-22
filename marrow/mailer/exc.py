@@ -16,11 +16,13 @@ __all__ = [
 
 class MailException(Exception):
     """The base for all marrow.mailer exceptions."""
+    
     pass
 
 
 class MailerNotRunning(MailException):
     """Raised when attempting to deliver messages using a dead interface."""
+    
     pass
 
 
@@ -44,7 +46,8 @@ class TransportFailedException(TransportException):
 
 class TransportExhaustedException(TransportException):
     """The transport has successfully delivered the message, but can no longer
-    be used for message delivery."""
+    be used for future message delivery; a new instance should be used on the
+    next request."""
     
     pass
 
