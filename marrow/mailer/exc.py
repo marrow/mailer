@@ -8,6 +8,7 @@ __all__ = [
         'MailConfigurationException',
         'TransportException',
         'TransportFailedException',
+        'MessageFailedException',
         'TransportExhaustedException',
         'ManagerException'
     ]
