@@ -44,6 +44,15 @@ class TransportFailedException(TransportException):
     
     pass
 
+
+class MessageFailedException(TransportException):
+    """The transport has failed to deliver the message due to a problem with
+    the message itself, and no attempt should be made to retry delivery of
+    this message.  The transport may still be re-used, however."""
+    
+    pass
+
+
 class TransportExhaustedException(TransportException):
     """The transport has successfully delivered the message, but can no longer
     be used for future message delivery; a new instance should be used on the
