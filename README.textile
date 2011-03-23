@@ -1,1 +1,81 @@
-Lorem ipsum.
+h1(#title). Marrow Mailer
+
+bq(subtitle). A highly efficient and modular mail delivery framework for Python 2.6+ and 3.1+, formerly called TurboMail.
+
+bq(byline). (C) 2006-2011, Alice Bevan-McGregor
+
+bq(byline). "https://github.com/marrow/marrow.mailer":github-project
+
+[github-project]https://github.com/marrow/marrow.mailer
+
+
+
+h2(#what-is). %1.% What is Marrow Mailer?
+
+Marrow Mailer is a Python library to ease sending emails from your application.
+
+By using Marrow Mailer you can:
+
+* Easily construct plain text and HTML emails.
+* Improve the testability of your e-mail deliveries.
+* Use different mail delivery management strategies, e.g. immediate, deferred, or even multi-server.
+* Switch the transport, e.g. SMTP or maildir, by just changing some values in a configuration file.
+* Multiple simultaneous configurations for more targeted delivery.
+
+Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on external packages for normal operation [1].
+
+fn1. In order to run the full test suite you need to install "pymta":http://www.schwarz.eu/opensource/projects/pymta/ and its dependencies.
+
+
+h2(#installation). %2.% Installation
+
+Installing @marrow.mailer@ is easy, just execute the following in a terminal:
+
+<pre><code>pip install marrow.mailer</code></pre>
+
+If you add @marrow.mailer@ to the @install_requires@ argument of the call to @setup()@ in your application's @setup.py@ file, @marrow.mailer@ will be automatically installed and made available when your own application is installed.
+
+
+h3(#install-dev). %2.1.% Development Version
+
+Development takes place on "GitHub":github in the "marrow.tags":github-project project.  Issue tracking, documentation, and downloads are provided there.
+
+Installing the current development version requires "Git":git, a distributes source code management system.  If you have Git, you can run the following to download and _link_ the development version into your Python runtime:
+
+<pre><code>git clone https://github.com/marrow/marrow.mailer.git
+(cd marrow.mailer; python setup.py develop)</code></pre>
+
+You can upgrade to the latest version at any time:
+
+<pre><code>(cd marrow.mailer; git pull; python setup.py develop)</code></pre>
+
+If you would like to make changes and contribute them back to the project, fork the GitHub project, make your changes, and submit a pull request.  This process is beyond the scope of this documentation; for more information, see "GitHub's documentation":github-help.
+
+
+[github]https://github.com/
+[git]http://git-scm.com/
+[github-help]http://help.github.com/
+
+
+
+h2(#basic). %3.% Basic Usage
+
+
+
+
+
+
+h2(#license). %5.% License
+
+Marrow Tags has been released under the MIT Open Source license.
+
+
+h3. %5.1.% The MIT License
+
+Copyright (C) 2006-2011 Alice Bevan-McGregor and contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
