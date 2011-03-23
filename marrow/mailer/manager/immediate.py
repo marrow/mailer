@@ -10,9 +10,9 @@ log = __import__('logging').getLogger(__name__)
 
 
 class ImmediateManager(object):
-    def __init__(self, config, transport):
+    def __init__(self, config, Transport):
         self.config = config
-        self._Transport = transport
+        self._Transport = Transport
         self._transport = None
         
         super(ImmediateManager, self).__init__()
