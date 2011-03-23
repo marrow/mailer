@@ -33,26 +33,26 @@ class Delivery(object):
         self.manager, self.Manager = None, None
         self.Transport = None
         self.running = False
-        config = self.config = Bunch(config)
+        self.config = config = Bunch(config)
         
         if prefix is not None:
-            config = self.config = Bunch.partial(prefix, config)
-            log.debug("New config: %r", dict(config))
+            self.config = config = Bunch.partial(prefix, config)
         
-        manager_config = Bunch.partial('manager', config)
-        transport_config = Bunch.partial('transport', config)
+        self.manager_config = manager_config = Bunch.partial('manager', config)
+        self.transport_config = transport_config = Bunch.partial('transport', config)
+        self.message_config = Bunch.partial('message', config)
         
-        self.Manager = self._load(config.manager, 'marrow.mailer.manager')
+        self.Manager = Manager = self._load(config.manager, 'marrow.mailer.manager')
         
-        if not self.Manager:
+        if not Manager:
             raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
         
-        self.Transport = self.transport = self._load(config.transport, 'marrow.mailer.transport')
+        self.Transport = Transport = self._load(config.transport, 'marrow.mailer.transport')
         
-        if not self.Transport:
+        if not Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.manager, ))
         
-        self.manager = self.Manager(manager_config, partial(self.Transport, transport_config))
+        self.manager = Manager(manager_config, partial(Transport, transport_config))
     
     @staticmethod
     def _load(spec, group):
