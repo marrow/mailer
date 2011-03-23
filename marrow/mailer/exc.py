@@ -21,6 +21,27 @@ class MailException(Exception):
     pass
 
 
+# Application Exceptions
+
+class DeliveryException(MailException):
+    """The base class for all public-facing exceptions."""
+    
+    pass
+
+
+class DeliveryFailedException(DeliveryException):
+    """The message stored in args[0] could not be delivered for the reason
+    given in args[1].  (These can be accessed as e.message and e.reason.)"""
+    
+    def __init__(self, message, reason):
+        self.message = message
+        self.reason = reason
+        
+        super(DeliveryFailedException, self).__init__(message, reason)
+
+
+# Internal Exceptions
+
 class MailerNotRunning(MailException):
     """Raised when attempting to deliver messages using a dead interface."""
     
