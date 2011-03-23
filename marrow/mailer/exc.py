@@ -31,10 +31,10 @@ class DeliveryException(MailException):
 
 class DeliveryFailedException(DeliveryException):
     """The message stored in args[0] could not be delivered for the reason
-    given in args[1].  (These can be accessed as e.message and e.reason.)"""
+    given in args[1].  (These can be accessed as e.msg and e.reason.)"""
     
     def __init__(self, message, reason):
-        self.message = message
+        self.msg = msg
         self.reason = reason
         
         super(DeliveryFailedException, self).__init__(message, reason)
