@@ -2,7 +2,7 @@ h1(#title). Marrow Mailer
 
 bq(subtitle). A highly efficient and modular mail delivery framework for Python 2.6+ and 3.1+, formerly called TurboMail.
 
-bq(byline). (C) 2006-2011, Alice Bevan-McGregor
+bq(byline). (C) 2006-2011, Alice Bevan-McGregor and contributors.
 
 bq(byline). "https://github.com/marrow/marrow.mailer":github-project
 
@@ -24,12 +24,21 @@ By using Marrow Mailer you can:
 
 Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on external packages for normal operation [1].
 
-fn1. In order to run the full test suite you need to install "pymta":http://www.schwarz.eu/opensource/projects/pymta/ and its dependencies.
+
+h3(#goals). %1.1.% Goals
+
+Marrow Mailer is all about making email delivery easy. Attempting to utilize the built-in MIME message generation classes can be painful, and interfacing with an SMTP server, or, worse, the command-line @sendmail@ command can make you lose your hair.  Mailer handles both of these tasks for you and more.
+
+The most common cases for mail message creation (plain text, html, attachments, and html embeds) are handled by the @marrow.mailer.message.Message@ class. Using this class allows you to write clean, succinct code within your own applications.  If you want to use hand-generated MIME messages, or tackle Python's built-in MIME generation support for an advanced use-case, Mailer allows you to utilize the delivery mechanics without requiring the use of the @Message@ class.
+
+Mailer is *not* an MTA like "Exim":http://www.exim.org/, "Postfix":http://www.postfix.org/, "sendmail":http://www.sendmail.com/sm/open_source/, or "qmail":http://www.qmail.org/. It is designed
+to deliver your messages to a real mail server ("smart host") or other back-end which then actually delivers the messages to the recipient's server. There are a number of true MTAs written in Python, however, including "Python's smtpd":http://docs.python.org/library/smtpd.html, "Twisted Mail":http://twistedmatrix.com/trac/wiki/TwistedMail, "pymta":http://www.schwarz.eu/opensource/projects/pymta/, "tmda-ofmipd":http://tmda.svn.sourceforge.net/viewvc/tmda/trunk/tmda/bin/tmda-ofmipd?revision=2194&view=markup, and "Lamson":http://lamsonproject.org/, but this is by no means an exhaustive list.
+
 
 
 h2(#installation). %2.% Installation
 
-Installing @marrow.mailer@ is easy, just execute the following in a terminal:
+Installing @marrow.mailer@ is easy, just execute the following in a terminal: [2]
 
 <pre><code>pip install marrow.mailer</code></pre>
 
@@ -62,15 +71,35 @@ h2(#basic). %3.% Basic Usage
 
 
 
+h2(#advanced). %4.% Advanced Usage
+
+
+h3(#configuration). %4.1.% Advanced Configuration
+
+
+h3(#manager-use). %4.2.% Delivery Managers
+
+
+h3(#transport-use). %4.3.% Message Transports
 
 
 
-h2(#license). %5.% License
+h2(#extending). %5.% Extending Marrow Mailer
+
+
+h3(#managers). %5.1.% Delivery Managers
+
+
+h3(#transports). %5.2.% Message Transports
+
+
+
+h2(#license). %6.% License
 
 Marrow Tags has been released under the MIT Open Source license.
 
 
-h3. %5.1.% The MIT License
+h3. %6.1.% The MIT License
 
 Copyright (C) 2006-2011 Alice Bevan-McGregor and contributors.
 
@@ -79,3 +108,9 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+fn1. In order to run the full test suite you need to install "pymta":http://www.schwarz.eu/opensource/projects/pymta/ and its dependencies.
+
+fn2. If "Pip":http://www.pip-installer.org/ is not available for you, you can use @easy_install@ instead. We have much love for Pip and "Distribute":http://packages.python.org/distribute/, though.
