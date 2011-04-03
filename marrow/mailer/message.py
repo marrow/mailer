@@ -2,10 +2,10 @@
 
 """MIME-encoded electronic mail message classes."""
 
-from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.nonmultipart import MIMENonMultipart
 from email.utils import make_msgid, formatdate
 from datetime import datetime
 import logging
@@ -15,6 +15,8 @@ import warnings
 
 from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring
+from mimetypes import guess_type
+import imghdr
 
 __all__ = ['Message']
 
@@ -218,58 +220,70 @@ class Message(object):
 
         return message
 
-    def attach(self, file, name=None, maintype='application', subtype='octet-stream'):
+    def attach(self, name, data=None, maintype=None, subtype=None, inline=False):
         """Attach a file to this message.
 
-        :param file: The path to the file you wish to attach, or an
-                     instance of a file-like object.
-        :param name: You can optionally override the filename of the
-                     attached file.  This name will appear in the
-                     recipient's mail viewer.  **Optional if passing
-                     an on-disk path.  Required if passing a file-like
-                     object.**
-        :type name: string
+        :param name: Path to the file to attach if data is None, or the name
+                     of the file if the ``data`` argument is given
+        :param data: Contents of the file to attach, or None if the data is to
+                     be read from the file pointed to by the ``name`` argument
+        :type data: bytes or a file-like object
+        :param maintype: First part of the MIME type of the file -- will be
+                         automatically guessed if not given
+        :param subtype: Second part of the MIME type of the file -- will be
+                        automatically guessed if not given
+        :param inline: Whether to set the Content-Disposition for the file to
+                       "inline" (True) or "attachment" (False)
         """
-        part = MIMEBase(type, subtype)
+        if not maintype:
+            maintype, subtype = guess_type(name)
+            if not maintype:
+                maintype, subtype = 'application', 'octet-stream'
 
-        if isinstance(file, basestring):
-            name = name or os.path.basename(file)
-            with open(file, 'rb') as fp:
+        part = MIMENonMultipart(maintype, subtype)
+
+        if data is None:
+            with open(name, 'rb') as fp:
                 part.set_payload(fp.read())
+            name = os.path.basename(name)
+        elif isinstance(data, bytes):
+            part.set_payload(data)
+        elif hasattr(data, 'read'):
+            part.set_payload(data.read())
         else:
-            name = name or getattr(file, 'name', None)
-            assert name, "If attaching a file-like object, you must pass a custom filename, as one can not be inferred."
-            part.set_payload(file.read())
+            raise TypeError("Unable to read attachment contents")
 
-        part.add_header('Content-Disposition', 'attachment', filename=name)
-        self.attachments.append(part)
+        if inline:
+            part.add_header('Content-Disposition', 'inline', filename=name)
+            part.add_header('Content-ID', '<%s>' % name)
+            self.embedded.append(part)
+        else:
+            part.add_header('Content-Disposition', 'attachment', filename=name)
+            self.attachments.append(part)
 
-    def embed_image(self, file, name=None):
-        """Attach an on-disk image file and prepare for HTML embedding.
+    def embed_image(self, name, data=None):
+        """Attach an image file and prepare for HTML embedding.
 
         This method should only be used to embed images.
 
-        :param file: The path to the file you wish to attach, or an
-                     instance of a file-like object.
-        :param name: You can optionally override the filename of the
-                     attached file.  This name will appear in the
-                     recipient's mail viewer.  **Optional if passing
-                     an on-disk path.  Required if passing a file-like
-                     object.**
-        :type name: string
+        :param name: Path to the image to embed if data is None, or the name
+                     of the file if the ``data`` argument is given
+        :param data: Contents of the image to embed, or None if the data is to
+                     be read from the file pointed to by the ``name`` argument
         """
-        if isinstance(file, basestring):
-            name = name or os.path.basename(file)
+        if data is None:
+            name = os.path.basename(name)
             with open(file, 'rb') as fp:
-                part = MIMEImage(fp.read(), name)
+                data = fp.read()
+        elif isinstance(data, bytes):
+            pass
+        elif hasattr(data, 'read'):
+            data = data.read()
         else:
-            name = name or getattr(file, 'name', None)
-            assert name, "If attaching a file-like object, you must pass a custom filename, as one can not be inferred."
-            part = MIMEImage(file.read(), name)
+            raise TypeError("Unable to read image contents")
 
-        part.add_header('Content-Disposition', 'inline', filename=name)
-        part.add_header('Content-ID', '<%s>' % name)
-        self.embedded.append(part)
+        subtype = imghdr.what(None, data)
+        self.attach(name, data, 'image', subtype, True)
 
     @staticmethod
     def _callable(var):
