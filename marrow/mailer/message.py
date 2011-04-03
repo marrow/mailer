@@ -10,7 +10,6 @@ from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
 from datetime import datetime
 import imghdr
-import logging
 import os
 import time
 import warnings
@@ -19,9 +18,6 @@ from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring
 
 __all__ = ['Message']
-
-
-log = logging.getLogger(__name__)
 
 
 class Message(object):
