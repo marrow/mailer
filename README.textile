@@ -19,7 +19,7 @@ By using Marrow Mailer you can:
 * Easily construct plain text and HTML emails.
 * Improve the testability of your e-mail deliveries.
 * Use different mail delivery management strategies, e.g. immediate, deferred, or even multi-server.
-* Switch the transport, e.g. SMTP or maildir, by just changing some values in a configuration file.
+* Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even direct maildir delivery.
 * Multiple simultaneous configurations for more targeted delivery.
 
 Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on external packages for normal operation [1].
