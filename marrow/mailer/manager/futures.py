@@ -3,7 +3,9 @@
 from concurrent import futures
 from Queue import Queue, Empty
 
-from marrow.mailer.exc import ManagerException, TransportFailedException, TransportExhaustedException
+from marrow.mailer.exc import (ManagerException, TransportFailedException,
+        MessageFailedException, TransportExhaustedException)
+
 from marrow.mailer.manager.util import TransportPool
 
 
