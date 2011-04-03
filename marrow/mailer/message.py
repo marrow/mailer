@@ -33,13 +33,13 @@ class Message(object):
         constructor, using named arguments.  The first three positional
         arguments can be used to quickly prepare a simple message.
         """
-        self.smtp_from = kw.pop('smtp_from', None)
+        self.sender = kw.pop('sender', None)
         self.author = kw.pop('author', None)
         self.to = kw.pop('to', None)
         self.cc = kw.pop('cc', None)
         self.bcc = kw.pop('bcc', None)
-        self.reply_to = kw.pop('reply_to', None)
-        self.notification_to = kw.pop('disposition', None)
+        self.reply = kw.pop('reply', None)
+        self.notify = kw.pop('disposition', None)
 
         self.subject = kw.pop('subject', None)
         self.date = kw.pop('date', None)
@@ -65,13 +65,13 @@ class Message(object):
             error_msg = "__init__() got an unexpected keyword argument '%s'"
             raise TypeError(error_msg % parameter_name)
 
-    smtp_from = AutoConverter(Address)
+    sender = AutoConverter(Address)
     author = AutoConverter(Address)
     to = AutoConverter(AddressList)
     bcc = AutoConverter(AddressList)
     cc = AutoConverter(AddressList)
-    reply_to = AutoConverter(AddressList)
-    notification_to = AutoConverter(AddressList)
+    reply = AutoConverter(AddressList)
+    notify = AutoConverter(AddressList)
 
     def __setattr__(self, name, value):
         """Set the dirty flag as properties are updated."""
@@ -93,7 +93,7 @@ class Message(object):
     def envelope_sender(self):
         """Returns the address of the envelope sender address (SMTP from, if
         not set the sender, if this one isn't set too, the author)."""
-        return self.smtp_from or self.author
+        return self.sender or self.author
 
     @property
     def recipients(self):
@@ -141,7 +141,7 @@ class Message(object):
         headers = [
                 ('Sender', sender),
                 ('From', author),
-                ('Reply-To', self.reply_to),
+                ('Reply-To', self.reply),
                 ('Subject', self.subject),
                 ('Date', date_value),
                 ('To', self.to),
