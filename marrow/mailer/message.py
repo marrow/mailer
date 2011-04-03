@@ -5,6 +5,7 @@
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
+from email.header import Header
 from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
 from datetime import datetime
@@ -198,7 +199,7 @@ class Message(object):
         if len(sender) > 1:
             raise ValueError('You must not specify more than one sender!')
 
-        if not self._dirty and self._processed and not interface.config.get('mail.debug', False):
+        if not self._dirty and self._processed:
             return self._mime
 
         self._processed = False
