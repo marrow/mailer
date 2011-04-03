@@ -2,12 +2,13 @@
 
 """MIME-encoded electronic mail message classes."""
 
-from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 from email.utils import make_msgid, formatdate
+from mimetypes import guess_type
 from datetime import datetime
+import imghdr
 import logging
 import os
 import time
@@ -15,8 +16,6 @@ import warnings
 
 from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring
-from mimetypes import guess_type
-import imghdr
 
 __all__ = ['Message']
 
