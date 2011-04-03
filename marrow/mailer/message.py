@@ -64,7 +64,7 @@ class Message(object):
             raise TypeError(error_msg % parameter_name)
 
     sender = AutoConverter(Address)
-    author = AutoConverter(Address)
+    author = AutoConverter(AddressList)
     to = AutoConverter(AddressList)
     bcc = AutoConverter(AddressList)
     cc = AutoConverter(AddressList)
@@ -91,7 +91,7 @@ class Message(object):
     def envelope_sender(self):
         """Returns the address of the envelope sender address (SMTP from, if
         not set the sender, if this one isn't set too, the author)."""
-        return self.sender or self.author
+        return self.sender or self.author[0]
 
     @property
     def recipients(self):
