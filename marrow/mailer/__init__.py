@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-""""""
+"""marrow.mailer mail delivery framework and MIME message abstraction."""
 
 
 import logging
@@ -21,9 +21,9 @@ log = __import__('logging').getLogger(__name__)
 
 
 class Delivery(object):
-    """The primary marrow.mail interface.
+    """The primary marrow.mailer interface.
     
-    Instantiate and configure marrow.mail, then use the instance to initiate mail delivery.
+    Instantiate and configure marrow.mailer, then use the instance to initiate mail delivery.
     
     Where managers and transports are defined in the configuration you may pass in the class,
     an entrypoint name (simple string), or package-object notation ('foo.bar:baz').
