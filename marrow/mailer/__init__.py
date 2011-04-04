@@ -54,7 +54,7 @@ class Delivery(object):
         self.Transport = Transport = self._load(config.transport, 'marrow.mailer.transport')
         
         if not Transport:
-            raise LookupError("Unable to determine transport from specification: %r" % (config.manager, ))
+            raise LookupError("Unable to determine transport from specification: %r" % (config.transport, ))
         
         self.manager = Manager(manager_config, partial(Transport, transport_config))
     
