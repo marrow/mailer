@@ -45,5 +45,4 @@ class MaildirTransport(object):
         self.box.add(mailbox.MaildirMessage(bytes(message)))
     
     def shutdown(self):
-        self.box.close()
         self.box = None
