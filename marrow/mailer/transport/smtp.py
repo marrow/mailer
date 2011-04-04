@@ -36,7 +36,11 @@ class SMTPTransport(object):
 
         self.connection = None
         self.messages_sent = 0
-
+    
+    def startup(self):
+        if not self.connected:
+            self.connect_to_server()
+    
     def shutdown(self):
         if self.connected:
             log.debug("Closing SMTP connection")
@@ -118,9 +122,9 @@ class SMTPTransport(object):
             cls_name = e.__class__.__name__
             log.debug("%s EXCEPTION %s", message.id, cls_name, exc_info=True)
 
-            if message.nr_retries >= 0:
+            if message.retries >= 0:
                 log.warning("%s DEFERRED %s", message.id, cls_name)
-                message.nr_retries -= 1
+                message.retries -= 1
             else:
                 log.exception("%s REFUSED %s", message.id, cls_name)
                 raise TransportFailedException
