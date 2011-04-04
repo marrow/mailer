@@ -9,13 +9,14 @@ import pkg_resources
 
 from functools import partial
 
+from marrow.mailer.message import Message
 from marrow.mailer.exc import MailerNotRunning
 
 from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
 
-__all__ = ['Delivery']
+__all__ = ['Delivery', 'Message']
 
 log = __import__('logging').getLogger(__name__)
 
@@ -28,6 +29,9 @@ class Delivery(object):
     Where managers and transports are defined in the configuration you may pass in the class,
     an entrypoint name (simple string), or package-object notation ('foo.bar:baz').
     """
+    
+    def __repr__(self):
+        return "Delivery(manager=%s, transport=%s)" % (self.Manager.__name__, self.Transport.__name__)
     
     def __init__(self, config, prefix=None):
         self.manager, self.Manager = None, None
