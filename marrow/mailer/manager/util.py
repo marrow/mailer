@@ -48,6 +48,7 @@ class TransportPool(object):
                     transport.startup()
             
             self.transport = transport
+            return transport
         
         def __exit__(self, type, value, traceback):
             transport = self.transport
@@ -63,4 +64,4 @@ class TransportPool(object):
                 transport.shutdown()
     
     def __call__(self):
-        return Context(self)
+        return self.Context(self)
