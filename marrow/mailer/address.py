@@ -142,8 +142,9 @@ class AddressList(list):
 class AutoConverter(object):
     """Automatically converts an assigned value to the given type."""
 
-    def __init__(self, cls):
+    def __init__(self, cls, default=None):
         self.cls = cls
+        self.value = default
 
     def __get__(self, instance, owner):
         return self.value
