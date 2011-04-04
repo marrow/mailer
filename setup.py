@@ -63,6 +63,9 @@ Python 2.6+ and 3.1+, formerly called TurboMail.""",
         'marrow.mailer.transport': [
             "mock = marrow.mailer.transport.mock:MockTransport",
             "smtp = marrow.mailer.transport.smtp:SMTPTransport",
+            "mbox = marrow.mailer.transport.mbox:MailboxTransport",
+            "mailbox = marrow.mailer.transport.mbox:MailboxTransport",
+            "maildir = marrow.mailer.transport.maildir:MaildirTransport",
         ]
     }
 )
