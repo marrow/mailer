@@ -35,5 +35,5 @@ if __name__ == '__main__':
     message.subject = "This is a test message."
     message.plain = "Testing!"
     
-    mail.send(b)
+    mail.send(message)
     mail.stop()
