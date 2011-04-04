@@ -1,19 +1,49 @@
 # encoding: utf-8
 
-__all__ = ['MailDirTransport']
+import mailbox
+
+
+__all__ = ['MaildirTransport']
 
 log = __import__('logging').getLogger(__name__)
 
 
-class MailDirTransport(object):
-	def __init__(self, **kw):
-		self.config = kw
-	
-	def startup(self):
-		pass
-	
-	def __call__(self, message):
-		pass # Deliver the message.
-	
-	def shutdown(self):
-		pass
+
+class MaildirTransport(object):
+    """A modern UNIX maildir on-disk file delivery transport."""
+    
+    def __init__(self, config):
+        self.box = None
+        self.directory = config.get('directory', None) # maildir directory
+        self.folder = config.get('folder', None) # maildir folder to deliver to
+        self.create = config.get('create', False) # create folder if missing
+        self.separator = config.get('separator', '!')
+        
+        if not self.directory:
+            raise ValueError("You must specify the path to a maildir tree to write messages to.")
+    
+    def startup(self):
+        self.box = mailbox.Maildir(self.directory)
+        
+        if self.folder:
+            try:
+                folder = self.box.get_folder(self.folder)
+            
+            except mailbox.NoSuchMailboxError:
+                if not self.create:
+                    raise
+                
+                folder = self.box.add_folder(self.folder)
+            
+            self.box = folder
+        
+        self.box.colon = self.separator
+    
+    def deliver(self, message):
+        # TODO: Create an ID based on process and thread IDs.
+        # Current bhaviour may allow for name clashes in multi-threaded.
+        self.box.add(mailbox.MaildirMessage(bytes(message)))
+    
+    def shutdown(self):
+        self.box.close()
+        self.box = None
