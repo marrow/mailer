@@ -64,7 +64,7 @@ class SMTPTransport(object):
 
         log.info("Connecting to SMTP server %s:%s", self.host, self.port)
         connection.set_debuglevel(self.debug)
-        connection.connect()
+        connection.connect(self.host, self.port)
 
         # Do TLS handshake if configured
         connection.ehlo()

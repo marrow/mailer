@@ -150,7 +150,7 @@ class Message(object):
                 ('Date', date_value),
                 ('To', self.to),
                 ('Cc', self.cc),
-                ('Disposition-Notification-To', self.disposition),
+                ('Disposition-Notification-To', self.notify),
                 ('Organization', self.organization),
                 ('X-Priority', self.priority),
             ]
@@ -183,23 +183,25 @@ class Message(object):
         """Produce the final MIME message."""
         author = self.author
         sender = self.sender
-        if not author and sender:
-            msg = 'Please specify the author using the "author" property. ' + \
-                  'Using "sender" for the From header is deprecated!'
-            warnings.warn(msg, category=DeprecationWarning)
-            author = sender
-            sender = []
+        
         if not author:
-            raise ValueError('You must specify an author.')
+            raise ValueError("You must specify an author.")
         
-        assert self.subject, "You must specify a subject."
-        assert len(self.recipients) > 0, "You must specify at least one recipient."
-        assert self.plain, "You must provide plain text content."
+        if not self.subject:
+            raise ValueError("You must specify a subject.")
         
-        if len(author) > 1 and len(sender) == 0:
-            raise ValueError('If there are multiple authors of message, you must specify a sender!')
-        if len(sender) > 1:
-            raise ValueError('You must not specify more than one sender!')
+        if len(self.recipients) == 0:
+            raise ValueError("You must specify at least one recipient.")
+        
+        if not self.plain:
+            raise ValueError("You must provide plain text content.")
+        
+        # DISCUSS: Take the first author, or raise this error?
+        # if len(author) > 1 and len(sender) == 0:
+        #     raise ValueError('If there are multiple authors of message, you must specify a sender!')
+        
+        # if len(sender) > 1:
+        #     raise ValueError('You must not specify more than one sender!')
         
         if not self._dirty and self._processed:
             return self._mime
