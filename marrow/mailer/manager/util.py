@@ -20,7 +20,8 @@ class TransportPool(object):
     def shutdown(self):
         try:
             while True:
-                self.transports.get(False)
+                transport = self.transports.get(False)
+                transport.shutdown()
         
         except Empty:
             pass
