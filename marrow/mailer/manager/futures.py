@@ -8,6 +8,8 @@ from marrow.mailer.exc import (ManagerException, TransportFailedException,
 
 from marrow.mailer.manager.util import TransportPool
 
+from marrow.util.bunch import Bunch
+
 
 __all__ = ['FuturesManager']
 
@@ -34,7 +36,7 @@ class FuturesManager(object):
         
         workers = self.config.workers
         log.debug("Starting thread pool with %d workers." % (workers, ))
-        self.executor = ThreadPoolExecutor(workers)
+        self.executor = futures.ThreadPoolExecutor(workers)
         
         log.info("Futures delivery manager started.")
     
