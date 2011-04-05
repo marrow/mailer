@@ -10,7 +10,9 @@ import sys
 from marrow.mailer.exc import (MailConfigurationException,
     TransportExhaustedException, TransportException, TransportFailedException)
 
+
 log = __import__('logging').getLogger(__name__)
+
 
 
 class SMTPTransport(object):
