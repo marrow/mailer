@@ -2,17 +2,18 @@
 
 """MIME-encoded electronic mail message classes."""
 
+import imghdr
+import os
+import time
+import warnings
+
+from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 from email.header import Header
 from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
-from datetime import datetime
-import imghdr
-import os
-import time
-import warnings
 
 from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring
@@ -49,7 +50,7 @@ class Message(object):
         # Default values.
         
         self.subject = None
-        self.date = None
+        self.date = datetime.now()
         self.encoding = 'utf-8'
         self.organization = None
         self.priority = None
