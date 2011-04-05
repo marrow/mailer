@@ -61,6 +61,7 @@ Python 2.6+ and 3.1+, formerly called TurboMail.""",
             "futures = marrow.mailer.manager.futures:FuturesManager",
         ],
         'marrow.mailer.transport': [
+            "amazon = marrow.mailer.transport.ses:AmazonTransport",
             "mock = marrow.mailer.transport.mock:MockTransport",
             "smtp = marrow.mailer.transport.smtp:SMTPTransport",
             "mbox = marrow.mailer.transport.mbox:MailboxTransport",
@@ -68,6 +69,9 @@ Python 2.6+ and 3.1+, formerly called TurboMail.""",
             "maildir = marrow.mailer.transport.maildir:MaildirTransport",
             "sendmail = marrow.mailer.transport.sendmail:SendmailTransport",
             "imap = marrow.mailer.transport.imap:IMAPTransport",
+            "appengine = marrow.mailer.transport.gae:AppEngineTransport",
+            "logging = marrow.mailer.transport.log:LoggingTransport",
+            "sms = marrow.mailer.transport.sms:SMSTransport",
         ]
     }
 )
