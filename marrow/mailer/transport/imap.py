@@ -44,7 +44,7 @@ class IMAPTransport(object):
             )
         
         if result[0] != b'OK':
-            raise DeliveryFailedException(message, "\n".join(result[1])
+            raise DeliveryFailedException(message, "\n".join(result[1]))
     
     def shutdown(self):
         self.connection.logout()
