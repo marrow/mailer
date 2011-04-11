@@ -11,7 +11,6 @@ log = __import__('logging').getLogger(__name__)
 
 class ImmediateManager(object):
     def __init__(self, config, Transport):
-        self.config = config
         self._Transport = Transport
         self._transport = None
         
