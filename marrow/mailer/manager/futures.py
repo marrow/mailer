@@ -19,9 +19,7 @@ log = __import__('logging').getLogger(__name__)
 
 class FuturesManager(object):
     def __init__(self, config, transport):
-        base = dict(workers=10)
-        base.update(dict(config))
-        self.config = Bunch(base)
+        self.workers = config.get('workers', 1)
         
         self.executor = None
         self.transport = TransportPool(transport)
@@ -34,7 +32,7 @@ class FuturesManager(object):
         log.debug("Initializing transport queue.")
         self.transport.startup()
         
-        workers = self.config.workers
+        workers = self.workers
         log.debug("Starting thread pool with %d workers." % (workers, ))
         self.executor = futures.ThreadPoolExecutor(workers)
         
