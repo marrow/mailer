@@ -19,7 +19,7 @@ By using Marrow Mailer you can:
 * Easily construct plain text and HTML emails.
 * Improve the testability of your e-mail deliveries.
 * Use different mail delivery management strategies, e.g. immediate, deferred, or even multi-server.
-* Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even direct maildir delivery.
+* Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even direct mbox/maildir delivery.
 * Multiple simultaneous configurations for more targeted delivery.
 
 Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on external packages for normal operation [1].
@@ -27,7 +27,7 @@ Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on exte
 
 h3(#goals). %1.1.% Goals
 
-Marrow Mailer is all about making email delivery easy. Attempting to utilize the built-in MIME message generation classes can be painful, and interfacing with an SMTP server, or, worse, the command-line @sendmail@ command can make you lose your hair.  Mailer handles both of these tasks for you and more.
+Marrow Mailer is all about making email delivery easy. Attempting to utilize the built-in MIME message generation classes can be painful, and interfacing with an SMTP server, or, worse, the command-line @sendmail@ command can make you lose your hair.  Mailer handles all of these tasks for you and more.
 
 The most common cases for mail message creation (plain text, html, attachments, and html embeds) are handled by the @marrow.mailer.message.Message@ class. Using this class allows you to write clean, succinct code within your own applications.  If you want to use hand-generated MIME messages, or tackle Python's built-in MIME generation support for an advanced use-case, Mailer allows you to utilize the delivery mechanics without requiring the use of the @Message@ class.
 
@@ -41,7 +41,7 @@ Installing @marrow.mailer@ is easy, just execute the following in a terminal: [2
 
 <pre><code>pip install marrow.mailer</code></pre>
 
-If you add @marrow.mailer@ to the @install_requires@ argument of the call to @setup()@ in your application's @setup.py@ file, @marrow.mailer@ will be automatically installed and made available when your own application is installed.
+If you add @marrow.mailer@ to the @install_requires@ argument of the call to @setup()@ in your application's @setup.py@ file, @marrow.mailer@ will be automatically installed and made available when your own application is installed.  We recommend using "less than" version numbers to ensure there are no unintentional side-effects when updating.  Use @"marrow.mailer<4.1"@ to get all bugfixes for the current release, and @"marrow.mailer<5.0"@ to get bugfixes and feature updates, but ensure that large breaking changes are ignored.
 
 
 h3(#install-dev). %2.1.% Development Version
@@ -68,18 +68,51 @@ If you would like to make changes and contribute them back to the project, fork 
 
 h2(#basic). %3.% Basic Usage
 
+To use Marrow Mailer you instantiate a @marrow.mailer.Delivery@ object with the configuration, then pass @Message@ instances to the @Delivery@ instance.  This allows you to configure multiple delivery mechanisms and choose, within your code, how you want each message delivered.  The configuration is a dictionary of dot-notation keys and their values.  Each manager and transport has their own configuration keys.
+
+Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.
+
+<pre><code>from marrow.mailer import Delivery, Message
+
+mailer = Delivery({...}, prefix=None)
+mailer.start()
+
+message = Message(...)
+mailer.send(message)
+
+mailer.stop()</code></pre>
 
 
-h2(#advanced). %4.% Advanced Usage
+h2(#managers). %4.% Delivery Managers
+
+h3(#immediate-manager). %4.1.% Immediate Manager
+
+The immediate manager attempts to deliver the message using your chosen transport immediately.  The request to deliver a message is blocking.  There is no configuration for this manager.
 
 
-h3(#configuration). %4.1.% Advanced Configuration
+h3(#futures-manager). %4.2.% Futures Manager
+
+Futures is a thread pool delivery manager based on the @concurrent.futures@ module introduced in "PEP 3148":http://www.python.org/dev/peps/pep-3148/.  The use of @concurrent.futures@ and its default thread pool manager is that you can receive notification (via callback or blocking request) of successful delivery and errors.
+
+When you enqueue a message for delivery a Future object is returned to you.  For information on what you can do with a Future object, see the "relevant section of the Futures PEP":http://www.python.org/dev/peps/pep-3148/#future-objects.
+
+h4(#futures-config). %4.2.1.% Configuration
+
+The Futures manager understands the following configuration directives:
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @workers@ | @1@ | The number of threads to spawn. |
+
+The @workers@ configuration directive has the side effect of requiring one transport instance per worker, requiring up to @workers@ simultaneous connections.
 
 
-h3(#manager-use). %4.2.% Delivery Managers
+h3(#dynamic-manager). %4.3.% Dynamic Manager
+
+This manager dynamically scales the number of worker threads (and thus simultaneous transport connections) based on the current workload.  This is a port of the _TurboMail 3_ @ondemand@ manager to the Futures API.
 
 
-h3(#transport-use). %4.3.% Message Transports
+
 
 
 
