@@ -119,14 +119,102 @@ table(configuration).
 
 
 
-h2(#extending). %5.% Extending Marrow Mailer
+h2(#transports). %5.% Message Transports
+
+Transports are grouped into three primary categories: disk, network, and meta.  Meta transports keep the message within Python or only 'pretend' to deliver it.  Disk transports save the message to disk in some fashion, and networked transports deliver the message over a network.  Configuration is similar between transports within the same category.
+
+
+h3(#disk-transports). %5.1.% Disk Transports
+
+Disk transports are the easiest to get up and running with, and allow you to off-load final transport of the message to another process or even server.  These transports are most useful in a larger deployment, but are also great for testing!
+
+There are currently two on-disk transports included with Marrow Mailer: @mbox@ and @maildir@.
+
+h4(#mbox-transport). %5.1.1.% UNIX Mailbox
+
+There is only one configuration directive for the @mbox@ transport:
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @file@ | — | The on-disk file to use as the mailbox, must be writeable. |
+
+There are several important limitations on this mailbox format; notably the use of whole-file locking when changes are to be made, making this transport useless for high-performance or multi-threaded delivery.  For details, see the "@mbox@ documentation":http://docs.python.org/library/mailbox.html#mbox.
+
+
+h4(#maildir-transport). %5.1.2.% UNIX Mail Directory
+
+The @maildir@ transport offers the benefits of a universal on-disk mail storage format with numerous features and none of the limitations of the @mbox@ format.  These added features mandate the need for additional configuration directives.
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @directory@ | — | The on-disk path to the mail directory. |
+| @folder@ | @None@ | A dot-separated subfolder to deliver mail into. The default is the top-level (inbox) folder. |
+| @create@ | @False@ | Create the target folder if it does not exist at the time of delivery. |
+| @separator@ | @"!"@ | Additional meta-information is associated with the mail directory format, usually separated by a colon. Because a colon is not a valid character on many operating systems, Marrow Mailer defaults to the de-facto standard of the @!@ (bang) character. |
+
+
+
+h3(#network-transports). %5.2.% Network Transports
+
+Network transports have Python directly communicate over TCP/IP with an external service.
+
+
+h4(#). %5.2.1.% Simple Mail Transport Protocol (SMTP)
+
+SMTP is, far and away, the most ubiquitous mail delivery protocol in existence.
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @host@ | @None@ | |
+| @port@ | @25@ or @465@ | |
+| @username@ | @None@ | |
+| @password@ | @None@ | |
+| @timeout@ | @None@ | |
+| @local_hostname@ | @None@ | |
+| @debug@ | @False@ | |
+| @tls@ | @"optional"@ | |
+| @certfile@ | @None@ | |
+| @keyfile@ | @None@ | |
+| @pipeline@ | @None@ | |
+
+
+h4(#). %5.2.2.% Internet Mail Access Protocol (IMAP)
+
+Marrow Mailer, via the @imap@ transport, allows you to dump messages directly into folders on remote servers.
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @host@ | @None@ | |
+| @ssl@ | @False@ | |
+| @port@ | @143@ or @993@ | |
+| @username@ | @None@ | |
+| @password@ | @None@ | |
+| @folder@ | @"INBOX"@ | |
+
+
+h3(#meta-transports). %5.3.% Meta-Transports
+
+
+h4(#). %5.3.1.% Google AppEngine
+
+h4(#). %5.3.1.% Python Logging
+
+h4(#). %5.3.1.% Mock (Testing) Transport
+
+h4(#). %5.3.1.% Sendmail Command
+
+h4(#). %5.3.1.% Amazon Simple E-Mail Service (SES)
+
+
+
+h2(#extending). %6.% Extending Marrow Mailer
 
 Marrow Mailer can be extended in two ways: new managers (such as thread pool management strategies or process pools) and delivery transports.  The API for each is quite simple.
 
 One note is that managers and transports only receive the configuration directives targeted at them; it is not possible to inspect other aspects of configuration.
 
 
-h3(#managers). %5.1.% Delivery Manager API
+h3(#managers). %6.1.% Delivery Manager API
 
 Delivery managers are responsible for accepting work from the application programmer and (eventually) handing this work to transports for final outbound delivery from the application.
 
@@ -154,9 +242,9 @@ Additionally, a manager must not:
 # Utilize or alter any form of global scope configuration.
 
 
-h3(#transports). %5.2.% Message Transport API
+h3(#transports). %6.2.% Message Transport API
 
-A message transport is some method whereby a message is sent to some external consumer.  Message transports have limited control over how they are utilized by the use of Marrow Mailer exceptions with specific semantic meanings, as described in "§5.3":#exceptions.
+A message transport is some method whereby a message is sent to some external consumer.  Message transports have limited control over how they are utilized by the use of Marrow Mailer exceptions with specific semantic meanings, as described in "§6.3":#exceptions.
 
 The following are the methods understood by the duck-typed transport API.  All methods are required even if they do nothing.
 
@@ -175,14 +263,14 @@ A transport must:
 # Return None from the @deliver()@ method.
 # Accept multiple messages during the lifetime of the transport instance.
 # Accept multiple @startup()@/@shutdown()@ cycles.
-# Understand and correctly handle exceptions that may be raised by message transports, described in "§5.3":#exceptions.
+# Understand and correctly handle exceptions that may be raised by message transports, described in "§6.3":#exceptions.
 
 Additionally, a transport must not:
 
 # Utilize or alter any form of global scope configuration.
 
 
-h3(#exceptions). %5.2.% Exceptions
+h3(#exceptions). %6.3.% Exceptions
 
 The following table illustrates the semantic meaning of the various internal (and external) exceptions used by Marrow Mailer, managers, and transports.
 
@@ -197,12 +285,12 @@ table(exceptions).
 
 
 
-h2(#license). %6.% License
+h2(#license). %7.% License
 
 Marrow Tags has been released under the MIT Open Source license.
 
 
-h3. %6.1.% The MIT License
+h3. %7.1.% The MIT License
 
 Copyright (C) 2006-2011 Alice Bevan-McGregor and contributors.
 
