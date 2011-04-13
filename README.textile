@@ -96,8 +96,6 @@ Futures is a thread pool delivery manager based on the @concurrent.futures@ modu
 
 When you enqueue a message for delivery a Future object is returned to you.  For information on what you can do with a Future object, see the "relevant section of the Futures PEP":http://www.python.org/dev/peps/pep-3148/#future-objects.
 
-h4(#futures-config). %4.2.1.% Configuration
-
 The Futures manager understands the following configuration directives:
 
 table(configuration).
@@ -111,18 +109,91 @@ h3(#dynamic-manager). %4.3.% Dynamic Manager
 
 This manager dynamically scales the number of worker threads (and thus simultaneous transport connections) based on the current workload.  This is a port of the _TurboMail 3_ @ondemand@ manager to the Futures API.
 
+The Dynamic manager understands the following configuration directives:
 
-
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @threads@ | @4@ | The maximum number of threads. |
+| @divisor@ | @10@ | The number of messages to send before freeing the thread. |
+| @timeout@ | @60@ | The number of seconds to wait for additional work before freeing the thread. |
 
 
 
 h2(#extending). %5.% Extending Marrow Mailer
 
+Marrow Mailer can be extended in two ways: new managers (such as thread pool management strategies or process pools) and delivery transports.  The API for each is quite simple.
 
-h3(#managers). %5.1.% Delivery Managers
+One note is that managers and transports only receive the configuration directives targeted at them; it is not possible to inspect other aspects of configuration.
 
 
-h3(#transports). %5.2.% Message Transports
+h3(#managers). %5.1.% Delivery Manager API
+
+Delivery managers are responsible for accepting work from the application programmer and (eventually) handing this work to transports for final outbound delivery from the application.
+
+The following are the methods understood by the duck-typed manager API.  All methods are required even if they do nothing.
+
+table(methods).
+|_. Method |_. Description |
+| @__init__(config, Transport)@ | Initialization code.  @Transport@ is a pre-configured transport factory. |
+| @startup()@ | Code to execute after initialization and before messages are accepted. |
+| @deliver(message)@ | Handle delivery of the given @Message@ instance. |
+| @shutdown()@ | Code to execute during shutdown. |
+
+A manager must:
+
+# Perform no actions during initialization.
+# Prepare state within the @startup()@ method call.  E.g. prepare a thread or transport pool.
+# Clean up state within the @shutdown()@ method call.  E.g. free a thread or transport pool.
+# Return a documented object from the @deliver()@ method call, preferably a @Future@ instance for interoperability with the core managers.
+# Accept multiple messages during the lifetime of the manager instance.
+# Accept multiple @startup()@/@shutdown()@ cycles.
+# Understand and correctly handle exceptions that may be raised by message transports, described in "§5.3":#exceptions.
+
+Additionally, a manager must not:
+
+# Utilize or alter any form of global scope configuration.
+
+
+h3(#transports). %5.2.% Message Transport API
+
+A message transport is some method whereby a message is sent to some external consumer.  Message transports have limited control over how they are utilized by the use of Marrow Mailer exceptions with specific semantic meanings, as described in "§5.3":#exceptions.
+
+The following are the methods understood by the duck-typed transport API.  All methods are required even if they do nothing.
+
+table(methods).
+|_. Method |_. Description |
+| @__init__(config)@ | Initialization code. |
+| @startup()@ | Code to execute after initialization and before messages are accepted. |
+| @deliver(message)@ | Handle delivery of the given @Message@ instance. |
+| @shutdown()@ | Code to execute during shutdown. |
+
+A transport must:
+
+# Perform no actions during initialization.
+# Prepare state within the @startup()@ method call.  E.g. opening network connections or files.
+# Clean up state within the @shutdown()@ method call.  E.g. closing network connections or files.
+# Return None from the @deliver()@ method.
+# Accept multiple messages during the lifetime of the transport instance.
+# Accept multiple @startup()@/@shutdown()@ cycles.
+# Understand and correctly handle exceptions that may be raised by message transports, described in "§5.3":#exceptions.
+
+Additionally, a transport must not:
+
+# Utilize or alter any form of global scope configuration.
+
+
+h3(#exceptions). %5.2.% Exceptions
+
+The following table illustrates the semantic meaning of the various internal (and external) exceptions used by Marrow Mailer, managers, and transports.
+
+table(exceptions).
+|_. Exception |_. Role |_. Description |
+| @DeliveryFailedException@ | External | The message stored in @args[0]@ could not be delivered for the reason given in @args[1]@.  (These can be accessed as @e.msg@ and @e.reason@.) |
+| @MailerNotRunning@ | External | Raised when attempting to deliver messages using a dead interface.  (Not started, or already shut down.) |
+| @MailConfigurationException@ | External | Raised to indicate some configuration value was required, and missing, out of bounds, or otherwise invalid. |
+| @TransportFailedException@ | Internal | The transport has failed to deliver the message due to an internal error; a new instance of the transport should be used to retry. |
+| @MessageFailedException@ | Internal | The transport has failed to deliver the message due to a problem with the message itself, and no attempt should be made to retry delivery of this message.  The transport may still be re-used, however. |
+| @TransportExhaustedException@ | Internal | The transport has successfully delivered the message, but can no longer be used for future message delivery; a new instance should be used on the next request. |
 
 
 
