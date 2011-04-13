@@ -33,8 +33,7 @@ class SMTPTransport(object):
         self.timeout = config.get('timeout', None)
         self.debug = config.get('debug', False)
 
-        self.max_messages_per_connection = config.get(
-            'max_messages_per_connection', None)
+        self.pipeline = config.get('pipeline', None)
 
         self.connection = None
         self.messages_sent = 0
@@ -88,7 +87,7 @@ class SMTPTransport(object):
         return getattr(self.connection, 'sock', None) is not None
 
     def can_send_more_messages_on_this_connection(self):
-        return self.messages_sent < self.max_messages_per_connection
+        return self.messages_sent < self.pipeline
 
     def deliver(self, message):
         if not self.connected:
