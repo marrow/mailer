@@ -86,9 +86,6 @@ class SMTPTransport(object):
     def connected(self):
         return getattr(self.connection, 'sock', None) is not None
 
-    def can_send_more_messages_on_this_connection(self):
-        return self.messages_sent < self.pipeline
-
     def deliver(self, message):
         if not self.connected:
             self.connect_to_server()
@@ -96,7 +93,7 @@ class SMTPTransport(object):
         try:
             self.send_with_smtp(message)
         finally:
-            if not self.can_send_more_messages_on_this_connection():
+            if not self.messages_sent < self.pipeline:
                 self.close_connection()
 
     def send_with_smtp(self, message):
