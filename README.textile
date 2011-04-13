@@ -70,7 +70,7 @@ h2(#basic). %3.% Basic Usage
 
 To use Marrow Mailer you instantiate a @marrow.mailer.Delivery@ object with the configuration, then pass @Message@ instances to the @Delivery@ instance.  This allows you to configure multiple delivery mechanisms and choose, within your code, how you want each message delivered.  The configuration is a dictionary of dot-notation keys and their values.  Each manager and transport has their own configuration keys.
 
-Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.
+Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.  Manager and transport configurations are each additionally prefixed with @manager.@ and @transport.@, respectively.
 
 <pre><code>from marrow.mailer import Delivery, Message
 
@@ -81,6 +81,14 @@ message = Message(...)
 mailer.send(message)
 
 mailer.stop()</code></pre>
+
+A full example configuration, delivering to an on-disk @maildir@ mailbox:
+
+<pre><code>{
+    'manager': 'immediate',
+    'transport': 'maildir',
+    'transport.directory': 'data/maildir'
+}</pre></code>
 
 
 h2(#managers). %4.% Delivery Managers
@@ -197,13 +205,39 @@ h3(#meta-transports). %5.3.% Meta-Transports
 
 h4(#). %5.3.1.% Google AppEngine
 
+bq(note). This module is not functional yet.
+
+
 h4(#). %5.3.1.% Python Logging
+
+bq(note). This module is not functional yet.
+
 
 h4(#). %5.3.1.% Mock (Testing) Transport
 
+The @mock@ testing transport is useful if you are writing a manager.  It allows you to test to ensure your manager handles various exceptions correctly.
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @success@ | @1.0@ | The probability of successful delivery, handled after the following conditions. |
+| @failure@ | @0.0@ | The probability of the @TransportFailedException@ exception being raised. |
+| @exhaustion@ | @0.0@ | The probability of the @TransportExhaustedException@ exception being raised. |
+
+All probabilities are floating point numbers between 0.0 (0% chance) and 1.0 (100% chance).
+
+
 h4(#). %5.3.1.% Sendmail Command
 
+If the server your software is running on is configured to deliver mail via the on-disk @sendmail@ command, you can use the @sendmail@ transport to deliver your mail.
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @path@ | @"/usr/sbin/sendmail"@ | The path to the @sendmail@ executable. |
+
+
 h4(#). %5.3.1.% Amazon Simple E-Mail Service (SES)
+
+bq(note). This module is not functional yet.
 
 
 
