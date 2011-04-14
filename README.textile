@@ -18,8 +18,8 @@ By using Marrow Mailer you can:
 
 * Easily construct plain text and HTML emails.
 * Improve the testability of your e-mail deliveries.
-* Use different mail delivery management strategies, e.g. immediate, deferred, or even multi-server.
-* Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even direct mbox/maildir delivery.
+* Use different mail delivery management strategies; e.g. immediate, deferred, or even multi-server.
+* Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even via direct on-disk mbox/maildir.
 * Multiple simultaneous configurations for more targeted delivery.
 
 Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on external packages for normal operation [1].
@@ -31,7 +31,7 @@ Marrow Mailer is all about making email delivery easy. Attempting to utilize the
 
 The most common cases for mail message creation (plain text, html, attachments, and html embeds) are handled by the @marrow.mailer.message.Message@ class. Using this class allows you to write clean, succinct code within your own applications.  If you want to use hand-generated MIME messages, or tackle Python's built-in MIME generation support for an advanced use-case, Mailer allows you to utilize the delivery mechanics without requiring the use of the @Message@ class.
 
-Mailer is *not* an MTA like "Exim":http://www.exim.org/, "Postfix":http://www.postfix.org/, "sendmail":http://www.sendmail.com/sm/open_source/, or "qmail":http://www.qmail.org/. It is designed to deliver your messages to a real mail server ("smart host") or other back-end which then actually delivers the messages to the recipient's server. There are a number of true MTAs written in Python, however, including "Python's smtpd":http://docs.python.org/library/smtpd.html, "Twisted Mail":http://twistedmatrix.com/trac/wiki/TwistedMail, "pymta":http://www.schwarz.eu/opensource/projects/pymta/, "tmda-ofmipd":http://tmda.svn.sourceforge.net/viewvc/tmda/trunk/tmda/bin/tmda-ofmipd?revision=2194&view=markup, and "Lamson":http://lamsonproject.org/, but this is by no means an exhaustive list.
+Mailer is *not* an MTA like "Exim":http://www.exim.org/, "Postfix":http://www.postfix.org/, "sendmail":http://www.sendmail.com/sm/open_source/, or "qmail":http://www.qmail.org/. It is designed to deliver your messages to a real mail server ("smart host") or other back-end which then actually delivers the messages to the recipient's server. There are a number of true MTAs written in Python, however, including "Python's smtpd":http://docs.python.org/library/smtpd.html, "Twisted Mail":http://twistedmatrix.com/trac/wiki/TwistedMail, "pymta":http://www.schwarz.eu/opensource/projects/pymta/, "tmda-ofmipd":http://tmda.svn.sourceforge.net/viewvc/tmda/trunk/tmda/bin/tmda-ofmipd?revision=2194&view=markup, and "Lamson":http://lamsonproject.org/, though this is by no means an exhaustive list.
 
 
 
@@ -48,7 +48,7 @@ h3(#install-dev). %2.1.% Development Version
 
 Development takes place on "GitHub":github in the "marrow.tags":github-project project.  Issue tracking, documentation, and downloads are provided there.
 
-Installing the current development version requires "Git":git, a distributes source code management system.  If you have Git, you can run the following to download and _link_ the development version into your Python runtime:
+Installing the current development version requires "Git":git, a distributed source code management system.  If you have Git, you can run the following to download and _link_ the development version into your Python runtime:
 
 <pre><code>git clone https://github.com/marrow/marrow.mailer.git
 (cd marrow.mailer; python setup.py develop)</code></pre>
@@ -100,7 +100,7 @@ The immediate manager attempts to deliver the message using your chosen transpor
 
 h3(#futures-manager). %4.2.% Futures Manager
 
-Futures is a thread pool delivery manager based on the @concurrent.futures@ module introduced in "PEP 3148":http://www.python.org/dev/peps/pep-3148/.  The use of @concurrent.futures@ and its default thread pool manager is that you can receive notification (via callback or blocking request) of successful delivery and errors.
+Futures is a thread pool delivery manager based on the @concurrent.futures@ module introduced in "PEP 3148":http://www.python.org/dev/peps/pep-3148/.  The use of @concurrent.futures@ and its default thread pool manager allows you to receive notification (via callback or blocking request) of successful delivery and errors.
 
 When you enqueue a message for delivery a Future object is returned to you.  For information on what you can do with a Future object, see the "relevant section of the Futures PEP":http://www.python.org/dev/peps/pep-3148/#future-objects.
 
@@ -134,7 +134,7 @@ Transports are grouped into three primary categories: disk, network, and meta.  
 
 h3(#disk-transports). %5.1.% Disk Transports
 
-Disk transports are the easiest to get up and running with, and allow you to off-load final transport of the message to another process or even server.  These transports are most useful in a larger deployment, but are also great for testing!
+Disk transports are the easiest to get up and running and allow you to off-load final transport of the message to another process or server.  These transports are most useful in a larger deployment, but are also great for testing!
 
 There are currently two on-disk transports included with Marrow Mailer: @mbox@ and @maildir@.
 
@@ -167,7 +167,7 @@ h3(#network-transports). %5.2.% Network Transports
 Network transports have Python directly communicate over TCP/IP with an external service.
 
 
-h4(#). %5.2.1.% Simple Mail Transport Protocol (SMTP)
+h4(#smtp-transport). %5.2.1.% Simple Mail Transport Protocol (SMTP)
 
 SMTP is, far and away, the most ubiquitous mail delivery protocol in existence.
 
@@ -186,7 +186,7 @@ table(configuration).
 | @pipeline@ | @None@ | |
 
 
-h4(#). %5.2.2.% Internet Mail Access Protocol (IMAP)
+h4(#imap-transport). %5.2.2.% Internet Mail Access Protocol (IMAP)
 
 Marrow Mailer, via the @imap@ transport, allows you to dump messages directly into folders on remote servers.
 
@@ -203,17 +203,17 @@ table(configuration).
 h3(#meta-transports). %5.3.% Meta-Transports
 
 
-h4(#). %5.3.1.% Google AppEngine
+h4(#gae-transport). %5.3.1.% Google AppEngine
 
 bq(note). This module is not functional yet.
 
 
-h4(#). %5.3.1.% Python Logging
+h4(#logging-transport). %5.3.1.% Python Logging
 
 bq(note). This module is not functional yet.
 
 
-h4(#). %5.3.1.% Mock (Testing) Transport
+h4(#mock-transport). %5.3.1.% Mock (Testing) Transport
 
 The @mock@ testing transport is useful if you are writing a manager.  It allows you to test to ensure your manager handles various exceptions correctly.
 
@@ -226,7 +226,7 @@ table(configuration).
 All probabilities are floating point numbers between 0.0 (0% chance) and 1.0 (100% chance).
 
 
-h4(#). %5.3.1.% Sendmail Command
+h4(#sendmail-transport). %5.3.1.% Sendmail Command
 
 If the server your software is running on is configured to deliver mail via the on-disk @sendmail@ command, you can use the @sendmail@ transport to deliver your mail.
 
@@ -235,7 +235,7 @@ table(configuration).
 | @path@ | @"/usr/sbin/sendmail"@ | The path to the @sendmail@ executable. |
 
 
-h4(#). %5.3.1.% Amazon Simple E-Mail Service (SES)
+h4(#ses-transport). %5.3.1.% Amazon Simple E-Mail Service (SES)
 
 bq(note). This module is not functional yet.
 
@@ -278,7 +278,7 @@ Additionally, a manager must not:
 
 h3(#transports). %6.2.% Message Transport API
 
-A message transport is some method whereby a message is sent to some external consumer.  Message transports have limited control over how they are utilized by the use of Marrow Mailer exceptions with specific semantic meanings, as described in "§6.3":#exceptions.
+A message transport is some method whereby a message is sent to an external consumer.  Message transports have limited control over how they are utilized by the use of Marrow Mailer exceptions with specific semantic meanings, as described in "§6.3":#exceptions.
 
 The following are the methods understood by the duck-typed transport API.  All methods are required even if they do nothing.
 
@@ -312,7 +312,7 @@ table(exceptions).
 |_. Exception |_. Role |_. Description |
 | @DeliveryFailedException@ | External | The message stored in @args[0]@ could not be delivered for the reason given in @args[1]@.  (These can be accessed as @e.msg@ and @e.reason@.) |
 | @MailerNotRunning@ | External | Raised when attempting to deliver messages using a dead interface.  (Not started, or already shut down.) |
-| @MailConfigurationException@ | External | Raised to indicate some configuration value was required, and missing, out of bounds, or otherwise invalid. |
+| @MailConfigurationException@ | External | Raised to indicate some configuration value was required and missing, out of bounds, or otherwise invalid. |
 | @TransportFailedException@ | Internal | The transport has failed to deliver the message due to an internal error; a new instance of the transport should be used to retry. |
 | @MessageFailedException@ | Internal | The transport has failed to deliver the message due to a problem with the message itself, and no attempt should be made to retry delivery of this message.  The transport may still be re-used, however. |
 | @TransportExhaustedException@ | Internal | The transport has successfully delivered the message, but can no longer be used for future message delivery; a new instance should be used on the next request. |
