@@ -95,7 +95,7 @@ class Message(object):
         return self._id
     
     @property
-    def envelope_sender(self):
+    def envelope(self):
         """Returns the address of the envelope sender address (SMTP from, if
         not set the sender, if this one isn't set too, the author)."""
         return self.sender or self.author[0]
@@ -104,7 +104,7 @@ class Message(object):
     def recipients(self):
         return AddressList(self.to + self.cc + self.bcc)
     
-    def mime_document(self, plain, rich=None):
+    def _mime_document(self, plain, rich=None):
         if not rich:
             message = plain
         
@@ -215,7 +215,7 @@ class Message(object):
         if self.rich:
             rich = MIMEText(self._callable(self.rich), 'html', self.encoding)
         
-        message = self.mime_document(plain, rich)
+        message = self._mime_document(plain, rich)
         headers = self._build_header_list(author, sender)
         self._add_headers_to_message(message, headers)
         
@@ -266,7 +266,7 @@ class Message(object):
             part.add_header('Content-Disposition', 'attachment', filename=name)
             self.attachments.append(part)
     
-    def embed_image(self, name, data=None):
+    def embed(self, name, data=None):
         """Attach an image file and prepare for HTML embedding.
         
         This method should only be used to embed images.
