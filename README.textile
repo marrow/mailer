@@ -22,7 +22,7 @@ By using Marrow Mailer you can:
 * Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even via direct on-disk mbox/maildir.
 * Multiple simultaneous configurations for more targeted delivery.
 
-Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on external packages for normal operation [1].
+Mailer supports Python 2.6+ and 3.1+ and there are no other dependencies on external packages for normal operation.
 
 
 h3(#goals). %1.1.% Goals
@@ -91,14 +91,68 @@ A full example configuration, delivering to an on-disk @maildir@ mailbox:
 }</pre></code>
 
 
-h2(#managers). %4.% Delivery Managers
+h2(#message). %4.% The Message Class
 
-h3(#immediate-manager). %4.1.% Immediate Manager
+The original format for email messages was defined in "RFC 822":http://www.faqs.org/rfcs/rfc822.html which was superseded by "RFC 2822":http://www.faqs.org/rfcs/rfc2822.html. The newest standard document about the format is currently "RFC 5322":http://www.faqs.org/rfcs/rfc2822.html. But the basics of RFC 822 still apply, so for the sake of readability we will just use "RFC 822" to refer to all these RFCs. Please read the official standard documents if this text fails to explain some aspects.
+
+The Marrow Mailer @Message@ class has a large number of attributes and methods, described below:
+
+h3(#message-methods). %4.1.% Message Methods
+
+table(methods).
+|_. Method |_. Description |
+| @__init__(author=None, to=None, subject=None, **kw)@ | Create and populate a new Message. Any attribute may be set by name. |
+| @__str__@ | You can easily get the MIME encoded version of the message using the @str()@ built-in. |
+| @attach(name, data=None, maintype=None, subtype=None, inline=False)@ | Attach a file (data=None) or string-like. For on-disk files, mimetype will be guessed. |
+| @embed(name, data=None)@ | Embed an image from disk or string-like. Only embed images! |
+
+h3(#message-attributes). %4.2.% Message Attributes
+
+h4. %4.2.1.% Read/Write Attributes
+
+table(attributes).
+|_. Attribute |_. Description |
+| @_id@ | The message ID, generated for you as needed. |
+| @attachments@ | A list of MIME-encoded attachments. |
+| @author@ | The visible author of the message. |
+| @bcc@ | An invisible list of tertiary intended recipients. |
+| @cc@ | A visible list of secondary intended recipients. |
+| @date@ | The visible date/time of the message. |
+| @embedded@ | A list of MIME-encoded embedded images. |
+| @encoding@ | Unicode encoding, defaults to @utf-8@. |
+| @headers@ | A list of message headers. |
+| @notify@ | The address that message disposition notification messages get routed to. |
+| @organization@ | An extended header for an organization name. |
+| @plain@ | Plain text message content. [1] |
+| @priority@ | The @X-Priority@ header. |
+| @reply@ | The address replies should be routed to by default; may differ from @author@. |
+| @retries@ | The number of times the message should be retried in the event of a non-critical failure. |
+| @rich@ | HTML message content. Must have plain text alternative. [1] |
+| @sender@ | The designated sender of the message; may differ from @author@. |
+| @subject@ | The subject of the message. |
+| @to@ | The visible list of primary intended recipients. |
+
+fn1. The message bodies may be callables which will be executed when the message is delivered, allowing you to easily utilize templates.
+
+h4. %4.2.2.% Read-Only Attributes
+
+table(attributes).
+|_. Attribute |_. Description |
+| @envelope@ | The envelope sender from SMTP terminology. Uses the value of the @sender@ attribute, if set, otherwise the first @author@ address. |
+| @id@ | A valid message ID. Regenerated after each delivery. |
+| @mime@ | The complete MIME document tree that is the message. |
+| @recipients@ | A combination of @to@, @cc@, and @bcc@ address lists. |
+
+
+
+h2(#managers). %5.% Delivery Managers
+
+h3(#immediate-manager). %5.1.% Immediate Manager
 
 The immediate manager attempts to deliver the message using your chosen transport immediately.  The request to deliver a message is blocking.  There is no configuration for this manager.
 
 
-h3(#futures-manager). %4.2.% Futures Manager
+h3(#futures-manager). %5.2.% Futures Manager
 
 Futures is a thread pool delivery manager based on the @concurrent.futures@ module introduced in "PEP 3148":http://www.python.org/dev/peps/pep-3148/.  The use of @concurrent.futures@ and its default thread pool manager allows you to receive notification (via callback or blocking request) of successful delivery and errors.
 
@@ -113,7 +167,7 @@ table(configuration).
 The @workers@ configuration directive has the side effect of requiring one transport instance per worker, requiring up to @workers@ simultaneous connections.
 
 
-h3(#dynamic-manager). %4.3.% Dynamic Manager
+h3(#dynamic-manager). %5.3.% Dynamic Manager
 
 This manager dynamically scales the number of worker threads (and thus simultaneous transport connections) based on the current workload.  This is a port of the _TurboMail 3_ @ondemand@ manager to the Futures API.
 
@@ -127,18 +181,18 @@ table(configuration).
 
 
 
-h2(#transports). %5.% Message Transports
+h2(#transports). %6.% Message Transports
 
 Transports are grouped into three primary categories: disk, network, and meta.  Meta transports keep the message within Python or only 'pretend' to deliver it.  Disk transports save the message to disk in some fashion, and networked transports deliver the message over a network.  Configuration is similar between transports within the same category.
 
 
-h3(#disk-transports). %5.1.% Disk Transports
+h3(#disk-transports). %6.1.% Disk Transports
 
 Disk transports are the easiest to get up and running and allow you to off-load final transport of the message to another process or server.  These transports are most useful in a larger deployment, but are also great for testing!
 
 There are currently two on-disk transports included with Marrow Mailer: @mbox@ and @maildir@.
 
-h4(#mbox-transport). %5.1.1.% UNIX Mailbox
+h4(#mbox-transport). %6.1.1.% UNIX Mailbox
 
 There is only one configuration directive for the @mbox@ transport:
 
@@ -149,7 +203,7 @@ table(configuration).
 There are several important limitations on this mailbox format; notably the use of whole-file locking when changes are to be made, making this transport useless for high-performance or multi-threaded delivery.  For details, see the "@mbox@ documentation":http://docs.python.org/library/mailbox.html#mbox.
 
 
-h4(#maildir-transport). %5.1.2.% UNIX Mail Directory
+h4(#maildir-transport). %6.1.2.% UNIX Mail Directory
 
 The @maildir@ transport offers the benefits of a universal on-disk mail storage format with numerous features and none of the limitations of the @mbox@ format.  These added features mandate the need for additional configuration directives.
 
@@ -162,12 +216,12 @@ table(configuration).
 
 
 
-h3(#network-transports). %5.2.% Network Transports
+h3(#network-transports). %6.2.% Network Transports
 
 Network transports have Python directly communicate over TCP/IP with an external service.
 
 
-h4(#smtp-transport). %5.2.1.% Simple Mail Transport Protocol (SMTP)
+h4(#smtp-transport). %6.2.1.% Simple Mail Transport Protocol (SMTP)
 
 SMTP is, far and away, the most ubiquitous mail delivery protocol in existence.
 
@@ -200,20 +254,20 @@ table(configuration).
 | @folder@ | @"INBOX"@ | |
 
 
-h3(#meta-transports). %5.3.% Meta-Transports
+h3(#meta-transports). %6.3.% Meta-Transports
 
 
-h4(#gae-transport). %5.3.1.% Google AppEngine
-
-bq(note). This module is not functional yet.
-
-
-h4(#logging-transport). %5.3.1.% Python Logging
+h4(#gae-transport). %6.3.1.% Google AppEngine
 
 bq(note). This module is not functional yet.
 
 
-h4(#mock-transport). %5.3.1.% Mock (Testing) Transport
+h4(#logging-transport). %6.3.1.% Python Logging
+
+bq(note). This module is not functional yet.
+
+
+h4(#mock-transport). %6.3.1.% Mock (Testing) Transport
 
 The @mock@ testing transport is useful if you are writing a manager.  It allows you to test to ensure your manager handles various exceptions correctly.
 
@@ -226,7 +280,7 @@ table(configuration).
 All probabilities are floating point numbers between 0.0 (0% chance) and 1.0 (100% chance).
 
 
-h4(#sendmail-transport). %5.3.1.% Sendmail Command
+h4(#sendmail-transport). %6.3.1.% Sendmail Command
 
 If the server your software is running on is configured to deliver mail via the on-disk @sendmail@ command, you can use the @sendmail@ transport to deliver your mail.
 
@@ -235,20 +289,20 @@ table(configuration).
 | @path@ | @"/usr/sbin/sendmail"@ | The path to the @sendmail@ executable. |
 
 
-h4(#ses-transport). %5.3.1.% Amazon Simple E-Mail Service (SES)
+h4(#ses-transport). %6.3.1.% Amazon Simple E-Mail Service (SES)
 
 bq(note). This module is not functional yet.
 
 
 
-h2(#extending). %6.% Extending Marrow Mailer
+h2(#extending). %7.% Extending Marrow Mailer
 
 Marrow Mailer can be extended in two ways: new managers (such as thread pool management strategies or process pools) and delivery transports.  The API for each is quite simple.
 
 One note is that managers and transports only receive the configuration directives targeted at them; it is not possible to inspect other aspects of configuration.
 
 
-h3(#managers). %6.1.% Delivery Manager API
+h3(#managers). %7.1.% Delivery Manager API
 
 Delivery managers are responsible for accepting work from the application programmer and (eventually) handing this work to transports for final outbound delivery from the application.
 
@@ -276,7 +330,7 @@ Additionally, a manager must not:
 # Utilize or alter any form of global scope configuration.
 
 
-h3(#transports). %6.2.% Message Transport API
+h3(#transports). %7.2.% Message Transport API
 
 A message transport is some method whereby a message is sent to an external consumer.  Message transports have limited control over how they are utilized by the use of Marrow Mailer exceptions with specific semantic meanings, as described in "§6.3":#exceptions.
 
@@ -304,7 +358,7 @@ Additionally, a transport must not:
 # Utilize or alter any form of global scope configuration.
 
 
-h3(#exceptions). %6.3.% Exceptions
+h3(#exceptions). %7.3.% Exceptions
 
 The following table illustrates the semantic meaning of the various internal (and external) exceptions used by Marrow Mailer, managers, and transports.
 
@@ -319,12 +373,12 @@ table(exceptions).
 
 
 
-h2(#license). %7.% License
+h2(#license). %8.% License
 
 Marrow Tags has been released under the MIT Open Source license.
 
 
-h3. %7.1.% The MIT License
+h3(#license-mit). %8.1.% The MIT License
 
 Copyright (C) 2006-2011 Alice Bevan-McGregor and contributors.
 
