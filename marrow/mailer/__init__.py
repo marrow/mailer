@@ -83,6 +83,8 @@ class Delivery(object):
         self.running = True
         
         log.info("Mail delivery service started.")
+        
+        return self
     
     def stop(self):
         if not self.running:
@@ -95,6 +97,8 @@ class Delivery(object):
         self.running = False
         
         log.info("Mail delivery service stopped.")
+        
+        return self
     
     def send(self, message):
         if not self.running:
