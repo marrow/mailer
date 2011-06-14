@@ -26,6 +26,7 @@ class Message(object):
     
     sender = AutoConverter(Address)
     author = AutoConverter(AddressList, [])
+    authors = author
     to = AutoConverter(AddressList, [])
     bcc = AutoConverter(AddressList, [])
     cc = AutoConverter(AddressList, [])
