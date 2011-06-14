@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+# TODO: Port: https://github.com/pankratiev/python-amazon-ses-api/blob/master/amazon_ses.py
+
 
 __all__ = ['AmazonTransport']
 
