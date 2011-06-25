@@ -18,14 +18,12 @@ log = __import__('logging').getLogger(__name__)
 
 
 def worker(pool, message):
-    success = False
-    
     # This may be non-obvious, but there are several conditions which
     # we trap later that require us to retry the entire delivery.
     while True:
         with pool() as transport:
             try:
-                success = transport.deliver(message)
+                transport.deliver(message)
             
             except TransportFailedException:
                 # The transport likely timed out waiting for work, so we
@@ -40,7 +38,7 @@ def worker(pool, message):
         
         break
     
-    return success
+    return message
 
 
 
