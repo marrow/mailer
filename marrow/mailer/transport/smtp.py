@@ -17,11 +17,11 @@ log = __import__('logging').getLogger(__name__)
 
 class SMTPTransport(object):
     """An (E)SMTP pipelining transport."""
-
+    
     def __init__(self, config):
         if not 'host' in config:
             raise MailConfigurationException('No server configured for SMTP')
-
+        
         self.host = config.get('host', None)
         self.tls = config.get('tls', 'optional')
         self.certfile = config.get('certfile', None)
@@ -32,11 +32,11 @@ class SMTPTransport(object):
         self.password = config.get('password', None)
         self.timeout = config.get('timeout', None)
         self.debug = config.get('debug', False)
-
+        
         self.pipeline = config.get('pipeline', None)
-
+        
         self.connection = None
-        self.messages_sent = 0
+        self.sent = 0
     
     def startup(self):
         if not self.connected:
@@ -45,16 +45,20 @@ class SMTPTransport(object):
     def shutdown(self):
         if self.connected:
             log.debug("Closing SMTP connection")
+            
             try:
                 try:
                     self.connection.quit()
+                
                 except SMTPServerDisconnected:
                     pass
+                
                 except (SMTPException, socket.error):
-                    log.exception('Error stopping connection')
+                    log.exception("Unhandled error while closing connection.")
+            
             finally:
                 self.connection = None
-
+    
     def connect_to_server(self):
         if self.tls == 'ssl':
             connection = SMTP_SSL(self.host, self.port, self.local_hostname,
@@ -81,7 +85,7 @@ class SMTPTransport(object):
             connection.login(self.username, self.password)
 
         self.connection = connection
-
+    
     @property
     def connected(self):
         return getattr(self.connection, 'sock', None) is not None
@@ -89,40 +93,49 @@ class SMTPTransport(object):
     def deliver(self, message):
         if not self.connected:
             self.connect_to_server()
-
+        
         try:
             self.send_with_smtp(message)
+        
         finally:
-            if not self.messages_sent < self.pipeline:
-                self.close_connection()
-
+            if self.pipeline is True:
+                return
+            
+            if not self.pipeline or self.sent >= self.pipeline:
+                raise TransportExhaustedException()
+    
     def send_with_smtp(self, message):
         try:
             sender = bytes(message.envelope)
             recipients = message.recipients.string_addresses
-            self.messages_sent += 1
+            self.sent += 1
             self.connection.sendmail(sender, recipients, bytes(message))
+        
         except SMTPSenderRefused:
             # The envelope sender was refused.  This is bad.
             e = sys.exc_info()[1]
             log.error("%s REFUSED %s %s", message.id, e.__class__.__name__, e)
-            raise TransportFailedException
+            raise TransportFailedException()
+        
         except SMTPRecipientsRefused:
             # All recipients were refused. Log which recipients.
             # This allows you to automatically parse your logs for bad e-mail addresses.
             e = sys.exc_info()[1]
             log.warning("%s REFUSED %s %s", message.id, e.__class__.__name__, e)
-            raise TransportFailedException
+            raise TransportFailedException()
+        
         except SMTPServerDisconnected:
-            raise TransportExhaustedException
-        except Exception:
+            raise TransportExhaustedException()
+        
+        except:
             e = sys.exc_info()[1]
             cls_name = e.__class__.__name__
             log.debug("%s EXCEPTION %s", message.id, cls_name, exc_info=True)
-
+            
             if message.retries >= 0:
                 log.warning("%s DEFERRED %s", message.id, cls_name)
                 message.retries -= 1
+            
             else:
                 log.exception("%s REFUSED %s", message.id, cls_name)
                 raise TransportFailedException

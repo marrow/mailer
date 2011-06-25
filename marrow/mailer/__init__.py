@@ -42,9 +42,20 @@ class Delivery(object):
         if prefix is not None:
             self.config = config = Bunch.partial(prefix, config)
         
-        self.manager_config = manager_config = Bunch.partial('manager', config)
-        self.transport_config = transport_config = Bunch.partial('transport', config)
-        self.message_config = Bunch.partial('message', config)
+        try:
+            self.manager_config = manager_config = Bunch.partial('manager', config)
+        except ValueError:
+            self.manager_config = manager_config = Bunch()
+        
+        try:
+            self.transport_config = transport_config = Bunch.partial('transport', config)
+        except ValueError:
+            self.transport_config = transport_config = Bunch()
+        
+        try:
+            self.message_config = Bunch.partial('message', config)
+        except ValueError:
+            self.message_config = Bunch()
         
         self.Manager = Manager = self._load(config.manager, 'marrow.mailer.manager')
         

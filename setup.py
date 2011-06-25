@@ -59,6 +59,7 @@ Python 2.6+ and 3.1+, formerly called TurboMail.""",
         'marrow.mailer.manager': [
             "immediate = marrow.mailer.manager.immediate:ImmediateManager",
             "futures = marrow.mailer.manager.futures:FuturesManager",
+            "dynamic = marrow.mailer.manager.dynamic:DynamicManager",
         ],
         'marrow.mailer.transport': [
             "amazon = marrow.mailer.transport.ses:AmazonTransport",
