@@ -65,18 +65,18 @@ class TestBasicMessage(unittest.TestCase):
         mime = message.mime
         
         self.failUnless(message.mime is mime)
-        self.message.subject = "Test message subject."
-        self.failIf(self.message.mime is mime)
+        message.subject = "Test message subject."
+        self.failIf(message.mime is mime)
     
     def test_recipients_collection(self):
-        messagae = self.build_message()
+        message = self.build_message()
         message.cc.append("copied@example.com")
         self.assertEqual(["recipient@example.com", "copied@example.com"], message.recipients.addresses)
     
     def test_smtp_from_as_envelope(self):
         message = self.build_message()
         message.smtp_from = 'devnull@example.com'
-        self.assertEqual('devnull@example.com', str(message.envelope_sender))
+        self.assertEqual('devnull@example.com', str(message.envelope))
     
     def test_subject_with_umlaut(self):
         message = self.build_message()
@@ -120,8 +120,8 @@ class TestBasicMessage(unittest.TestCase):
     #     message.authors = ['bar@example.com', 'baz@example.com']
     #     self.assertRaises(ValueError, str, message)
     #     
-    #     self.message.sender = 'bar@example.com'
-    #     str(self.message)
+    #     message.sender = 'bar@example.com'
+    #     str(message)
     
     def test_permit_one_sender_at_most(self):
         message = self.build_message()
@@ -147,20 +147,22 @@ class TestBasicMessage(unittest.TestCase):
         message = self.build_message()
         message.headers = (('Precedence', 'bulk'), ('X-User', 'Alice'))
         
-        msg = email.message_from_string(str(self.message))
+        msg = email.message_from_string(str(message))
         self.assertEqual('bulk', msg['Precedence'])
         self.assertEqual('Alice', msg['X-User'])
 
     def test_add_custom_headers_list(self):
         "Test that a custom header (list type) can be attached."
-        self.message.headers = [('Precedence', 'bulk'), ('X-User', 'Alice')]
+        message = self.build_message()
+        message.headers = [('Precedence', 'bulk'), ('X-User', 'Alice')]
         
-        msg = email.message_from_string(str(self.message))
+        msg = email.message_from_string(str(message))
         self.assertEqual('bulk', msg['Precedence'])
         self.assertEqual('Alice', msg['X-User'])
     
     def test_no_sender_header_if_no_sender_required(self):
-        msg = email.message_from_string(str(self.message))
+        message = self.build_message()
+        msg = email.message_from_string(str(message))
         self.assertEqual(None, msg['Sender'])
     
     def _date_header_to_utc_datetime(self, date_string):
@@ -186,20 +188,23 @@ class TestBasicMessage(unittest.TestCase):
         return (delta < timedelta(seconds=1))
     
     def test_date_header_added_even_if_date_not_set_explicitely(self):
-        msg = email.message_from_string(str(self.message))
+        message = self.build_message()
+        msg = email.message_from_string(str(message))
         self.failUnless(self._almost_now(msg['Date']))
     
     def test_date_can_be_set_as_string(self):
+        message = self.build_message()
         date_string = 'Fri, 26 Dec 2008 11:19:42 +0530'
-        self.message.date = date_string
-        msg = email.message_from_string(str(self.message))
+        message.date = date_string
+        msg = email.message_from_string(str(message))
         self.assertEqual(date_string, msg['Date'])
     
     def test_date_can_be_set_as_float(self):
+        message = self.build_message()
         expected_date = datetime(2008, 12, 26, 12, 55)
         expected_time = time.mktime(expected_date.timetuple())
-        self.message.date = expected_time
-        msg = email.message_from_string(str(self.message))
+        message.date = expected_time
+        msg = email.message_from_string(str(message))
         header_string = msg['Date']
         header_date = self._date_header_to_utc_datetime(header_string)
         self.assertEqual(self.localdate_to_utc(expected_date), header_date)
@@ -212,51 +217,57 @@ class TestBasicMessage(unittest.TestCase):
         return self._date_header_to_utc_datetime(date_string)
     
     def test_date_can_be_set_as_datetime(self):
+        message = self.build_message()
         expected_date = datetime(2008, 12, 26, 12, 55)
-        self.message.date = expected_date
-        msg = email.message_from_string(str(self.message))
+        message.date = expected_date
+        msg = email.message_from_string(str(message))
         header_date = self._date_header_to_utc_datetime(msg['Date'])
         self.assertEqual(self.localdate_to_utc(expected_date), header_date)
     
     def test_date_header_is_set_even_if_reset_to_none(self):
-        self.message.date = None
-        msg = email.message_from_string(str(self.message))
+        message = self.build_message()
+        message.date = None
+        msg = email.message_from_string(str(message))
         self.failUnless(self._almost_now(msg['Date']))
     
     def test_recipients_property_includes_cc_and_bcc(self):
-        self.message.cc = 'cc@example.com'
-        self.message.bcc = 'bcc@example.com'
+        message = self.build_message()
+        message.cc = 'cc@example.com'
+        message.bcc = 'bcc@example.com'
         expected_recipients = ['recipient@example.com', 'cc@example.com', 
                                'bcc@example.com']
-        recipients = map(str, list(self.message.recipients.addresses))
+        recipients = map(str, list(message.recipients.addresses))
         self.assertEqual(expected_recipients, recipients)
     
     def test_can_set_encoding_for_message_explicitely(self):
-        self.failIf('iso-8859-1' in str(self.message).lower())
-        self.message.encoding = 'ISO-8859-1'
-        msg = email.message_from_string(str(self.message))
-        self.assertEqual('text/plain; charset="iso-8859-1"', msg['Content-Type'])
-        self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
-    
-    def test_message_encoding_can_be_set_in_config_file(self):
-        interface.config['mail.message.encoding'] = 'ISO-8859-1'
         message = self.build_message()
+        self.failIf('iso-8859-1' in str(message).lower())
+        message.encoding = 'ISO-8859-1'
         msg = email.message_from_string(str(message))
         self.assertEqual('text/plain; charset="iso-8859-1"', msg['Content-Type'])
         self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
     
+    # def test_message_encoding_can_be_set_in_config_file(self):
+    #     interface.config['mail.message.encoding'] = 'ISO-8859-1'
+    #     message = self.build_message()
+    #     msg = email.message_from_string(str(message))
+    #     self.assertEqual('text/plain; charset="iso-8859-1"', msg['Content-Type'])
+    #     self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
+    
     def test_plain_utf8_encoding_uses_base64(self):
-        self.failIf('utf-8' in str(self.message).lower())
-        self.message.encoding = 'UTF-8'
-        msg = email.message_from_string(str(self.message))
+        message = self.build_message()
+        self.failIf('utf-8' in str(message).lower())
+        message.encoding = 'UTF-8'
+        msg = email.message_from_string(str(message))
         self.assertEqual('text/plain; charset="utf-8"', msg['Content-Type'])
         self.assertEqual('base64', msg['Content-Transfer-Encoding'])
     
     # def test_can_use_utf8qp_encoding_without_turbogears_extension(self):
-    #     self.failIf('utf-8' in str(self.message).lower())
+    #     message = self.build_message()
+    #     self.failIf('utf-8' in str(message).lower())
     #     for encoding in ('utf8qp', 'utf-8-qp', 'UTF-8-QP', 'UtF-8-qP'):
-    #         self.message.encoding = encoding
-    #         msg = email.message_from_string(str(self.message))
+    #         message.encoding = encoding
+    #         msg = email.message_from_string(str(message))
     #         self.assertEqual('text/plain; charset="utf-8"', msg['Content-Type'])
     #         self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
 

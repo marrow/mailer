@@ -174,7 +174,7 @@ class TestAddressList(object):
         eq_(bytes(self.addresses), b'User1 <foo@xn--exmple-qta.test>, User2 <foo@xn--exmple-qta.test>')
     
     def test_repr(self):
-        self.addresses = ('user1@example.com', 'user2@example.com')
+        self.addresses = ['user1@example.com', 'user2@example.com']
         
         eq_(repr(self.addresses),
             'AddressList("user1@example.com, user2@example.com")')
