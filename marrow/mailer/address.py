@@ -52,6 +52,8 @@ class Address(object):
             return unicode(self) == other
         elif isinstance(other, bytes):
             return bytes(self) == other
+        elif isinstance(other, tuple):
+            return (self.name, self.address) == other
         return NotImplemented
 
     def __ne__(self, other):

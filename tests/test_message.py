@@ -75,7 +75,7 @@ class TestBasicMessage(unittest.TestCase):
     
     def test_smtp_from_as_envelope(self):
         message = self.build_message()
-        message.smtp_from = 'devnull@example.com'
+        message.sender = 'devnull@example.com'
         self.assertEqual('devnull@example.com', str(message.envelope))
     
     def test_subject_with_umlaut(self):
