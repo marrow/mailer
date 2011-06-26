@@ -83,12 +83,15 @@ class Address(object):
 
 
 class AddressList(list):
-    def __init__(self, addresses=[]):
+    def __init__(self, addresses=None):
         list.__init__(self)
 
         if isinstance(addresses, basestring):
             addresses = addresses.split(',')
-
+        
+        if isinstance(addresses, tuple):
+            addresses = self.append(Address(addresses))
+        
         if addresses is not None:
             self.extend(addresses)
 
