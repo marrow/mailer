@@ -57,6 +57,9 @@ class Address(object):
     def __ne__(self, other):
         return not self == other
 
+    def __len__(self):
+        return len(unicode(self))
+
     def __repr__(self):
         return 'Address("%s")' % self
 
