@@ -132,7 +132,7 @@ table(attributes).
 | @subject@ | The subject of the message. |
 | @to@ | The visible list of primary intended recipients. |
 
-fn1. The message bodies may be callables which will be executed when the message is delivered, allowing you to easily utilize templates.
+fn1. The message bodies may be callables which will be executed when the message is delivered, allowing you to easily utilize templates.  Pro tip: to pass arguments to your template, while still allowing for later execution, use `functools.partial`.
 
 h4. %4.2.2.% Read-Only Attributes
 
@@ -169,15 +169,15 @@ The @workers@ configuration directive has the side effect of requiring one trans
 
 h3(#dynamic-manager). %5.3.% Dynamic Manager
 
-This manager dynamically scales the number of worker threads (and thus simultaneous transport connections) based on the current workload.  This is a port of the _TurboMail 3_ @ondemand@ manager to the Futures API.
+This manager dynamically scales the number of worker threads (and thus simultaneous transport connections) based on the current workload.  This is a port of the _TurboMail 3_ @ondemand@ manager to the Futures API.  This manager is somewhat more efficient than the plain Futures manager, and should be the manager in use on production systems.
 
 The Dynamic manager understands the following configuration directives:
 
 table(configuration).
 |_. Directive |_. Default |_. Description |
-| @threads@ | @4@ | The maximum number of threads. |
-| @divisor@ | @10@ | The number of messages to send before freeing the thread. |
-| @timeout@ | @60@ | The number of seconds to wait for additional work before freeing the thread. |
+| @workers@ | @10@ | The maximum number of threads. |
+| @divisor@ | @10@ | The number of messages to send before freeing the thread. (A.k.a. "exhaustion".) |
+| @timeout@ | @60@ | The number of seconds to wait for additional work before freeing the thread. (A.k.a. "starvation".) |
 
 
 
