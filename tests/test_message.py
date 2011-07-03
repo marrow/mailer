@@ -254,19 +254,8 @@ class TestBasicMessage(unittest.TestCase):
     #     self.assertEqual('text/plain; charset="iso-8859-1"', msg['Content-Type'])
     #     self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
     
-    def test_plain_utf8_encoding_uses_base64(self):
+    def test_plain_utf8_encoding_uses_qp(self):
         message = self.build_message()
         msg = email.message_from_string(str(message))
         self.assertEqual('text/plain; charset="utf-8"', msg['Content-Type'])
-        self.assertEqual('base64', msg['Content-Transfer-Encoding'])
-    
-    # def test_can_use_utf8qp_encoding_without_turbogears_extension(self):
-    #     message = self.build_message()
-    #     self.failIf('utf-8' in str(message).lower())
-    #     for encoding in ('utf8qp', 'utf-8-qp', 'UTF-8-QP', 'UtF-8-qP'):
-    #         message.encoding = encoding
-    #         msg = email.message_from_string(str(message))
-    #         self.assertEqual('text/plain; charset="utf-8"', msg['Content-Type'])
-    #         self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
-
-
+        self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
