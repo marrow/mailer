@@ -18,6 +18,21 @@ class TestAddress(object):
         addr = Address('Foo <foo@exámple.test>'.encode('utf-8'))
         eq_(b'Foo <foo@xn--exmple-qta.test>', bytes(addr))
     
+    def test_address_from_addresslist(self):
+        email = 'foo@example.com'
+        addr = Address(AddressList([Address(email)]))
+        eq_(email, unicode(addr))
+    
+    @raises(ValueError)
+    def test_address_from_addresslist_limit_0(self):
+        email = 'foo@example.com'
+        addr = Address(AddressList())
+    
+    @raises(ValueError)
+    def test_address_from_addresslist_limit_2(self):
+        email = 'foo@example.com'
+        addr = Address(AddressList([Address(email), Address(email)]))
+    
     def test_initialization_with_tuple(self):
         name = 'Foo'
         emailaddress = 'foo@example.com'
@@ -51,9 +66,18 @@ class TestAddress(object):
         addr = Address('foo@example.com')
         eq_(addr, b'foo@example.com')
     
+    def test_compare_tuple(self):
+        addr = Address('foo', 'foo@example.com')
+        eq_(addr, ('foo', 'foo@example.com'))
+    
+    @raises(NotImplementedError)
     def test_compare_othertype(self):
         addr = Address('foo@example.com')
-        assert addr != 123
+        addr != 123
+    
+    def test_len(self):
+        addr = Address('foo@example.com')
+        eq_(len(addr), len('foo@example.com'))
     
     def test_repr(self):
         addr = Address('foo@example.com')
@@ -79,6 +103,10 @@ class TestAddress(object):
         Address('!def!xyz%abc@example.com ')
         Address('_somename@example.com')
         Address('!$&*-=^`|~#%\'+/?_{}@example.com')
+    
+    def test_revalidation(self):
+        addr = Address('_somename@example.com')
+        eq_(addr.valid, True)
     
 # TODO: Later
 #    def test_validation_accepts_quoted_local_parts(self):
@@ -169,15 +197,25 @@ class TestAddressList(object):
         
         eq_(addresses, unicode(self.addresses))
     
+    def test_init_accepts_tuple(self):
+        addresses = AddressList(('foo', 'foo@example.com'))
+        eq_([('foo', 'foo@example.com')], addresses)
+    
     def test_bytes(self):
         self.addresses = [('User1', 'foo@exámple.test'), ('User2', 'foo@exámple.test')]
         eq_(bytes(self.addresses), b'User1 <foo@xn--exmple-qta.test>, User2 <foo@xn--exmple-qta.test>')
     
     def test_repr(self):
+        eq_(repr(self.addresses), 'AddressList()')
+        
         self.addresses = ['user1@example.com', 'user2@example.com']
         
         eq_(repr(self.addresses),
             'AddressList("user1@example.com, user2@example.com")')
+    
+    @raises(ValueError)
+    def test_invalid_init(self):
+        AddressList(2)
     
     def test_addresses(self):
         self.addresses = [('Test User 1', 'user1@example.com'), ('Test User 2', 'user2@example.com')]
