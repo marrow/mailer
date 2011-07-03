@@ -14,6 +14,9 @@ from email.mime.text import MIMEText
 from email.utils import formatdate, parsedate_tz
 
 from marrow.mailer import Delivery, Message
+from marrow.mailer.address import AddressList
+
+from nose.tools import raises
 
 # logging.disable(logging.WARNING)
 
@@ -21,12 +24,13 @@ from marrow.mailer import Delivery, Message
 class TestBasicMessage(unittest.TestCase):
     """Test the basic output of the Message class."""
     
-    def build_message(self):
+    def build_message(self, **kw):
         return Message(
                     author=('Author', 'author@example.com'),
                     to=('Recipient', 'recipient@example.com'),
                     subject='Test message subject.',
-                    plain='This is a test message plain text body.'
+                    plain='This is a test message plain text body.',
+                    **kw
                 )
     
     def test_message_properties(self):
@@ -36,7 +40,7 @@ class TestBasicMessage(unittest.TestCase):
         self.failUnless(isinstance(message.mime, MIMEText))
     
     def test_message_string_with_basic(self):
-        msg = email.message_from_string(str(self.build_message()))
+        msg = email.message_from_string(str(self.build_message(encoding="iso-8859-1")))
         
         self.assertEqual('Author <author@example.com>', msg['From'])
         self.assertEqual('Recipient <recipient@example.com>', msg['To'])
@@ -49,8 +53,8 @@ class TestBasicMessage(unittest.TestCase):
         message.cc = 'cc@example.com'
         message.bcc = 'bcc@example.com'
         message.sender = 'sender@example.com'
-        message.reply_to = 'replyto@example.com'
-        message.disposition = 'disposition@example.com'
+        message.reply = 'replyto@example.com'
+        message.notify = 'disposition@example.com'
         
         msg = email.message_from_string(str(message))
         
@@ -123,14 +127,10 @@ class TestBasicMessage(unittest.TestCase):
     #     message.sender = 'bar@example.com'
     #     str(message)
     
+    @raises(ValueError)
     def test_permit_one_sender_at_most(self):
         message = self.build_message()
-        
-        message.sender = ['bar@example.com', 'baz@example.com']
-        self.assertRaises(ValueError, str, message)
-        
-        message.sender = 'bar@example.com'
-        str(message)
+        message.sender = AddressList(['bar@example.com', 'baz@example.com'])
     
     def test_raise_error_for_unknown_kwargs_at_class_instantiation(self):
         self.assertRaises(TypeError, Message, invalid_argument=True)
@@ -163,7 +163,7 @@ class TestBasicMessage(unittest.TestCase):
     def test_no_sender_header_if_no_sender_required(self):
         message = self.build_message()
         msg = email.message_from_string(str(message))
-        self.assertEqual(None, msg['Sender'])
+        self.assertEqual(None, msg['sender'])
     
     def _date_header_to_utc_datetime(self, date_string):
         """Converts a date_string from the Date header into a naive datetime
@@ -256,8 +256,6 @@ class TestBasicMessage(unittest.TestCase):
     
     def test_plain_utf8_encoding_uses_base64(self):
         message = self.build_message()
-        self.failIf('utf-8' in str(message).lower())
-        message.encoding = 'UTF-8'
         msg = email.message_from_string(str(message))
         self.assertEqual('text/plain; charset="utf-8"', msg['Content-Type'])
         self.assertEqual('base64', msg['Content-Transfer-Encoding'])

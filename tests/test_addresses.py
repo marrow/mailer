@@ -145,7 +145,10 @@ class TestAddress(object):
 class TestAddressList(object):
     """Test the AddressList helper class."""
     
-    addresses = AutoConverter(AddressList)
+    addresses = AutoConverter('_addresses', AddressList)
+    
+    def __init__(self):
+        self._addresses = AddressList()
     
     def setUp(self):
         self.addresses = AddressList()

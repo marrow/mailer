@@ -15,6 +15,7 @@ from email.header import Header
 from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
 
+from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring
 
@@ -24,14 +25,14 @@ __all__ = ['Message']
 class Message(object):
     """Represents an e-mail message."""
     
-    sender = AutoConverter(Address)
-    author = AutoConverter(AddressList, [])
+    sender = AutoConverter('_sender', Address, False)
+    author = AutoConverter('_author', AddressList)
     authors = author
-    to = AutoConverter(AddressList, [])
-    bcc = AutoConverter(AddressList, [])
-    cc = AutoConverter(AddressList, [])
-    reply = AutoConverter(AddressList, [])
-    notify = AutoConverter(AddressList, [])
+    to = AutoConverter('_to', AddressList)
+    cc = AutoConverter('_cc', AddressList)
+    bcc = AutoConverter('_bcc', AddressList)
+    reply = AutoConverter('_reply', AddressList)
+    notify = AutoConverter('_notify', AddressList)
     
     def __init__(self, author=None, to=None, subject=None, **kw):
         """Instantiate a new Message object.
@@ -61,6 +62,15 @@ class Message(object):
         self.embedded = []
         self.headers = []
         self.retries = 3
+        self.brand = True
+        
+        self._sender = None
+        self._author = AddressList()
+        self._to = AddressList()
+        self._cc = AddressList()
+        self._bcc = AddressList()
+        self._reply = AddressList()
+        self._notify = AddressList()
         
         # Overrides at initialization time.
         
@@ -157,11 +167,18 @@ class Message(object):
                 ('X-Priority', self.priority),
             ]
         
+        if self.brand:
+            headers.extend([
+                    ('X-Mailer', "marrow.mailer {0}".format(release.version))
+                ])
+        
         if isinstance(self.headers, dict):
             for key in self.headers:
                 headers.append((key, self.headers[key]))
+        
         else:
             headers.extend(self.headers)
+        
         return headers
     
     def _add_headers_to_message(self, message, headers):
@@ -169,14 +186,28 @@ class Message(object):
             if isinstance(header, (tuple, list)):
                 if header[1] is None or (isinstance(header[1], list) and not header[1]):
                     continue
-                header = list(header)
-                if isinstance(header[1], AddressList):
-                    header[1] = Header(header[1].encode(self.encoding))
-                elif isinstance(header[1], unicode):
-                    header[1] = Header(header[1], self.encoding)
+                
+                name, value = header
+                
+                if isinstance(value, Address):
+                    # print type(value), repr(value), value
+                    value = value.encode(self.encoding)
+                
+                elif isinstance(value, AddressList):
+                    # print type(value), repr(value), value
+                    value = value.encode(self.encoding)
+                    # print '->', type(value), repr(value), value
+                
+                if isinstance(value, unicode):
+                    # print type(value), repr(value), value
+                    value = Header(value, self.encoding)
+                
                 else:
-                    header[1] = Header(header[1])
-                message[header[0]] = header[1]
+                    # print type(value), repr(value), value
+                    value = Header(value)
+                
+                message[name] = value
+            
             elif isinstance(header, dict):
                 message.add_header(**header)
     
