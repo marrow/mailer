@@ -23,7 +23,7 @@ def worker(pool, message):
     while True:
         with pool() as transport:
             try:
-                transport.deliver(message)
+                result = transport.deliver(message)
             
             except TransportFailedException:
                 # The transport likely timed out waiting for work, so we
@@ -38,7 +38,7 @@ def worker(pool, message):
         
         break
     
-    return message
+    return message, result
 
 
 
