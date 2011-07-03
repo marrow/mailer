@@ -9,13 +9,13 @@ log = __import__('logging').getLogger(__name__)
 
 class LoggingTransport(object):
     def __init__(self, config):
-        pass
+        self.log = log if 'name' not in config else __import__('logging').getLogger(config.name)
     
     def startup(self):
-        pass
+        self.log.debug("Logging transport starting.")
     
     def deliver(self, message):
-        pass
+        self.log.info(str(message))
     
     def shutdown(self):
-        pass
+        self.log.debug("Logging transport stopping.")
