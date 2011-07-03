@@ -40,7 +40,7 @@ class ImmediateManager(object):
             self.transport.shutdown()
             self.deliver(message)
         
-        return result
+        return message, result
     
     def shutdown(self):
         log.info("Immediate delivery manager stopping.")
