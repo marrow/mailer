@@ -316,7 +316,13 @@ table(configuration).
 
 h4(#ses-transport). %6.3.1.% Amazon Simple E-Mail Service (SES)
 
-bq(note). This module is not functional yet.
+Deliver your messages via the Amazon Simple E-Mail Service.  While Amazon allow you to utilize SMTP for communication, using the correct API allows you to get much richer information back from delivery upon both success *and* failure.  To utilize this transport you must have the @boto@ package installed.  You 
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @id@ | — | Your Amazon AWS access key identifier. |
+| @key@ | — | Your Amazon AWS secret access key. |
+| @host@ | @"email.us-east-1.amazonaws.com"@ | The API endpoint to utilize. |
 
 
 
