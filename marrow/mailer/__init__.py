@@ -7,6 +7,7 @@ import logging
 import warnings
 import pkg_resources
 
+from email import charset
 from functools import partial
 
 from marrow.mailer.message import Message
@@ -126,3 +127,8 @@ class Delivery(object):
         
         log.debug("Message %s delivered.", message.id)
         return result
+
+
+# Import-time side-effect: un-fscking the default use of base-64 encoding for UTF-8 e-mail.
+charset.add_charset('utf-8', charset.SHORTEST, charset.QP, 'utf-8')
+charset.add_charset('utf8', charset.SHORTEST, charset.QP, 'utf8')
