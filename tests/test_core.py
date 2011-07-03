@@ -45,6 +45,15 @@ class TestInitialization(TestCase):
         self.assertEqual(a.Manager, ImmediateManager)
         self.assertEqual(a.Transport, MockTransport)
     
+    def test_repr(self):
+        config = {
+                'manager': 'immediate',
+                'transport': 'mock'
+            }
+        
+        a = Delivery(config)
+        self.assertEqual(repr(a), "Delivery(manager=ImmediateManager, transport=MockTransport)")
+    
     def test_prefix(self):
         config = {
                 'mail.manager': 'immediate',
