@@ -264,7 +264,22 @@ bq(note). This module is not functional yet.
 
 h4(#logging-transport). %6.3.1.% Python Logging
 
-bq(note). This module is not functional yet.
+The @log@ transport implements the use of the standard Python logging module for message delivery.  Using this module allows you to emit messages which are filtered and directed through standard logging configuration.  There are three logging levels used:
+
+|_. Level |_. Meaning |
+| @DEBUG@ | This level is used for informational messages such as startup and shutdown. |
+| @INFO@ | This level communicates information about messages being delivered. |
+| @CRITICAL@  | This level is used to deliver the MIME content of the message. |
+
+Log entries at the @INFO@ level conform to the following syntax:
+
+<pre><code>DELIVER {ID} {ISODATE} {SIZE} {AUTHOR} {RECIPIENTS}</code></pre>
+
+There is only one configuration directive:
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @name@ | *"marrow.mailer.transport.log"* | The name of the logger to use. |
 
 
 h4(#mock-transport). %6.3.1.% Mock (Testing) Transport
