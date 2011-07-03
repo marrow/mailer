@@ -22,7 +22,7 @@ try:
 except ImportError:
     import Queue as queue
 
-__all__ = ['ThreadpoolManager']
+__all__ = ['TransactionalDynamicManager']
 
 log = __import__('logging').getLogger(__name__)
 
