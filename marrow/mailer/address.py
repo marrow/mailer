@@ -9,7 +9,7 @@ from email.utils import formataddr, parseaddr
 from email.header import Header
 
 from marrow.mailer.validator import EmailValidator
-from marrow.util.compat import basestring, unicode, unicodestr
+from marrow.util.compat import basestring, unicode, unicodestr, native
 
 __all__ = ['Address', 'AddressList']
 
@@ -77,7 +77,7 @@ class Address(object):
         return len(unicode(self))
     
     def __repr__(self):
-        return 'Address("%s")' % self
+        return 'Address("{0}")'.format(unicode(self).encode('ascii', 'backslashreplace'))
     
     def __unicode__(self):
         return formataddr((self.name, self.address))
@@ -92,7 +92,8 @@ class Address(object):
         __str__ = __unicode__
     
     def encode(self, encoding='utf-8'):
-        name_string = unicode(Header(self.name, encoding))
+        name_string = Header(self.name, encoding).encode()
+        # print name_string
         
         # Encode punycode for internationalized domains.
         localpart, domain = self.address.split('@', 1)
@@ -104,7 +105,7 @@ class Address(object):
     @property
     def valid(self):
         email, err = EmailValidator().validate_email(self.address)
-        return bool(err)
+        return False if err else True
 
 
 class AddressList(list):
@@ -132,13 +133,13 @@ class AddressList(list):
         if not self:
             return "AddressList()"
         
-        return "AddressList(\"{0}\")".format(self)
+        return "AddressList(\"{0}\")".format(", ".join([unicode(i).encode('ascii', 'backslashreplace') for i in self]))
     
     def __bytes__(self):
         return self.encode()
     
     def __unicode__(self):
-        return ", ".join(str(i) for i in self)
+        return ", ".join(unicode(i) for i in self)
     
     if sys.version_info < (3, 0):
         __str__ = __bytes__
@@ -160,7 +161,8 @@ class AddressList(list):
     
     def encode(self, encoding=None):
         encoding = encoding if encoding else self.encoding
-        return b", ".join(a.encode(encoding) for a in self)
+        # print type(self[0]), self[0], self[0].encode(encoding)
+        return b", ".join([a.encode(encoding) for a in self])
     
     def extend(self, sequence):
         values = [Address(val) if not isinstance(val, Address) else val for val in sequence]
@@ -183,22 +185,28 @@ class AddressList(list):
 
 class AutoConverter(object):
     """Automatically converts an assigned value to the given type."""
-
-    def __init__(self, cls, default=None):
+    
+    def __init__(self, attr, cls, can=True):
         self.cls = cls
-        
-        if hasattr(default, '__call__'):
-            default = default()
-        
-        self.value = default
-
+        self.can = can
+        self.attr = native(attr)
+    
     def __get__(self, instance, owner):
-        return self.value
-
+        value = getattr(instance, self.attr, None)
+        
+        if value is None:
+            return self.cls() if self.can else None
+        
+        if not isinstance(value, self.cls):
+            return self.cls(value)
+        
+        return value
+    
     def __set__(self, instance, value):
         if not isinstance(value, self.cls):
             value = self.cls(value)
-        self.value = value
-
+        
+        setattr(instance, self.attr, value)
+    
     def __delete__(self, instance):
-        del self.value
+        setattr(instance, self.attr, None)
