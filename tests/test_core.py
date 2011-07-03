@@ -35,7 +35,7 @@ class TestLookup(TestCase):
 class TestInitialization(TestCase):
     def test_standard(self):
         log.info("Testing configuration: %r", dict(base_config))
-        a = Delivery(config)
+        a = Delivery(base_config)
         
         self.assertEqual(a.Manager, ImmediateManager)
         self.assertEqual(a.Transport, MockTransport)
