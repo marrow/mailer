@@ -161,7 +161,7 @@ class TestMethods(TestCase):
         logging.getLogger().handlers[0].truncate()
         messages = logging.getLogger().handlers[0].buffer
         
-        self.assertEqual(interface.send(message), True)
+        self.assertEqual(interface.send(message), (message, True))
         
         self.assertEqual(messages[0].getMessage(), "Attempting delivery of message foo.")
         self.assertEqual(messages[-1].getMessage(), "Message foo delivered.")

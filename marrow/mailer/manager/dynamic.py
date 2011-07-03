@@ -82,6 +82,7 @@ class WorkItem(object):
         else:
             self.future.set_result(result)
 
+
 class ScalingPoolExecutor(futures.ThreadPoolExecutor):
     def __init__(self, workers, divisor, timeout):
         self._max_workers = workers
@@ -89,6 +90,7 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
         self.timeout = timeout
         
         self._work_queue = queue.Queue()
+        
         self._threads = set()
         self._shutdown = False
         self._shutdown_lock = threading.Lock()
@@ -134,6 +136,9 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
 
 
 class DynamicManager(object):
+    name = "Dynamic"
+    Executor = ScalingPoolExecutor
+    
     def __init__(self, config, transport):
         self.workers = config.get('workers', 10) # Maximum number of threads to create.
         self.divisor = config.get('divisor', 10) # Estimate the number of required threads by dividing the queue size by this.
@@ -145,16 +150,16 @@ class DynamicManager(object):
         super(DynamicManager, self).__init__()
     
     def startup(self):
-        log.info("Demand manager starting up.")
+        log.info("%s manager starting up.", self.name)
         
         log.debug("Initializing transport queue.")
         self.transport.startup()
         
         workers = self.workers
         log.debug("Starting thread pool with %d workers." % (workers, ))
-        self.executor = ScalingPoolExecutor(workers, self.divisor, self.timeout)
+        self.executor = self.Executor(workers, self.divisor, self.timeout)
         
-        log.info("Demand manager ready.")
+        log.info("%s manager ready.", self.name)
     
     def deliver(self, message):
         # Return the Future object so the application can register callbacks.
@@ -163,7 +168,7 @@ class DynamicManager(object):
         return self.executor.submit(partial(worker, self.transport), message)
     
     def shutdown(self, wait=True):
-        log.info("Demand manager stopping.")
+        log.info("%s manager stopping.", self.name)
         
         log.debug("Stopping thread pool.")
         self.executor.shutdown(wait=wait)
@@ -171,4 +176,4 @@ class DynamicManager(object):
         log.debug("Draining transport queue.")
         self.transport.shutdown()
         
-        log.info("Demand manager stopped.")
+        log.info("%s manager stopped.", self.name)
