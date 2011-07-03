@@ -259,7 +259,17 @@ h3(#meta-transports). %6.3.% Meta-Transports
 
 h4(#gae-transport). %6.3.1.% Google AppEngine
 
-bq(note). This module is not functional yet.
+The @appengine@ transport translates between Mailer's Message representation and Google AppEngine's.  Note that GAE's @EmailMessage@ class is not nearly as feature-complete as Mailer's.  The translation covers the following @marrow.mailer.Message@ attributes:
+
+* @author@
+* @to@
+* @cc@
+* @bcc@
+* @reply@
+* @subject@
+* @plain@
+* @rich@
+* @attachments@ (not counting embedded files)
 
 
 h4(#logging-transport). %6.3.1.% Python Logging
