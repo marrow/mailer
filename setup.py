@@ -22,8 +22,8 @@ A highly efficient and modular mail delivery framework for
 Python 2.6+ and 3.1+, formerly called TurboMail.""",
     author="Alice Bevan-McGregor",
     author_email="alice+marrow@gothcandy.com",
-    url="",
-    download_url="",
+    url="https://github.com/marrow/marrow.mailer",
+    download_url="http://pypi.python.org/pypi/marrow.mailer",
     license="MIT",
     keywords="",
     
@@ -33,7 +33,7 @@ Python 2.6+ and 3.1+, formerly called TurboMail.""",
     tests_require=["nose", "coverage"],
     
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
