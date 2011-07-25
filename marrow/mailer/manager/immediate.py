@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-from marrow.mailer.exc import TransportExhaustedException
+from marrow.mailer.exc import (TransportExhaustedException,
+        TransportFailedException, MessageFailedException)
 
 
 __all__ = ['ImmediateManager']
@@ -35,10 +36,18 @@ class ImmediateManager(object):
         try:
             result = self.transport.deliver(message)
         
-        except TransportExhaustedException:
-            log.debug("Transport exhausted, retrying.")
+        except TransportFailedException:
+            log.debug("Transport failed, retrying.")
             self.transport.shutdown()
             self.deliver(message)
+        
+        except TransportExhaustedException:
+            log.debug("Transport exhausted, recycling.")
+            self.transport.shutdown()
+        
+        except MessageFailedException:
+            log.debug("Unable to deliver message.")
+            return message, None
         
         return message, result
     
