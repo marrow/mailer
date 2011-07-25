@@ -48,6 +48,8 @@ class SMTPTransport(object):
         self.sent = 0
     
     def startup(self):
+        self.sent = 0
+        
         if not self.connected:
             self.connect_to_server()
     
