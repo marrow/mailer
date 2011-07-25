@@ -13,6 +13,7 @@ from functools import partial
 from marrow.mailer.message import Message
 from marrow.mailer.exc import MailerNotRunning
 
+from marrow.util.compat import basestring
 from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
@@ -72,7 +73,7 @@ class Delivery(object):
     
     @staticmethod
     def _load(spec, group):
-        if not isinstance(spec, str):
+        if not isinstance(spec, basestring):
             # It's already an object, just use it.
             return spec
         
