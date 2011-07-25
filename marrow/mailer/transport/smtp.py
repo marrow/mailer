@@ -10,6 +10,9 @@ import sys
 from marrow.mailer.exc import (MailConfigurationException,
     TransportExhaustedException, TransportException, TransportFailedException)
 
+from marrow.util.convert import boolean
+from marrow.util.compat import native
+
 
 log = __import__('logging').getLogger(__name__)
 
@@ -22,18 +25,24 @@ class SMTPTransport(object):
         if not 'host' in config:
             raise MailConfigurationException('No server configured for SMTP')
         
-        self.host = config.get('host', None)
+        self.host = native(config.get('host'))
         self.tls = config.get('tls', 'optional')
         self.certfile = config.get('certfile', None)
         self.keyfile = config.get('keyfile', None)
-        self.port = config.get('port', 465 if self.tls == 'ssl' else 25)
-        self.local_hostname = config.get('local_hostname', None)
-        self.username = config.get('username', None)
-        self.password = config.get('password', None)
+        self.port = int(config.get('port', 465 if self.tls == 'ssl' else 25))
+        self.local_hostname = native(config.get('local_hostname', '')) or None
+        self.username = native(config.get('username', '')) or None
+        self.password = native(config.get('password', '')) or None
         self.timeout = config.get('timeout', None)
-        self.debug = config.get('debug', False)
+        
+        if self.timeout:
+            self.timeout = int(self.timeout)
+        
+        self.debug = boolean(config.get('debug', False))
         
         self.pipeline = config.get('pipeline', None)
+        if self.pipeline is not None:
+            self.pipeline = int(self.pipeline)
         
         self.connection = None
         self.sent = 0
