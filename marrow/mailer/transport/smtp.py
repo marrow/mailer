@@ -72,11 +72,10 @@ class SMTPTransport(object):
     
     def connect_to_server(self):
         if self.tls == 'ssl':
-            connection = SMTP_SSL(self.host, self.port, self.local_hostname,
-                                  self.keyfile, self.certfile, self.timeout)
+            connection = SMTP_SSL(local_hostname=self.local_hostname, keyfile=self.keyfile,
+                                  certfile=self.certfile, timeout=self.timeout)
         else:
-            connection = SMTP(self.host, self.port, self.local_hostname,
-                              self.timeout)
+            connection = SMTP(local_hostname=self.local_hostname, timeout=self.timeout)
 
         log.info("Connecting to SMTP server %s:%s", self.host, self.port)
         connection.set_debuglevel(self.debug)
