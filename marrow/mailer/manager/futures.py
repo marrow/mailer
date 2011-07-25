@@ -26,8 +26,9 @@ def worker(pool, message):
                 result = transport.deliver(message)
             
             except TransportFailedException:
-                # The transport likely timed out waiting for work, so we
-                # toss out the current transport and retry.
+                # The transport has suffered an internal error or has otherwise
+                # requested to not be recycled. Delivery should be attempted
+                # again.
                 transport.ephemeral = True
                 continue
             
