@@ -120,13 +120,13 @@ class TestMethods(TestCase):
         interface = Delivery(base_config)
         interface.start()
         
-        self.assertEqual(len(messages), 4)
+        self.assertEqual(len(messages), 5)
         self.assertEqual(messages[0].getMessage(), "Mail delivery service starting.")
         self.assertEqual(messages[-1].getMessage(), "Mail delivery service started.")
         
         interface.start()
         
-        self.assertEqual(len(messages), 5)
+        self.assertEqual(len(messages), 6)
         self.assertEqual(messages[-1].getMessage(), "Attempt made to start an already running delivery service.")
         
         interface.stop()
@@ -140,13 +140,13 @@ class TestMethods(TestCase):
         
         interface.stop()
         
-        self.assertEqual(len(messages), 4)
+        self.assertEqual(len(messages), 5)
         self.assertEqual(messages[0].getMessage(), "Mail delivery service stopping.")
         self.assertEqual(messages[-1].getMessage(), "Mail delivery service stopped.")
         
         interface.stop()
         
-        self.assertEqual(len(messages), 5)
+        self.assertEqual(len(messages), 6)
         self.assertEqual(messages[-1].getMessage(), "Attempt made to stop an already stopped delivery service.")
     
     def test_send(self):

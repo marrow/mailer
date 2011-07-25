@@ -126,14 +126,14 @@ class SMTPTransport(object):
             # The envelope sender was refused.  This is bad.
             e = sys.exc_info()[1]
             log.error("%s REFUSED %s %s", message.id, e.__class__.__name__, e)
-            raise MessageFailedException()
+            raise MessageFailedException(e)
         
         except SMTPRecipientsRefused:
             # All recipients were refused. Log which recipients.
             # This allows you to automatically parse your logs for bad e-mail addresses.
             e = sys.exc_info()[1]
             log.warning("%s REFUSED %s %s", message.id, e.__class__.__name__, e)
-            raise MessageFailedException()
+            raise MessageFailedException(e)
         
         except SMTPServerDisconnected:
             if message.retries >= 0:
