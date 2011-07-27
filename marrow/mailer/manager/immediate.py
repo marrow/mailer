@@ -1,8 +1,6 @@
 # encoding: utf-8
 
-from marrow.mailer.exc import (TransportExhaustedException,
-        TransportFailedException, MessageFailedException)
-
+from marrow.mailer.exc import TransportExhaustedException, TransportFailedException
 from marrow.mailer.manager.util import TransportPool
 
 
@@ -13,6 +11,8 @@ log = __import__('logging').getLogger(__name__)
 
 
 class ImmediateManager(object):
+    __slots__ = ('transport', )
+    
     def __init__(self, config, Transport):
         """Initialize the immediate delivery manager."""
         

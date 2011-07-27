@@ -1,26 +1,14 @@
 # encoding: utf-8
 
-import atexit
-import threading
-import weakref
-import sys
-import math
 import transaction
 
 from functools import partial
-from concurrent import futures
 
 from zope.interface import implements
 from transaction.interfaces import IDataManager
   
-from marrow.mailer.manager.futures import worker
 from marorw.mailer.manager.dynamic import ScalingPoolExecutor
-from marrow.mailer.manager.util import TransportPool
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
 
 __all__ = ['TransactionalDynamicManager']
 
@@ -28,18 +16,10 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-def check_transport(pool):
-    try:
-        with pool() as transport:
-            return getattr(transport, 'connected', True)
-    
-    except:
-        return False
-
-
-
 class ExecutorDataManager(object):
     implements(IDataManager)
+    
+    __slots__ = ('callback', 'abort_callback')
     
     def __init__(self, callback, abort=None, pool=None):
         self.callback = callback
@@ -76,7 +56,6 @@ class ExecutorDataManager(object):
         self.callback()
     
     tpc_abort = abort
-
 
 
 class TransactionalScalingPoolExecutor(ScalingPoolExecutor):

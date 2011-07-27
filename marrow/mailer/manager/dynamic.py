@@ -7,7 +7,6 @@ import sys
 import math
 
 from functools import partial
-from concurrent import futures
 
 from marrow.mailer.manager.futures import worker
 from marrow.mailer.manager.util import TransportPool
@@ -16,6 +15,12 @@ try:
     import queue
 except ImportError:
     import Queue as queue
+
+try:
+    from concurrent import futures
+except ImportError:
+    raise ImportError("You must install the futures package to use background delivery.")
+
 
 __all__ = ['DynamicManager']
 
@@ -62,6 +67,8 @@ def thread_worker(executor, jobs, timeout, maximum):
 
 
 class WorkItem(object):
+    __slots__ = ('future', 'fn', 'args', 'kwargs')
+    
     def __init__(self, future, fn, args, kwargs):
         self.future = future
         self.fn = fn
@@ -136,6 +143,8 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
 
 
 class DynamicManager(object):
+    __slots__ = ('workers', 'divisor', 'timeout', 'executor', 'transport')
+    
     name = "Dynamic"
     Executor = ScalingPoolExecutor
     

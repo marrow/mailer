@@ -12,6 +12,8 @@ log = __import__('logging').getLogger(__name__)
 class MaildirTransport(object):
     """A modern UNIX maildir on-disk file delivery transport."""
     
+    __slots__ = ('ephemeral', 'box', 'directory', 'folder', 'create', 'separator')
+    
     def __init__(self, config):
         self.box = None
         self.directory = config.get('directory', None) # maildir directory
@@ -31,7 +33,7 @@ class MaildirTransport(object):
             
             except mailbox.NoSuchMailboxError:
                 if not self.create:
-                    raise
+                    raise # TODO: Raise appropraite internal exception.
                 
                 folder = self.box.add_folder(self.folder)
             

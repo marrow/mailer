@@ -8,11 +8,13 @@ log = __import__('logging').getLogger(__name__)
 
 
 class LoggingTransport(object):
+    __slots__ = ('ephemeral', 'log')
+    
     def __init__(self, config):
         self.log = log if 'name' not in config else __import__('logging').getLogger(config.name)
     
     def startup(self):
-        self.log.debug("Logging transport starting.")
+        log.debug("Logging transport starting.")
     
     def deliver(self, message):
         msg = str(message)
@@ -21,4 +23,4 @@ class LoggingTransport(object):
         self.log.critical(str(message))
     
     def shutdown(self):
-        self.log.debug("Logging transport stopping.")
+        log.debug("Logging transport stopping.")
