@@ -16,6 +16,8 @@ class MailboxTransport(object):
     delivery mechanism (such as a Futures thread pool) makes no sense.
     """
     
+    __slots__ = ('ephemeral', 'box', 'filename')
+    
     def __init__(self, config):
         self.box = None
         self.filename = config.get('file', None)

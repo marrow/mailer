@@ -21,6 +21,8 @@ log = __import__('logging').getLogger(__name__)
 class SMTPTransport(object):
     """An (E)SMTP pipelining transport."""
     
+    __slots__ = ('ephemeral', 'host', 'tls', 'certfile', 'keyfile', 'port', 'local_hostname', 'username', 'password', 'timeout', 'debug', 'pipeline', 'connection', 'sent')
+    
     def __init__(self, config):
         if not 'host' in config:
             raise MailConfigurationException('No server configured for SMTP')

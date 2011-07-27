@@ -2,13 +2,13 @@
 
 from functools import partial
 
-from concurrent import futures
-from Queue import Queue, Empty
-
-from marrow.mailer.exc import (ManagerException, TransportFailedException,
-        MessageFailedException, TransportExhaustedException)
-
+from marrow.mailer.exc import TransportFailedException, TransportExhaustedException
 from marrow.mailer.manager.util import TransportPool
+
+try:
+    from concurrent import futures
+except ImportError:
+    raise ImportError("You must install the futures package to use background delivery.")
 
 
 __all__ = ['FuturesManager']
@@ -44,6 +44,8 @@ def worker(pool, message):
 
 
 class FuturesManager(object):
+    __slots__ = ('workers', 'executor', 'transport')
+    
     def __init__(self, config, transport):
         self.workers = config.get('workers', 1)
         

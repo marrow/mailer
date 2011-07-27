@@ -27,6 +27,8 @@ class MockTransport(object):
     badly; do not do this except under controlled, unit testing scenarios!)
     """
     
+    __slots__ = ('ephemeral', 'config')
+    
     def __init__(self, config):
         base = {'success': 1.0, 'failure': 0.0, 'exhaustion': 0.0}
         base.update(dict(config))

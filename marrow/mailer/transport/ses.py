@@ -16,6 +16,8 @@ log = __import__('logging').getLogger(__name__)
 
 
 class AmazonTransport(object):
+    __slots__ = ('ephemeral', 'id', 'key', 'host', 'connection')
+    
     def __init__(self, config):
         self.id = config.get('id')
         self.key = config.get('key')
@@ -43,7 +45,7 @@ class AmazonTransport(object):
                 )
         
         except SESConnection.ResponseError, err:
-            raise
+            raise # TODO: Raise appropriate internal exception.
             # ['status', 'reason', 'body', 'request_id', 'error_code', 'error_message']
     
     def shutdown(self):

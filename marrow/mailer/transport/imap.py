@@ -14,6 +14,8 @@ log = __import__('logging').getLogger(__name__)
 
 
 class IMAPTransport(object):
+    __slots__ = ('ephemeral', 'host', 'ssl', 'port', 'username', 'password', 'folder', 'connection')
+    
     def __init__(self, config):
         if not 'host' in config:
             raise MailConfigurationException('No server configured for IMAP.')

@@ -12,6 +12,8 @@ log = __import__('logging').getLogger(__name__)
 
 
 class SendmailTransport(object):
+    __slots__ = ('ephemeral', 'executable')
+    
     def __init__(self, config):
         self.executable = config.get('path', '/usr/sbin/sendmail')
     
