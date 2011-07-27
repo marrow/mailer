@@ -48,8 +48,6 @@ class SMTPTransport(object):
         self.sent = 0
     
     def startup(self):
-        self.sent = 0
-        
         if not self.connected:
             self.connect_to_server()
     
@@ -95,6 +93,7 @@ class SMTPTransport(object):
             connection.login(self.username, self.password)
 
         self.connection = connection
+        self.sent = 0
     
     @property
     def connected(self):
