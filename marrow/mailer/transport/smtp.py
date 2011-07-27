@@ -136,7 +136,7 @@ class SMTPTransport(object):
         
         except SMTPServerDisconnected:
             if message.retries >= 0:
-                log.warning("%s DEFERRED %s", message.id, cls_name)
+                log.warning("%s DEFERRED %s", message.id, "SMTPServerDisconnected")
                 message.retries -= 1
             
             raise TransportFailedException()
