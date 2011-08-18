@@ -17,7 +17,7 @@ from marrow.util.bunch import Bunch
 log = logging.getLogger('tests')
 
 
-base_config = {'manager': 'immediate', 'transport': 'mock'}
+base_config = dict(manager='immediate', transport='mock')
 
 
 
@@ -39,6 +39,20 @@ class TestInitialization(TestCase):
         
         self.assertEqual(a.Manager, ImmediateManager)
         self.assertEqual(a.Transport, MockTransport)
+    
+    def test_bad_manager(self):
+        config = dict(manager=object(), transport='mock')
+        log.info("Testing configuration: %r", dict(config))
+        
+        with self.assertRaises(TypeError):
+            a = Delivery(config)
+    
+    def test_bad_transport(self):
+        config = dict(manager='immediate', transport=object())
+        log.info("Testing configuration: %r", dict(config))
+        
+        with self.assertRaises(TypeError):
+            a = Delivery(config)
     
     def test_repr(self):
         a = Delivery(base_config)
