@@ -169,7 +169,11 @@ class TestMethods(TestCase):
         message_fail = Bunch(id='bar', die=True)
         self.assertRaises(Exception, lambda: interface.send(message_fail))
         
-        self.assertEqual(messages[-2].getMessage(), "Attempting delivery of message bar.")
+        print [i.getMessage() for i in messages]
+        
+        self.assertEqual(messages[-4].getMessage(), "Attempting delivery of message bar.")
+        self.assertEqual(messages[-3].getMessage(), "Acquired existing transport instance.")
+        self.assertEqual(messages[-2].getMessage(), "Shutting down transport due to unhandled exception.")
         self.assertEqual(messages[-1].getMessage(), "Delivery of message bar failed.")
         
         interface.stop()

@@ -61,7 +61,7 @@ class TransportPool(object):
             ephemeral = getattr(transport, 'ephemeral', False)
             
             if type is not None:
-                log.debug("Shutting down transport due to unhandled exception.")
+                log.error("Shutting down transport due to unhandled exception.", exc_info=True)
                 transport.shutdown()
                 return
             
