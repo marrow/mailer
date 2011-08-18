@@ -12,6 +12,7 @@ from functools import partial
 
 from marrow.mailer.message import Message
 from marrow.mailer.exc import MailerNotRunning
+from marrow.mailer.interfaces import IManager, ITransport
 
 from marrow.util.compat import basestring
 from marrow.util.bunch import Bunch
@@ -64,10 +65,16 @@ class Delivery(object):
         if not Manager:
             raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
         
+        if not isinstance(Manager, IManager):
+            raise TypeError("Chosen manager does not conform to the manager API.")
+        
         self.Transport = Transport = self._load(config.transport, 'marrow.mailer.transport')
         
         if not Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.transport, ))
+        
+        if not isinstance(Transport, ITransport):
+            raise TypeError("Chosen transport does not conform to the transport API.")
         
         self.manager = Manager(manager_config, partial(Transport, transport_config))
     

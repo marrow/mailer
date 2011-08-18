@@ -27,7 +27,7 @@ Python 2.6+ and 3.1+, formerly called TurboMail.""",
     license="MIT",
     keywords="",
     
-    install_requires=["marrow.util"],
+    install_requires=["marrow.util", "marrow.interface"],
     
     test_suite="nose.collector",
     tests_require=["nose", "coverage"],
