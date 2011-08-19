@@ -2,7 +2,7 @@
 
 from functools import partial
 
-from marrow.mailer.exc import TransportFailedException, TransportExhaustedException
+from marrow.mailer.exc import TransportFailedException, TransportExhaustedException, MessageFailedException, DeliveryFailedException
 from marrow.mailer.manager.util import TransportPool
 
 try:
@@ -24,6 +24,10 @@ def worker(pool, message):
         with pool() as transport:
             try:
                 result = transport.deliver(message)
+            
+            except MessageFailedException:
+                e = sys.exc_info()[1]
+                raise DeliveryFailedException(message, e.args[0] if e.args else "No reason given.")
             
             except TransportFailedException:
                 # The transport has suffered an internal error or has otherwise

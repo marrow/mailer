@@ -197,9 +197,6 @@ class AutoConverter(object):
         if value is None:
             return self.cls() if self.can else None
         
-        if not isinstance(value, self.cls):
-            return self.cls(value)
-        
         return value
     
     def __set__(self, instance, value):

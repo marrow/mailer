@@ -70,7 +70,10 @@ class TransportFailedException(TransportException):
 class MessageFailedException(TransportException):
     """The transport has failed to deliver the message due to a problem with
     the message itself, and no attempt should be made to retry delivery of
-    this message.  The transport may still be re-used, however."""
+    this message.  The transport may still be re-used, however.
+    
+    The reason for the failure should be the first argument.
+    """
     
     pass
 

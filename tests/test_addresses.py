@@ -158,6 +158,8 @@ class TestAddressList(object):
     
     def test_assignment(self):
         eq_([], self.addresses)
+        self.addresses = ['me@example.com']
+        eq_(['me@example.com'], self.addresses)
     
     def test_assign_single_address(self):
         address = 'user@example.com'

@@ -4,7 +4,7 @@ import imaplib
 
 from datetime import datetime
 
-from marrow.mailer.exc import TransportException, DeliveryFailedException
+from marrow.mailer.exc import TransportException, MessageFailedException
 
 
 __all__ = ['IMAPTransport']
@@ -46,7 +46,7 @@ class IMAPTransport(object):
             )
         
         if result[0] != b'OK':
-            raise DeliveryFailedException(message, "\n".join(result[1]))
+            raise MessageFailedException("\n".join(result[1]))
     
     def shutdown(self):
         self.connection.logout()
