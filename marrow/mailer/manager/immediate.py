@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from marrow.mailer.exc import TransportExhaustedException, TransportFailedException
+from marrow.mailer.exc import TransportExhaustedException, TransportFailedException, DeliveryFailedException, MessageFailedException
 from marrow.mailer.manager.util import TransportPool
 
 
@@ -41,6 +41,10 @@ class ImmediateManager(object):
             with self.transport() as transport:
                 try:
                     result = transport.deliver(message)
+                
+                except MessageFailedException:
+                    e = sys.exc_info()[1]
+                    raise DeliveryFailedException(message, e.args[0] if e.args else "No reason given.")
                 
                 except TransportFailedException:
                     # The transport has suffered an internal error or has otherwise
