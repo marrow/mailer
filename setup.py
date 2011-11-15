@@ -38,7 +38,8 @@ https://github.com/marrow/marrow.mailer""",
         test_suite = 'nose.collector',
         tests_require = [
             'nose',
-            'coverage'
+            'coverage',
+            'PyDNS'
         ],
         
         classifiers=[
