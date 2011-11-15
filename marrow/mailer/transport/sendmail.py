@@ -20,7 +20,7 @@ class SendmailTransport(object):
     def startup(self):
         pass
     
-    def __call__(self, message):
+    def deliver(self, message):
         # TODO: Utilize -F full_name (sender full name), -f sender (envelope sender), -V envid (envelope ID), and space-separated BCC recipients
         # TODO: Record the output of STDOUT and STDERR to capture errors.
         proc = os.popen('%s -t -i' % (self.executable, ), 'w')
