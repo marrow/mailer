@@ -34,7 +34,7 @@ class DeliveryFailedException(DeliveryException):
     given in args[1].  (These can be accessed as e.msg and e.reason.)"""
     
     def __init__(self, message, reason):
-        self.msg = msg
+        self.msg = message
         self.reason = reason
         
         super(DeliveryFailedException, self).__init__(message, reason)
