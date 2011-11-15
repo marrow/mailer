@@ -39,7 +39,8 @@ https://github.com/marrow/marrow.mailer""",
         tests_require = [
             'nose',
             'coverage',
-            'PyDNS'
+            'PyDNS',
+            'transaction'
         ],
         
         classifiers=[
@@ -81,8 +82,7 @@ https://github.com/marrow/marrow.mailer""",
                 'sendmail = marrow.mailer.transport.sendmail:SendmailTransport',
                 'imap = marrow.mailer.transport.imap:IMAPTransport',
                 'appengine = marrow.mailer.transport.gae:AppEngineTransport',
-                'logging = marrow.mailer.transport.log:LoggingTransport',
-                'sms = marrow.mailer.transport.sms:SMSTransport',
+                'logging = marrow.mailer.transport.log:LoggingTransport'
             ]
         }
     )
