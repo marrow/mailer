@@ -183,33 +183,22 @@ class Message(object):
     
     def _add_headers_to_message(self, message, headers):
         for header in headers:
-            if isinstance(header, (tuple, list)):
-                if header[1] is None or (isinstance(header[1], list) and not header[1]):
-                    continue
-                
-                name, value = header
-                
-                if isinstance(value, Address):
-                    # print type(value), repr(value), value
-                    value = value.encode(self.encoding)
-                
-                elif isinstance(value, AddressList):
-                    # print type(value), repr(value), value
-                    value = value.encode(self.encoding)
-                    # print '->', type(value), repr(value), value
-                
-                if isinstance(value, unicode):
-                    # print type(value), repr(value), value
-                    value = Header(value, self.encoding)
-                
-                else:
-                    # print type(value), repr(value), value
-                    value = Header(value)
-                
-                message[name] = value
+            if header[1] is None or (isinstance(header[1], list) and not header[1]):
+                continue
             
-            elif isinstance(header, dict):
-                message.add_header(**header)
+            name, value = header
+            
+            if isinstance(value, Address):
+                value = value.encode(self.encoding)
+            elif isinstance(value, AddressList):
+                value = value.encode(self.encoding)
+            
+            if isinstance(value, unicode):
+                value = Header(value, self.encoding)
+            else:
+                value = Header(value)
+            
+            message[name] = value
     
     @property
     def mime(self):
@@ -272,10 +261,14 @@ class Message(object):
         :param inline: Whether to set the Content-Disposition for the file to
                        "inline" (True) or "attachment" (False)
         """
+        self._dirty = True
+        
         if not maintype:
-            maintype, subtype = guess_type(name)
+            maintype, _ = guess_type(name)
             if not maintype:
                 maintype, subtype = 'application', 'octet-stream'
+            else:
+                maintype, _, subtype = maintype.partition('/')
 
         part = MIMENonMultipart(maintype, subtype)
 
@@ -309,9 +302,9 @@ class Message(object):
                      be read from the file pointed to by the ``name`` argument
         """
         if data is None:
-            name = os.path.basename(name)
-            with open(file, 'rb') as fp:
+            with open(name, 'rb') as fp:
                 data = fp.read()
+            name = os.path.basename(name)
         elif isinstance(data, bytes):
             pass
         elif hasattr(data, 'read'):

@@ -24,6 +24,8 @@ from nose.tools import raises
 class TestBasicMessage(unittest.TestCase):
     """Test the basic output of the Message class."""
     
+    gif = '47494638396101000100910000000000000000fe010200000021f904041400ff002c00000000010001000002024401003b'
+    
     def build_message(self, **kw):
         return Message(
                     author=('Author', 'author@example.com'),
@@ -32,6 +34,36 @@ class TestBasicMessage(unittest.TestCase):
                     plain='This is a test message plain text body.',
                     **kw
                 )
+    
+    def test_missing_values(self):
+        message = Message()
+        self.assertRaises(ValueError, str, message)
+        
+        message.author = "bob.dole@whitehouse.gov"
+        self.assertRaises(ValueError, str, message)
+        
+        message.subject = "Attn: Bob Dole"
+        self.assertRaises(ValueError, str, message)
+        
+        message.to = "user@example.com"
+        self.assertRaises(ValueError, str, message)
+        
+        message.plain = "Testing!"
+        
+        try:
+            str(message)
+        except ValueError:
+            self.fail("Message should be valid.")
+    
+    def test_message_id(self):
+        msg = self.build_message()
+        
+        self.assertEquals(msg._id, None)
+        
+        id_ = msg.id
+        self.assertEquals(msg._id, id_)
+        
+        self.assertEquals(msg.id, id_)
     
     def test_message_properties(self):
         message = self.build_message()
@@ -64,13 +96,131 @@ class TestBasicMessage(unittest.TestCase):
         self.assertEqual('replyto@example.com', msg['reply-to'])
         self.assertEqual('disposition@example.com', msg['disposition-notification-to'])
     
-    def test_mime_generation(self):
+    def test_mime_generation_plain(self):
         message = self.build_message()
         mime = message.mime
         
         self.failUnless(message.mime is mime)
         message.subject = "Test message subject."
         self.failIf(message.mime is mime)
+    
+    def test_mime_generation_rich(self):
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        
+        self.failUnless('Hello world.' in str(message))
+        self.failUnless('Farewell cruel world.' in str(message))
+    
+    def test_mime_generation_rich_embedded(self):
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        
+        message.attach("hello.txt", "Fnord.", "text", "plain", True)
+        
+        self.failUnless('Hello world.' in str(message))
+        self.failUnless('Farewell cruel world.' in str(message))
+        self.failUnless('hello.txt' in str(message))
+        self.failUnless('Fnord.' in str(message))
+    
+    def test_mime_attachments(self):
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        
+        message.attach("hello.txt", "Fnord.")
+        
+        self.failUnless('Hello world.' in str(message))
+        self.failUnless('Farewell cruel world.' in str(message))
+        self.failUnless('hello.txt' in str(message))
+        self.failUnless('Fnord.' in str(message))
+        self.failUnless('text/plain\n' in str(message))
+    
+    def test_mime_attachments_unknown(self):
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        message.attach('test.xbin', "Word.")
+        self.failUnless('test.xbin' in str(message))
+        self.failUnless('application/octet-stream' in str(message))
+        
+        self.assertRaises(TypeError, message.attach, 'foo', object())
+    
+    def test_mime_attachments_file(self):
+        import tempfile
+        
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        
+        with tempfile.NamedTemporaryFile() as fh:
+            fh.write("foo")
+            fh.flush()
+            
+            message.attach(fh.name)
+            self.failUnless('application/octet-stream' in str(message))
+            self.failUnless('foo' in str(message))
+    
+    def test_mime_attachments_filelike(self):
+        class Mock(object):
+            def read(self):
+                return 'foo'
+        
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        message.attach('test.xbin', Mock())
+        self.failUnless('test.xbin' in str(message))
+        self.failUnless('application/octet-stream' in str(message))
+        self.failUnless('foo' in str(message))
+    
+    def test_mime_embed_gif_file(self):
+        import tempfile
+        import codecs
+        
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        
+        with tempfile.NamedTemporaryFile() as fh:
+            fh.write(codecs.decode(self.gif, 'hex'))
+            fh.flush()
+            
+            message.embed(fh.name)
+            
+            self.failUnless('image/gif' in str(message))
+            self.failUnless('GIF89a' in str(message))
+    
+    def test_mime_embed_gif_bytes(self):
+        import codecs
+        
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        message.embed('test.gif', codecs.decode(self.gif, 'hex'))
+        
+        self.failUnless('image/gif' in str(message))
+        self.failUnless('GIF89a' in str(message))
+        
+        class Mock(object):
+            def read(s):
+                return codecs.decode(self.gif, 'hex')
+        
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        message.embed('test.gif', Mock())
+        
+        self.failUnless('image/gif' in str(message))
+        self.failUnless('GIF89a' in str(message))
+    
+    def test_mime_embed_failures(self):
+        message = self.build_message()
+        message.plain = "Hello world."
+        message.rich = "Farewell cruel world."
+        
+        self.assertRaises(TypeError, message.embed, 'test.gif', object())
     
     def test_recipients_collection(self):
         message = self.build_message()
@@ -259,3 +409,11 @@ class TestBasicMessage(unittest.TestCase):
         msg = email.message_from_string(str(message))
         self.assertEqual('text/plain; charset="utf-8"', msg['Content-Type'])
         self.assertEqual('quoted-printable', msg['Content-Transfer-Encoding'])
+    
+    def test_callable_bodies(self):
+        message = self.build_message()
+        message.plain = lambda: "plain text"
+        message.rich = lambda: "rich text"
+        
+        self.assertTrue('plain text' in str(message))
+        self.assertTrue('rich text' in str(message))
