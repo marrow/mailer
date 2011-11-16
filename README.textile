@@ -70,22 +70,26 @@ h2(#basic). %3.% Basic Usage
 
 To use Marrow Mailer you instantiate a @marrow.mailer.Delivery@ object with the configuration, then pass @Message@ instances to the @Delivery@ instance's @send()@ method.  This allows you to configure multiple delivery mechanisms and choose, within your code, how you want each message delivered.  The configuration is a dictionary of dot-notation keys and their values.  Each manager and transport has their own configuration keys.
 
-Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.  Manager and transport configurations are each additionally prefixed with @manager.@ and @transport.@, respectively.
+Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.  Manager and transport configurations are each additionally prefixed with @manager.@ and @transport.@, respectively.  The following is an example of how to send a message by SMTP:
 
 <pre><code>from marrow.mailer import Delivery, Message
 
-mailer = Delivery({...}, prefix=None)
+mailer = Delivery(
+        {'transport': 'smtp', 'transport.host': 'localhost'},
+        prefix=None
+    )
 mailer.start()
 
-message = Message(...)
+message = Message(author="user@example.com", to="user-two@example.com")
+message.subject = "Testing Marrow Mailer"
+message.plain = "This is a test."
 mailer.send(message)
 
 mailer.stop()</code></pre>
 
-A full example configuration, delivering to an on-disk @maildir@ mailbox:
+Another example configuration, delivering to an on-disk @maildir@ mailbox:
 
 <pre><code>{
-    'manager': 'immediate',
     'transport': 'maildir',
     'transport.directory': 'data/maildir'
 }</pre></code>
@@ -269,7 +273,7 @@ The @appengine@ transport translates between Mailer's Message representation and
 * @subject@
 * @plain@
 * @rich@
-* @attachments@ (not counting embedded files)
+* @attachments@ (excluding inline/embedded files)
 
 
 h4(#logging-transport). %6.3.1.% Python Logging

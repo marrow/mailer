@@ -41,6 +41,7 @@ class Delivery(object):
         self.Transport = None
         self.running = False
         self.config = config = Bunch(config)
+        config.setdefault('manager', 'immediate')
         
         if prefix is not None:
             self.config = config = Bunch.partial(prefix, config)
