@@ -32,7 +32,7 @@ class MaildirTransport(object):
                 folder = self.box.get_folder(self.folder)
             
             except mailbox.NoSuchMailboxError:
-                if not self.create:
+                if not self.create: # pragma: no cover
                     raise # TODO: Raise appropraite internal exception.
                 
                 folder = self.box.add_folder(self.folder)
