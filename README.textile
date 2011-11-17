@@ -74,10 +74,10 @@ Configuration keys may utilize a shared, common prefix, such as @mail.@.  By def
 
 <pre><code>from marrow.mailer import Delivery, Message
 
-mailer = Delivery(
-        {'transport': 'smtp', 'transport.host': 'localhost'},
-        prefix=None
-    )
+mailer = Delivery(dict(
+        transport = dict(
+                use = 'smtp',
+                host = 'localhost')))
 mailer.start()
 
 message = Message(author="user@example.com", to="user-two@example.com")
@@ -87,10 +87,10 @@ mailer.send(message)
 
 mailer.stop()</code></pre>
 
-Another example configuration, delivering to an on-disk @maildir@ mailbox:
+Another example configuration, using a flat dictionary and delivering to an on-disk @maildir@ mailbox:
 
 <pre><code>{
-    'transport': 'maildir',
+    'transport.use': 'maildir',
     'transport.directory': 'data/maildir'
 }</pre></code>
 

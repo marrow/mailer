@@ -17,7 +17,7 @@ log = logging.getLogger('tests')
 def test_issue_2():
     mail = Delivery({
             'manager': 'immediate',
-            'transport': 'smtp',
+            'transport.use': 'smtp',
             'transport.host': 'secure.emailsrvr.com',
             'transport.tls': 'ssl'
         })

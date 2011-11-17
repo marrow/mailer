@@ -17,7 +17,7 @@ from marrow.util.bunch import Bunch
 log = logging.getLogger('tests')
 
 
-base_config = dict(manager='immediate', transport='mock')
+base_config = dict(manager=dict(use='immediate'), transport=dict(use='mock'))
 
 
 
@@ -41,18 +41,14 @@ class TestInitialization(TestCase):
         self.assertEqual(a.Transport, MockTransport)
     
     def test_bad_manager(self):
-        config = dict(manager=object(), transport='mock')
+        config = dict(manager=dict(use=object()), transport=dict(use='mock'))
         log.info("Testing configuration: %r", dict(config))
-        
-        with self.assertRaises(TypeError):
-            a = Delivery(config)
+        self.assertRaises(TypeError, Delivery, config)
     
     def test_bad_transport(self):
-        config = dict(manager='immediate', transport=object())
+        config = dict(manager=dict(use='immediate'), transport=dict(use=object()))
         log.info("Testing configuration: %r", dict(config))
-        
-        with self.assertRaises(TypeError):
-            a = Delivery(config)
+        self.assertRaises(TypeError, Delivery, config)
     
     def test_repr(self):
         a = Delivery(base_config)
@@ -60,8 +56,8 @@ class TestInitialization(TestCase):
     
     def test_prefix(self):
         config = {
-                'mail.manager': 'immediate',
-                'mail.transport': 'mock'
+                'mail.manager.use': 'immediate',
+                'mail.transport.use': 'mock'
             }
         
         log.info("Testing configuration: %r", dict(config))
@@ -72,8 +68,8 @@ class TestInitialization(TestCase):
     
     def test_deep_prefix(self):
         config = {
-                'marrow.mailer.manager': 'immediate',
-                'marrow.mailer.transport': 'mock'
+                'marrow.mailer.manager.use': 'immediate',
+                'marrow.mailer.transport.use': 'mock'
             }
         
         log.info("Testing configuration: %r", dict(config))
@@ -84,47 +80,47 @@ class TestInitialization(TestCase):
     
     def test_manager_entrypoint_failure(self):
         config = {
-                'manager': 'immediate2',
-                'transport': 'mock'
+                'manager.use': 'immediate2',
+                'transport.use': 'mock'
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(LookupError, lambda: Delivery(config))
+        self.assertRaises(LookupError, Delivery, config)
     
     def test_manager_dotcolon_failure(self):
         config = {
-                'manager': 'marrow.mailer.manager.foo:FooManager',
-                'transport': 'mock'
+                'manager.use': 'marrow.mailer.manager.foo:FooManager',
+                'transport.use': 'mock'
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(ImportError, lambda: Delivery(config))
+        self.assertRaises(ImportError, Delivery, config)
         
-        config['manager'] = 'marrow.mailer.manager.immediate:FooManager'
+        config['manager.use'] = 'marrow.mailer.manager.immediate:FooManager'
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(AttributeError, lambda: Delivery(config))
+        self.assertRaises(AttributeError, Delivery, config)
     
     def test_transport_entrypoint_failure(self):
         config = {
-                'manager': 'immediate',
-                'transport': 'mock2'
+                'manager.use': 'immediate',
+                'transport.use': 'mock2'
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(LookupError, lambda: Delivery(config))
+        self.assertRaises(LookupError, Delivery, config)
     
     def test_transport_dotcolon_failure(self):
         config = {
-                'manager': 'immediate',
-                'transport': 'marrow.mailer.transport.foo:FooTransport'
+                'manager.use': 'immediate',
+                'transport.use': 'marrow.mailer.transport.foo:FooTransport'
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(ImportError, lambda: Delivery(config))
+        self.assertRaises(ImportError, Delivery, config)
         
-        config['manager'] = 'marrow.mailer.transport.mock:FooTransport'
+        config['manager.use'] = 'marrow.mailer.transport.mock:FooTransport'
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(AttributeError, lambda: Delivery(config))
+        self.assertRaises(AttributeError, Delivery, config)
 
 
 class TestMethods(TestCase):
@@ -168,7 +164,7 @@ class TestMethods(TestCase):
         
         interface = Delivery(base_config)
         
-        self.assertRaises(MailerNotRunning, lambda: interface.send(message))
+        self.assertRaises(MailerNotRunning, interface.send, message)
         
         interface.start()
         
@@ -181,7 +177,7 @@ class TestMethods(TestCase):
         self.assertEqual(messages[-1].getMessage(), "Message foo delivered.")
         
         message_fail = Bunch(id='bar', die=True)
-        self.assertRaises(Exception, lambda: interface.send(message_fail))
+        self.assertRaises(Exception, interface.send, message_fail)
         
         print [i.getMessage() for i in messages]
         
