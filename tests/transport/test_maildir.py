@@ -31,7 +31,7 @@ class TestMailDirectoryTransport(TestCase):
     
     def tearDown(self):
         self.transport.shutdown()
-        #shutil.rmtree(self.path)
+        shutil.rmtree(self.path)
     
     def test_bad_config(self):
         self.assertRaises(ValueError, MaildirTransport, dict())
