@@ -34,5 +34,8 @@ class MailboxTransport(object):
         self.box.unlock()
     
     def shutdown(self):
+        if self.box is None:
+            return
+        
         self.box.close()
         self.box = None
