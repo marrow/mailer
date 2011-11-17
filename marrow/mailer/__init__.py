@@ -41,7 +41,6 @@ class Delivery(object):
         self.Transport = None
         self.running = False
         self.config = config = Bunch(config)
-        config.setdefault('manager', 'immediate')
         
         if prefix is not None:
             self.config = config = Bunch.partial(prefix, config)
@@ -61,7 +60,7 @@ class Delivery(object):
         except ValueError:
             self.message_config = Bunch()
         
-        self.Manager = Manager = self._load(config.manager, 'marrow.mailer.manager')
+        self.Manager = Manager = self._load(config.manager.use if 'use' in config.manager else 'immediate', 'marrow.mailer.manager')
         
         if not Manager:
             raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
@@ -69,7 +68,7 @@ class Delivery(object):
         if not isinstance(Manager, IManager):
             raise TypeError("Chosen manager does not conform to the manager API.")
         
-        self.Transport = Transport = self._load(config.transport, 'marrow.mailer.transport')
+        self.Transport = Transport = self._load(config.transport.use, 'marrow.mailer.transport')
         
         if not Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.transport, ))
