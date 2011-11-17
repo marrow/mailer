@@ -20,7 +20,7 @@ log = logging.getLogger('tests')
 
 
 
-class TestImmediateManager(TestCase):
+class TestMailboxTransport(TestCase):
     def setUp(self):
         _, self.filename = tempfile.mkstemp('.mbox')
         os.close(_)
