@@ -40,7 +40,8 @@ https://github.com/marrow/marrow.mailer""",
             'nose',
             'coverage',
             'PyDNS',
-            'transaction'
+            'transaction',
+            'pymta'
         ],
         
         classifiers=[
