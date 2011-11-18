@@ -20,7 +20,7 @@ class LoggingTransport(object):
         msg = str(message)
         self.log.info("DELIVER %s %s %d %r %r", message.id, message.date.isoformat(),
             len(msg), message.author, message.recipients)
-        self.log.critical(str(message))
+        self.log.critical(msg)
     
     def shutdown(self):
         log.debug("Logging transport stopping.")
