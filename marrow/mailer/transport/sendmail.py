@@ -11,7 +11,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class SendmailTransport(object):
+class SendmailTransport(object): # pragma: no cover
     __slots__ = ('ephemeral', 'executable')
     
     def __init__(self, config):

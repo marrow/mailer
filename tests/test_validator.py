@@ -2,10 +2,12 @@
 
 """Test the primary configurator interface, Delivery."""
 
+import DNS
 import logging
 
 from unittest import TestCase
 from nose.tools import ok_, eq_, raises
+from nose.plugins.skip import Skip, SkipTest
 
 from marrow.mailer.validator import ValidationException, BaseValidator, DomainValidator, EmailValidator, EmailHarvester
 
@@ -112,7 +114,10 @@ def test_domain_validation():
         ]
     
     def closure(domain, expect):
-        eq_(mock.validate_domain(domain), (domain, expect))
+        try:
+            eq_(mock.validate_domain(domain), (domain, expect))
+        except DNS.DNSError:
+            raise SkipTest("Skipped due to DNS error.")
     
     for domain, expect in dataset:
         yield closure, domain, expect

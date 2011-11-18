@@ -15,7 +15,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class AmazonTransport(object):
+class AmazonTransport(object): # pragma: no cover
     __slots__ = ('ephemeral', 'id', 'key', 'host', 'connection')
     
     def __init__(self, config):
