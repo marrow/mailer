@@ -94,7 +94,11 @@ def test_domain_lookup():
         ]
     
     def closure(domain, kind, expect):
-        eq_(mock.lookup_domain(domain, kind, server=['8.8.8.8']), expect)
+        try:
+            eq_(mock.lookup_domain(domain, kind, server=['8.8.8.8']), expect)
+        except DNS.DNSError:
+            raise SkipTest("Skipped due to DNS error.")
+
     
     for domain, kind, expect in dataset:
         yield closure, domain, kind, expect
