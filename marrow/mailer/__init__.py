@@ -47,17 +47,17 @@ class Delivery(object):
         
         try:
             self.manager_config = manager_config = Bunch.partial('manager', config)
-        except ValueError:
+        except ValueError: # pragma: no cover
             self.manager_config = manager_config = Bunch()
         
         try:
             self.transport_config = transport_config = Bunch.partial('transport', config)
-        except ValueError:
+        except ValueError: # pragma: no cover
             self.transport_config = transport_config = Bunch()
         
         try:
             self.message_config = Bunch.partial('message', config)
-        except ValueError:
+        except ValueError: # pragma: no cover
             self.message_config = Bunch()
         
         self.Manager = Manager = self._load(config.manager.use if 'use' in config.manager else 'immediate', 'marrow.mailer.manager')
