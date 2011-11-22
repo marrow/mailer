@@ -1,12 +1,13 @@
 # encoding: utf-8
 
-"""Test the primary configurator interface, Delivery."""
+"""Test the primary configurator interface, Mailer."""
 
 import logging
+import warnings
 
 from unittest import TestCase
 
-from marrow.mailer import Delivery
+from marrow.mailer import Mailer, Delivery
 from marrow.mailer.exc import MailerNotRunning
 from marrow.mailer.manager.immediate import ImmediateManager
 from marrow.mailer.transport.mock import MockTransport
@@ -23,19 +24,31 @@ base_config = dict(manager=dict(use='immediate'), transport=dict(use='mock'))
 
 class TestLookup(TestCase):
     def test_load_literal(self):
-        self.assertEqual(Delivery._load(ImmediateManager, None), ImmediateManager)
+        self.assertEqual(Mailer._load(ImmediateManager, None), ImmediateManager)
     
     def test_load_dotcolon(self):
-        self.assertEqual(Delivery._load('marrow.mailer.manager.immediate:ImmediateManager', None), ImmediateManager)
+        self.assertEqual(Mailer._load('marrow.mailer.manager.immediate:ImmediateManager', None), ImmediateManager)
     
     def test_load_entrypoint(self):
-        self.assertEqual(Delivery._load('immediate', 'marrow.mailer.manager'), ImmediateManager)
+        self.assertEqual(Mailer._load('immediate', 'marrow.mailer.manager'), ImmediateManager)
 
 
 class TestInitialization(TestCase):
+    def test_deprecation(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            
+            Delivery(base_config)
+            
+            self.assertEqual(len(w), 1, "No, or more than one, warning issued.")
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning), "Category of warning is not DeprecationWarning.")
+            self.assertIn('deprecated', str(w[-1].message), "Warning does not include 'deprecated'.")
+            self.assertIn('Mailer', str(w[-1].message), "Warning does not include correct class name.")
+            self.assertIn('Delivery', str(w[-1].message), "Warning does not include old class name.")
+    
     def test_standard(self):
         log.info("Testing configuration: %r", dict(base_config))
-        a = Delivery(base_config)
+        a = Mailer(base_config)
         
         self.assertEqual(a.Manager, ImmediateManager)
         self.assertEqual(a.Transport, MockTransport)
@@ -43,16 +56,16 @@ class TestInitialization(TestCase):
     def test_bad_manager(self):
         config = dict(manager=dict(use=object()), transport=dict(use='mock'))
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(TypeError, Delivery, config)
+        self.assertRaises(TypeError, Mailer, config)
     
     def test_bad_transport(self):
         config = dict(manager=dict(use='immediate'), transport=dict(use=object()))
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(TypeError, Delivery, config)
+        self.assertRaises(TypeError, Mailer, config)
     
     def test_repr(self):
-        a = Delivery(base_config)
-        self.assertEqual(repr(a), "Delivery(manager=ImmediateManager, transport=MockTransport)")
+        a = Mailer(base_config)
+        self.assertEqual(repr(a), "Mailer(manager=ImmediateManager, transport=MockTransport)")
     
     def test_prefix(self):
         config = {
@@ -61,7 +74,7 @@ class TestInitialization(TestCase):
             }
         
         log.info("Testing configuration: %r", dict(config))
-        a = Delivery(config, 'mail')
+        a = Mailer(config, 'mail')
         
         self.assertEqual(a.Manager, ImmediateManager)
         self.assertEqual(a.Transport, MockTransport)
@@ -73,7 +86,7 @@ class TestInitialization(TestCase):
             }
         
         log.info("Testing configuration: %r", dict(config))
-        a = Delivery(config, 'marrow.mailer')
+        a = Mailer(config, 'marrow.mailer')
         
         self.assertEqual(a.Manager, ImmediateManager)
         self.assertEqual(a.Transport, MockTransport)
@@ -85,7 +98,7 @@ class TestInitialization(TestCase):
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(LookupError, Delivery, config)
+        self.assertRaises(LookupError, Mailer, config)
     
     def test_manager_dotcolon_failure(self):
         config = {
@@ -94,11 +107,11 @@ class TestInitialization(TestCase):
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(ImportError, Delivery, config)
+        self.assertRaises(ImportError, Mailer, config)
         
         config['manager.use'] = 'marrow.mailer.manager.immediate:FooManager'
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(AttributeError, Delivery, config)
+        self.assertRaises(AttributeError, Mailer, config)
     
     def test_transport_entrypoint_failure(self):
         config = {
@@ -107,7 +120,7 @@ class TestInitialization(TestCase):
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(LookupError, Delivery, config)
+        self.assertRaises(LookupError, Mailer, config)
     
     def test_transport_dotcolon_failure(self):
         config = {
@@ -116,18 +129,18 @@ class TestInitialization(TestCase):
             }
         
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(ImportError, Delivery, config)
+        self.assertRaises(ImportError, Mailer, config)
         
         config['manager.use'] = 'marrow.mailer.transport.mock:FooTransport'
         log.info("Testing configuration: %r", dict(config))
-        self.assertRaises(AttributeError, Delivery, config)
+        self.assertRaises(AttributeError, Mailer, config)
 
 
 class TestMethods(TestCase):
     def test_startup(self):
         messages = logging.getLogger().handlers[0].buffer
         
-        interface = Delivery(base_config)
+        interface = Mailer(base_config)
         interface.start()
         
         self.assertEqual(len(messages), 5)
@@ -137,12 +150,12 @@ class TestMethods(TestCase):
         interface.start()
         
         self.assertEqual(len(messages), 6)
-        self.assertEqual(messages[-1].getMessage(), "Attempt made to start an already running delivery service.")
+        self.assertEqual(messages[-1].getMessage(), "Attempt made to start an already running Mailer service.")
         
         interface.stop()
     
     def test_shutdown(self):
-        interface = Delivery(base_config)
+        interface = Mailer(base_config)
         interface.start()
         
         logging.getLogger().handlers[0].truncate()
@@ -157,12 +170,12 @@ class TestMethods(TestCase):
         interface.stop()
         
         self.assertEqual(len(messages), 6)
-        self.assertEqual(messages[-1].getMessage(), "Attempt made to stop an already stopped delivery service.")
+        self.assertEqual(messages[-1].getMessage(), "Attempt made to stop an already stopped Mailer service.")
     
     def test_send(self):
         message = Bunch(id='foo')
         
-        interface = Delivery(base_config)
+        interface = Mailer(base_config)
         
         self.assertRaises(MailerNotRunning, interface.send, message)
         

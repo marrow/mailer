@@ -1,8 +1,8 @@
 import logging
-from marrow.mailer import Message, Delivery
+from marrow.mailer import Message, Mailer
 logging.basicConfig(level=logging.INFO)
 
-mail = Delivery({
+mail = Mailer({
         'manager.use': 'futures',
         'transport.use': 'smtp',
         'transport.host': '',

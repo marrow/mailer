@@ -13,7 +13,7 @@ from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import formatdate, parsedate_tz
 
-from marrow.mailer import Delivery, Message
+from marrow.mailer import Message
 from marrow.mailer.address import AddressList
 
 from nose.tools import raises

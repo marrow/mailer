@@ -4,7 +4,7 @@
 import sys
 import logging
 
-from marrow.mailer import Message, Delivery
+from marrow.mailer import Message, Mailer
 
 
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +26,7 @@ configuration = {
 
 
 if __name__ == '__main__':
-    mail = Delivery(configuration)
+    mail = Mailer(configuration)
     mail.start()
     
     message = Message()
