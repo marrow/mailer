@@ -11,10 +11,10 @@ logging.basicConfig(level=logging.INFO)
 
 
 configuration = {
-        'manager': 'immediate', # futures
+        'manager.use': 'immediate', # futures
         'manager.workers': 5,
         
-        'transport': 'smtp',
+        'transport.use': 'smtp',
         'transport.host': '',
         'transport.tls': 'ssl', # None=='', required, optional
         'transport.port': 465, # 25, 465 = SSL

@@ -3,8 +3,8 @@ from marrow.mailer import Message, Delivery
 logging.basicConfig(level=logging.DEBUG)
 
 mail = Delivery({
-        'manager': 'futures',
-        'transport': 'imap',
+        'manager.use': 'futures',
+        'transport.use': 'imap',
         'transport.host': '',
         'transport.ssl': True,
         'transport.username': '',
