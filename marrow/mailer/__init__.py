@@ -59,7 +59,7 @@ class Mailer(object):
         
         try:
             if 'transport' in config and isinstance(config.transport, dict):
-                self.transport_config = transport_config = config.transport
+                self.transport_config = transport_config = Bunch(config.transport)
             else:
                 self.transport_config = transport_config = Bunch.partial('transport', config)
         except ValueError: # pragma: no cover
@@ -70,7 +70,10 @@ class Mailer(object):
             transport_config.use = config.transport
         
         try:
-            self.message_config = Bunch.partial('message', config)
+            if 'message' in config and isinstance(config.message, dict):
+                self.message_config = Bunch(config.message)
+            else:
+                self.message_config = Bunch.partial('message', config)
         except ValueError: # pragma: no cover
             self.message_config = Bunch()
         
@@ -149,6 +152,21 @@ class Mailer(object):
         
         log.debug("Message %s delivered.", message.id)
         return result
+    
+    def new(self, author=None, to=None, subject=None, **kw):
+        data = dict(self.message_config)
+        data['mailer'] = self
+        
+        if author:
+            kw['author'] = author
+        if to:
+            kw['to'] = to
+        if subject:
+            kw['subject'] = subject
+        
+        data.update(kw)
+        
+        return Message(**data)
 
 
 class Delivery(Mailer):

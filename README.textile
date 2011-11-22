@@ -95,6 +95,18 @@ Another example configuration, using a flat dictionary and delivering to an on-d
 }</pre></code>
 
 
+h3(#mailer-methods). %3.1.% Mailer Methods
+
+table(methods).
+|_. Method |_. Description |
+| @__init__(config, prefix=None)@ | Create and configure a new Mailer. |
+| @start()@ | Start the mailer. Returns the Mailer instance and can thus be chained with construction. |
+| @stop()@ | Stop the mailer.  This cascades through to the active manager and transports. |
+| @send(message)@ | Deliver the given Message instance. |
+| @new(author=None, to=None, subject=None, **kw)@ | Create a new bound instance of Message using configured default values. |
+
+
+
 h2(#message). %4.% The Message Class
 
 The original format for email messages was defined in "RFC 822":http://www.faqs.org/rfcs/rfc822.html which was superseded by "RFC 2822":http://www.faqs.org/rfcs/rfc2822.html. The newest standard document about the format is currently "RFC 5322":http://www.faqs.org/rfcs/rfc2822.html. But the basics of RFC 822 still apply, so for the sake of readability we will just use "RFC 822" to refer to all these RFCs. Please read the official standard documents if this text fails to explain some aspects.
@@ -109,6 +121,7 @@ table(methods).
 | @__str__@ | You can easily get the MIME encoded version of the message using the @str()@ built-in. |
 | @attach(name, data=None, maintype=None, subtype=None, inline=False)@ | Attach a file (data=None) or string-like. For on-disk files, mimetype will be guessed. |
 | @embed(name, data=None)@ | Embed an image from disk or string-like. Only embed images! |
+| @send()@ | If the Message instance is bound to a Mailer instance, e.g. having been created by the @Mailer.new()@ factory method, deliver the message via that instance. |
 
 h3(#message-attributes). %4.2.% Message Attributes
 
@@ -136,7 +149,17 @@ table(attributes).
 | @sender@ | The designated sender of the message; may differ from @author@. This is primarily utilized by SMTP delivery. |
 | @subject@ | The subject of the message. |
 
-fn1. The message bodies may be callables which will be executed when the message is delivered, allowing you to easily utilize templates.  Pro tip: to pass arguments to your template, while still allowing for later execution, use @functools.partial@.
+fn1. The message bodies may be callables which will be executed when the message is delivered, allowing you to easily utilize templates.  Pro tip: to pass arguments to your template, while still allowing for later execution, use @functools.partial@.  When using a threaded manager please be aware of thread-safe issues within your templates.
+
+Any of these attributes can also be defined within your mailer configuration.  When you wish to use default values from the configuration you must use the @Mailer.new()@ factory method.  For example:
+
+<pre><code>mail = Mailer({
+        'message.author': 'Example User <user@example.com',
+        'message.subject': "Test subject."
+    })
+message = mail.new()
+message.subject == "Test subject."
+message.send()</code></pre>
 
 h4. %4.2.2.% Read-Only Attributes
 
