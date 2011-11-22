@@ -7,7 +7,7 @@ import logging
 from unittest import TestCase
 from nose.tools import ok_, eq_, raises
 
-from marrow.mailer import Delivery
+from marrow.mailer import Mailer
 
 
 log = logging.getLogger('tests')
@@ -15,8 +15,8 @@ log = logging.getLogger('tests')
 
 
 def test_issue_2():
-    mail = Delivery({
-            'manager': 'immediate',
+    mail = Mailer({
+            'manager.use': 'immediate',
             'transport.use': 'smtp',
             'transport.host': 'secure.emailsrvr.com',
             'transport.tls': 'ssl'

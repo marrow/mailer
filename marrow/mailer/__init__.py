@@ -19,12 +19,12 @@ from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
 
-__all__ = ['Delivery', 'Message']
+__all__ = ['Mailer', 'Delivery', 'Message']
 
 log = __import__('logging').getLogger(__name__)
 
 
-class Delivery(object):
+class Mailer(object):
     """The primary marrow.mailer interface.
     
     Instantiate and configure marrow.mailer, then use the instance to initiate mail delivery.
@@ -34,7 +34,7 @@ class Delivery(object):
     """
     
     def __repr__(self):
-        return "Delivery(manager=%s, transport=%s)" % (self.Manager.__name__, self.Transport.__name__)
+        return "Mailer(manager=%s, transport=%s)" % (self.Manager.__name__, self.Transport.__name__)
     
     def __init__(self, config, prefix=None):
         self.manager, self.Manager = None, None
@@ -94,7 +94,7 @@ class Delivery(object):
     
     def start(self):
         if self.running:
-            log.warning("Attempt made to start an already running delivery service.")
+            log.warning("Attempt made to start an already running Mailer service.")
             return
         
         log.info("Mail delivery service starting.")
@@ -108,7 +108,7 @@ class Delivery(object):
     
     def stop(self):
         if not self.running:
-            log.warning("Attempt made to stop an already stopped delivery service.")
+            log.warning("Attempt made to stop an already stopped Mailer service.")
             return
         
         log.info("Mail delivery service stopping.")
@@ -135,6 +135,13 @@ class Delivery(object):
         
         log.debug("Message %s delivered.", message.id)
         return result
+
+
+class Delivery(Mailer):
+    def __init__(self, *args, **kw):
+        import warnings
+        warnings.warn("Use of the Delivery class is deprecated; use Mailer instead.", DeprecationWarning)
+        super(Delivery, self).__init__(*args, **kw)
 
 
 # Import-time side-effect: un-fscking the default use of base-64 encoding for UTF-8 e-mail.

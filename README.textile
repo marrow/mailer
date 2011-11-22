@@ -68,13 +68,13 @@ If you would like to make changes and contribute them back to the project, fork 
 
 h2(#basic). %3.% Basic Usage
 
-To use Marrow Mailer you instantiate a @marrow.mailer.Delivery@ object with the configuration, then pass @Message@ instances to the @Delivery@ instance's @send()@ method.  This allows you to configure multiple delivery mechanisms and choose, within your code, how you want each message delivered.  The configuration is a dictionary of dot-notation keys and their values.  Each manager and transport has their own configuration keys.
+To use Marrow Mailer you instantiate a @marrow.mailer.Mailer@ object with the configuration, then pass @Message@ instances to the @Mailer@ instance's @send()@ method.  This allows you to configure multiple delivery mechanisms and choose, within your code, how you want each message delivered.  The configuration is a dictionary of dot-notation keys and their values.  Each manager and transport has their own configuration keys.
 
 Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.  Manager and transport configurations are each additionally prefixed with @manager.@ and @transport.@, respectively.  The following is an example of how to send a message by SMTP:
 
-<pre><code>from marrow.mailer import Delivery, Message
+<pre><code>from marrow.mailer import Mailer, Message
 
-mailer = Delivery(dict(
+mailer = Mailer(dict(
         transport = dict(
                 use = 'smtp',
                 host = 'localhost')))
@@ -398,7 +398,7 @@ Additionally, a transport must not:
 
 A transport may:
 
-# Return data from the @deliver()@ method; this data will be passed through as the return value of the @Delivery.send()@ call or Future callback response value.
+# Return data from the @deliver()@ method; this data will be passed through as the return value of the @Mailer.send()@ call or Future callback response value.
 
 
 h3(#exceptions). %7.3.% Exceptions
