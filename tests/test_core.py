@@ -46,6 +46,22 @@ class TestInitialization(TestCase):
             self.assertIn('Mailer', str(w[-1].message), "Warning does not include correct class name.")
             self.assertIn('Delivery', str(w[-1].message), "Warning does not include old class name.")
     
+    def test_use_deprecation(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            
+            Mailer(dict(manager='immediate', transport='mock'))
+            
+            self.assertEqual(len(w), 2, "Too few or too many warnings issued.")
+            
+            self.assertTrue(issubclass(w[0].category, DeprecationWarning), "Category of warning is not DeprecationWarning.")
+            self.assertIn('deprecated', str(w[0].message), "Warning does not include 'deprecated'.")
+            self.assertIn('manager.use', str(w[0].message), "Warning does not include correct use.")
+            
+            self.assertTrue(issubclass(w[1].category, DeprecationWarning), "Category of warning is not DeprecationWarning.")
+            self.assertIn('deprecated', str(w[1].message), "Warning does not include 'deprecated'.")
+            self.assertIn('transport.use', str(w[1].message), "Warning does not include correct use.")
+    
     def test_standard(self):
         log.info("Testing configuration: %r", dict(base_config))
         a = Mailer(base_config)
