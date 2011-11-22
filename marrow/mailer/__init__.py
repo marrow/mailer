@@ -46,21 +46,35 @@ class Mailer(object):
             self.config = config = Bunch.partial(prefix, config)
         
         try:
-            self.manager_config = manager_config = Bunch.partial('manager', config)
+            if 'manager' in config and isinstance(config.manager, dict):
+                self.manager_config = manager_config = config.manager
+            else:
+                self.manager_config = manager_config = Bunch.partial('manager', config)
         except ValueError: # pragma: no cover
             self.manager_config = manager_config = Bunch()
         
+        if isinstance(config.manager, basestring):
+            warnings.warn("Use of the manager directive is deprecated; use manager.use instead.", DeprecationWarning)
+            manager_config.use = config.manager
+        
         try:
-            self.transport_config = transport_config = Bunch.partial('transport', config)
+            if 'transport' in config and isinstance(config.transport, dict):
+                self.transport_config = transport_config = config.transport
+            else:
+                self.transport_config = transport_config = Bunch.partial('transport', config)
         except ValueError: # pragma: no cover
             self.transport_config = transport_config = Bunch()
+        
+        if isinstance(config.transport, basestring):
+            warnings.warn("Use of the transport directive is deprecated; use transport.use instead.", DeprecationWarning)
+            transport_config.use = config.transport
         
         try:
             self.message_config = Bunch.partial('message', config)
         except ValueError: # pragma: no cover
             self.message_config = Bunch()
         
-        self.Manager = Manager = self._load(config.manager.use if 'use' in config.manager else 'immediate', 'marrow.mailer.manager')
+        self.Manager = Manager = self._load(manager_config.use if 'use' in manager_config else 'immediate', 'marrow.mailer.manager')
         
         if not Manager:
             raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
@@ -68,7 +82,7 @@ class Mailer(object):
         if not isinstance(Manager, IManager):
             raise TypeError("Chosen manager does not conform to the manager API.")
         
-        self.Transport = Transport = self._load(config.transport.use, 'marrow.mailer.transport')
+        self.Transport = Transport = self._load(transport_config.use, 'marrow.mailer.transport')
         
         if not Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.transport, ))
@@ -139,7 +153,6 @@ class Mailer(object):
 
 class Delivery(Mailer):
     def __init__(self, *args, **kw):
-        import warnings
         warnings.warn("Use of the Delivery class is deprecated; use Mailer instead.", DeprecationWarning)
         super(Delivery, self).__init__(*args, **kw)
 

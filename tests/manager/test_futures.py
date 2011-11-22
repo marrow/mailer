@@ -94,8 +94,9 @@ class TestImmediateManager(ManagerTestCase):
         
         exc = TransportFailedException()
         
-        self.manager.deliver(exc)
+        self.manager.deliver(exc).result()
         
+        print repr(self.states)
         self.assertEquals(self.states, ['running', 'stopped', 'running'])
         self.assertEquals(self.messages, [exc, exc])
         
@@ -107,7 +108,7 @@ class TestImmediateManager(ManagerTestCase):
         
         exc = TransportExhaustedException()
         
-        self.manager.deliver(exc)
+        self.manager.deliver(exc).result()
         
         self.assertEquals(self.states, ['running', 'stopped'])
         self.assertEquals(self.messages, [exc])
