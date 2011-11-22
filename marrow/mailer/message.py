@@ -48,6 +48,7 @@ class Message(object):
         self._id = None
         self._processed = False
         self._dirty = False
+        self.mailer = None
         
         # Default values.
         
@@ -321,3 +322,9 @@ class Message(object):
             return var()
         
         return var
+    
+    def send(self):
+        if not self.mailer:
+            raise NotImplementedError("Message instance is not bound to a Mailer.  Use mailer.send() instead.")
+        
+        return self.mailer.send(self)

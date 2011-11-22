@@ -7,7 +7,7 @@ import warnings
 
 from unittest import TestCase
 
-from marrow.mailer import Mailer, Delivery
+from marrow.mailer import Mailer, Delivery, Message
 from marrow.mailer.exc import MailerNotRunning
 from marrow.mailer.manager.immediate import ImmediateManager
 from marrow.mailer.transport.mock import MockTransport
@@ -216,3 +216,26 @@ class TestMethods(TestCase):
         self.assertEqual(messages[-1].getMessage(), "Delivery of message bar failed.")
         
         interface.stop()
+    
+    def test_new(self):
+        config = dict(manager=dict(use='immediate'), transport=dict(use='mock'),
+                message=dict(author='from@example.com', retries=1, brand=False))
+        
+        interface = Mailer(config).start()
+        message = interface.new(retries=2)
+        
+        self.assertEqual(message.author, ["from@example.com"])
+        self.assertEqual(message.bcc, [])
+        self.assertEqual(message.retries, 2)
+        self.assertIs(message.mailer, interface)
+        self.assertEqual(message.brand, False)
+        
+        self.assertRaises(NotImplementedError, Message().send)
+        
+        self.assertEqual(message.send(), (message, True))
+        
+        message = interface.new("alternate@example.com", "recipient@example.com", "Test.")
+        
+        self.assertEqual(message.author, ["alternate@example.com"])
+        self.assertEqual(message.to, ["recipient@example.com"])
+        self.assertEqual(message.subject, "Test.")
