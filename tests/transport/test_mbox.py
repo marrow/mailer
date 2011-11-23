@@ -51,4 +51,4 @@ class TestMailboxTransport(TestCase):
         self.transport.deliver(message)
         
         with open(self.filename, 'rb') as fh:
-            self.assertEqual(bytes(message), b"\n".join(fh.read().splitlines()[1:]))
+            self.assertEqual(str(message), b"\n".join(fh.read().splitlines()[1:]))

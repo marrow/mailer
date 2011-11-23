@@ -1,6 +1,8 @@
 # encoding: utf-8
 """Test the TurboMail Message class."""
 
+from __future__ import unicode_literals
+
 import calendar
 from datetime import datetime, timedelta
 import email
@@ -24,7 +26,7 @@ from nose.tools import raises
 class TestBasicMessage(unittest.TestCase):
     """Test the basic output of the Message class."""
     
-    gif = '47494638396101000100910000000000000000fe010200000021f904041400ff002c00000000010001000002024401003b'
+    gif = b'47494638396101000100910000000000000000fe010200000021f904041400ff002c00000000010001000002024401003b'
     
     def build_message(self, **kw):
         return Message(
@@ -123,7 +125,7 @@ class TestBasicMessage(unittest.TestCase):
         message.plain = "Hello world."
         message.rich = "Farewell cruel world."
         
-        message.attach("hello.txt", "Fnord.", "text", "plain", True)
+        message.attach("hello.txt", b"Fnord.", "text", "plain", True)
         
         self.failUnless('Hello world.' in str(message))
         self.failUnless('Farewell cruel world.' in str(message))
@@ -135,7 +137,7 @@ class TestBasicMessage(unittest.TestCase):
         message.plain = "Hello world."
         message.rich = "Farewell cruel world."
         
-        message.attach("hello.txt", "Fnord.")
+        message.attach("hello.txt", b"Fnord.")
         
         self.failUnless('Hello world.' in str(message))
         self.failUnless('Farewell cruel world.' in str(message))
@@ -147,7 +149,7 @@ class TestBasicMessage(unittest.TestCase):
         message = self.build_message()
         message.plain = "Hello world."
         message.rich = "Farewell cruel world."
-        message.attach('test.xbin', "Word.")
+        message.attach('test.xbin', b"Word.")
         self.failUnless('test.xbin' in str(message))
         self.failUnless('application/octet-stream' in str(message))
         
@@ -171,7 +173,7 @@ class TestBasicMessage(unittest.TestCase):
     def test_mime_attachments_filelike(self):
         class Mock(object):
             def read(self):
-                return 'foo'
+                return b'foo'
         
         message = self.build_message()
         message.plain = "Hello world."
@@ -195,8 +197,10 @@ class TestBasicMessage(unittest.TestCase):
             
             message.embed(fh.name)
             
-            self.failUnless('image/gif' in str(message))
-            self.failUnless('GIF89a' in str(message))
+            result = bytes(message)
+            
+            self.failUnless(b'image/gif' in result)
+            self.failUnless(b'GIF89a' in result)
     
     def test_mime_embed_gif_bytes(self):
         import codecs
@@ -204,10 +208,12 @@ class TestBasicMessage(unittest.TestCase):
         message = self.build_message()
         message.plain = "Hello world."
         message.rich = "Farewell cruel world."
-        message.embed('test.gif', codecs.decode(self.gif, 'hex'))
+        message.embed('test.gif', bytes(codecs.decode(self.gif, 'hex')))
         
-        self.failUnless('image/gif' in str(message))
-        self.failUnless('GIF89a' in str(message))
+        result = bytes(message)
+        
+        self.failUnless(b'image/gif' in result)
+        self.failUnless(b'GIF89a' in result)
         
         class Mock(object):
             def read(s):
@@ -218,8 +224,10 @@ class TestBasicMessage(unittest.TestCase):
         message.rich = "Farewell cruel world."
         message.embed('test.gif', Mock())
         
-        self.failUnless('image/gif' in str(message))
-        self.failUnless('GIF89a' in str(message))
+        result = bytes(message)
+        
+        self.failUnless(b'image/gif' in result)
+        self.failUnless(b'GIF89a' in result)
     
     def test_mime_embed_failures(self):
         message = self.build_message()
@@ -241,7 +249,7 @@ class TestBasicMessage(unittest.TestCase):
     def test_subject_with_umlaut(self):
         message = self.build_message()
         
-        subject_string = u"Test with äöü"
+        subject_string = "Test with äöü"
         message.subject = subject_string
         message.encoding = "UTF-8"
         
@@ -252,8 +260,8 @@ class TestBasicMessage(unittest.TestCase):
     def test_from_with_umlaut(self):
         message = self.build_message()
         
-        from_name = u"Karl Müller"
-        from_email = u"karl.mueller@example.com"
+        from_name = "Karl Müller"
+        from_email = "karl.mueller@example.com"
         
         message.author = [(from_name, from_email)]
         message.encoding = "ISO-8859-1"

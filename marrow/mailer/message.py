@@ -16,7 +16,7 @@ from mimetypes import guess_type
 
 from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
-from marrow.util.compat import basestring
+from marrow.util.compat import basestring, unicode
 
 __all__ = ['Message']
 

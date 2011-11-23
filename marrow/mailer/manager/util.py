@@ -1,6 +1,9 @@
 # encoding: utf-8
 
-from Queue import Queue, Empty
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 
 
 __all__ = ['TransportPool']
@@ -14,7 +17,7 @@ class TransportPool(object):
     
     def __init__(self, factory):
         self.factory = factory
-        self.transports = Queue()
+        self.transports = queue.Queue()
     
     def startup(self):
         pass
@@ -25,7 +28,7 @@ class TransportPool(object):
                 transport = self.transports.get(False)
                 transport.shutdown()
         
-        except Empty:
+        except queue.Empty:
             pass
     
     class Context(object):
@@ -47,7 +50,7 @@ class TransportPool(object):
                     transport = pool.transports.get(False)
                     log.debug("Acquired existing transport instance.")
                 
-                except Empty:
+                except queue.Empty:
                     # No transport is available, so we initialize another one.
                     log.debug("Unable to acquire existing transport, initalizing new instance.")
                     transport = pool.factory()

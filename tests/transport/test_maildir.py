@@ -60,4 +60,4 @@ class TestMailDirectoryTransport(TestCase):
         filename = os.listdir(os.path.join(self.path, 'new'))[0]
         
         with open(os.path.join(self.path, 'new', filename), 'rb') as fh:
-            self.assertEqual(bytes(message), fh.read())
+            self.assertEqual(str(message), fh.read())

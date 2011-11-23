@@ -44,7 +44,7 @@ class MaildirTransport(object):
     def deliver(self, message):
         # TODO: Create an ID based on process and thread IDs.
         # Current bhaviour may allow for name clashes in multi-threaded.
-        self.box.add(mailbox.MaildirMessage(bytes(message)))
+        self.box.add(mailbox.MaildirMessage(str(message)))
     
     def shutdown(self):
         self.box = None
