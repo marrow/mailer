@@ -42,9 +42,9 @@ class TestInitialization(TestCase):
             
             self.assertEqual(len(w), 1, "No, or more than one, warning issued.")
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning), "Category of warning is not DeprecationWarning.")
-            self.assertTrue('deprecated' in str(w[-1].message, "Warning does not include 'deprecated'.")
-            self.assertTrue('Mailer' in str(w[-1].message, "Warning does not include correct class name.")
-            self.assertTrue('Delivery' in str(w[-1].message, "Warning does not include old class name.")
+            self.assertTrue('deprecated' in str(w[-1].message), "Warning does not include 'deprecated'.")
+            self.assertTrue('Mailer' in str(w[-1].message), "Warning does not include correct class name.")
+            self.assertTrue('Delivery' in str(w[-1].message), "Warning does not include old class name.")
     
     def test_use_deprecation(self):
         with warnings.catch_warnings(record=True) as w:

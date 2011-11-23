@@ -39,7 +39,7 @@ class TestMailDirectoryTransport(TestCase):
     
     def test_startup(self):
         self.transport.startup()
-        self.assertTrue(isinstance(self.transport.box, mailbox.Maildir)
+        self.assertTrue(isinstance(self.transport.box, mailbox.Maildir))
     
     def test_child_folder_startup(self):
         self.transport.folder = 'test'
