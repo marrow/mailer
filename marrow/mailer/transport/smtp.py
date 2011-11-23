@@ -2,17 +2,15 @@
 
 """Deliver messages using (E)SMTP."""
 
+import socket
+
 from smtplib import (SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused,
                      SMTPSenderRefused, SMTPServerDisconnected)
-import socket
-import sys
-
-from marrow.mailer.exc import (MailConfigurationException,
-    TransportExhaustedException, TransportException, TransportFailedException,
-    MessageFailedException)
 
 from marrow.util.convert import boolean
 from marrow.util.compat import native
+
+from marrow.mailer.exc import TransportExhaustedException, TransportException, TransportFailedException, MessageFailedException
 
 
 log = __import__('logging').getLogger(__name__)

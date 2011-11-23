@@ -3,7 +3,6 @@
 """marrow.mailer mail delivery framework and MIME message abstraction."""
 
 
-import logging
 import warnings
 import pkg_resources
 

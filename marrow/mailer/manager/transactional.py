@@ -1,5 +1,10 @@
 # encoding: utf-8
 
+"""Currently unsupported and non-functional."""
+
+raise ImportError("This module is currently unsupported.")
+
+
 import transaction
 
 from functools import partial

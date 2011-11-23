@@ -2,28 +2,19 @@
 
 import logging
 
+from marrow.mailer import Mailer
+
 
 
 class MailHandler(logging.Handler):
     """A class which sends records out via e-mail.
     
     This handler should be configured using the same configuration
-    directives that TurboMail itself understands.  If you do not specify
-    `mail.on` in the configuration, this handler will attempt to use
-    the most recently configured TurboMail environment.
+    directives that Marrow Mailer itself understands.
     
-    Be sure that TurboMail is running before messages are emitted using
-    this handler, and be careful how many notifications get sent.
+    Be careful how many notifications get sent.
     
-    It is suggested to use background delivery using the 'demand' manager.
-    
-    Configuration options for this handler are as follows::
-    
-        * mail.handler.priorities = [True/False]
-          Set message priority using the following formula:
-            record.levelno / 10 - 3
-        
-        * 
+    It is suggested to use background delivery using the 'dynamic' manager.
     """
     
     def __init__(self, *args, **config):
@@ -44,11 +35,7 @@ class MailHandler(logging.Handler):
         if args:
             config.update(dict(zip(*[iter(args)]*2)))
         
-        if config and 'mail.on' in config:
-            # Initilize TurboMail using the configuration directives passed
-            # to this handler, generally from an INI configuration file.
-            turbomail.interface.start(config)
-            return
+        self.mailer = Mailer(config).start()
         
         # If we get a configuration that doesn't explicitly start TurboMail
         # we use the configuration to populate the Message instance.
@@ -58,16 +45,7 @@ class MailHandler(logging.Handler):
         """Emit a record."""
         
         try:
-            message = Message()
-            
-            if self.config:
-                for i, j in self.config.iteritems():
-                    if i.startswith('mail.message'):
-                        i = i[13:]
-                        setattr(message, i, j)
-            
-            message.plain = self.format(record)
-            message.send()
+            self.mailer.new(plain=self.format(record)).send()
         
         except (KeyboardInterrupt, SystemExit):
             raise
