@@ -4,7 +4,7 @@ import imaplib
 
 from datetime import datetime
 
-from marrow.mailer.exc import TransportException, MessageFailedException
+from marrow.mailer.exc import MailConfigurationException, TransportException, MessageFailedException
 
 
 __all__ = ['IMAPTransport']
@@ -13,7 +13,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class IMAPTransport(object):
+class IMAPTransport(object): # pragma: no cover
     __slots__ = ('ephemeral', 'host', 'ssl', 'port', 'username', 'password', 'folder', 'connection')
     
     def __init__(self, config):

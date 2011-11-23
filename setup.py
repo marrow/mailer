@@ -3,6 +3,7 @@
 
 import os
 import sys
+import warnings
 
 from setuptools import setup, find_packages
 
@@ -10,7 +11,10 @@ from setuptools import setup, find_packages
 if sys.version_info < (2, 6):
     raise SystemExit("Python 2.6 or later is required.")
 
-exec(open(os.path.join("marrow", "mailer", "release.py")))
+if sys.version_info > (3, 0):
+    warnings.warn("Marrow Mailer is untested on Python 3; some features may be broken.", RuntimeWarning)
+
+exec(open(os.path.join("marrow", "mailer", "release.py")).read())
 
 
 
@@ -27,7 +31,7 @@ https://github.com/marrow/marrow.mailer""",
         
         author = "Alice Bevan-McGregor",
         author_email = "alice+marrow@gothcandy.com",
-        url = "https://github.com/marrow/marrow.wsgi.objects",
+        url = "https://github.com/marrow/marrow.mailer",
         license = "MIT",
         
         install_requires = [
@@ -38,11 +42,16 @@ https://github.com/marrow/marrow.mailer""",
         test_suite = 'nose.collector',
         tests_require = [
             'nose',
-            'coverage'
-        ],
+            'coverage',
+            'PyDNS',
+            'transaction',
+            'pymta'
+        ] + [
+            'futures'
+        ] if sys.version_info < (3, 0) else [],
         
         classifiers=[
-            "Development Status :: 4 - Beta",
+            "Development Status :: 5 - Production/Stable",
             "Environment :: Console",
             "Intended Audience :: Developers",
             "License :: OSI Approved :: MIT License",
@@ -50,9 +59,9 @@ https://github.com/marrow/marrow.mailer""",
             "Programming Language :: Python",
             "Programming Language :: Python :: 2.6",
             "Programming Language :: Python :: 2.7",
-            "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.1",
-            "Programming Language :: Python :: 3.2",
+            # "Programming Language :: Python :: 3",
+            # "Programming Language :: Python :: 3.1",
+            # "Programming Language :: Python :: 3.2",
             "Topic :: Software Development :: Libraries :: Python Modules"
         ],
         
@@ -68,7 +77,7 @@ https://github.com/marrow/marrow.mailer""",
                 'immediate = marrow.mailer.manager.immediate:ImmediateManager',
                 'futures = marrow.mailer.manager.futures:FuturesManager',
                 'dynamic = marrow.mailer.manager.dynamic:DynamicManager',
-                'transactional = marrow.mailer.manager.transactional:TransactionalDynamicManager'
+                # 'transactional = marrow.mailer.manager.transactional:TransactionalDynamicManager'
             ],
             'marrow.mailer.transport': [
                 'amazon = marrow.mailer.transport.ses:AmazonTransport',
@@ -80,8 +89,7 @@ https://github.com/marrow/marrow.mailer""",
                 'sendmail = marrow.mailer.transport.sendmail:SendmailTransport',
                 'imap = marrow.mailer.transport.imap:IMAPTransport',
                 'appengine = marrow.mailer.transport.gae:AppEngineTransport',
-                'logging = marrow.mailer.transport.log:LoggingTransport',
-                'sms = marrow.mailer.transport.sms:SMSTransport',
+                'logging = marrow.mailer.transport.log:LoggingTransport'
             ]
         }
     )

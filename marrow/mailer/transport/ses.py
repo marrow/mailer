@@ -15,7 +15,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class AmazonTransport(object):
+class AmazonTransport(object): # pragma: no cover
     __slots__ = ('ephemeral', 'id', 'key', 'host', 'connection')
     
     def __init__(self, config):
@@ -44,7 +44,7 @@ class AmazonTransport(object):
                     response['SendRawEmailResponse']['ResponseMetadata']['RequestId']
                 )
         
-        except SESConnection.ResponseError, err:
+        except SESConnection.ResponseError:
             raise # TODO: Raise appropriate internal exception.
             # ['status', 'reason', 'body', 'request_id', 'error_code', 'error_message']
     

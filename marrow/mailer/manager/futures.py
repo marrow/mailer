@@ -7,7 +7,7 @@ from marrow.mailer.manager.util import TransportPool
 
 try:
     from concurrent import futures
-except ImportError:
+except ImportError: # pragma: no cover
     raise ImportError("You must install the futures package to use background delivery.")
 
 
@@ -20,13 +20,14 @@ log = __import__('logging').getLogger(__name__)
 def worker(pool, message):
     # This may be non-obvious, but there are several conditions which
     # we trap later that require us to retry the entire delivery.
+    result = None
+    
     while True:
         with pool() as transport:
             try:
                 result = transport.deliver(message)
             
-            except MessageFailedException:
-                e = sys.exc_info()[1]
+            except MessageFailedException as e:
                 raise DeliveryFailedException(message, e.args[0] if e.args else "No reason given.")
             
             except TransportFailedException:

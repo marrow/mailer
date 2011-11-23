@@ -42,8 +42,7 @@ class ImmediateManager(object):
                 try:
                     result = transport.deliver(message)
                 
-                except MessageFailedException:
-                    e = sys.exc_info()[1]
+                except MessageFailedException as e:
                     raise DeliveryFailedException(message, e.args[0] if e.args else "No reason given.")
                 
                 except TransportFailedException:
