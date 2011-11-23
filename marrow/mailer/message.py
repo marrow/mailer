@@ -109,6 +109,9 @@ class Message(object):
     def envelope(self):
         """Returns the address of the envelope sender address (SMTP from, if
         not set the sender, if this one isn't set too, the author)."""
+        if not self.sender and not self.author:
+            raise ValueError("Unable to determine message sender; no author or sender defined.")
+        
         return self.sender or self.author[0]
     
     @property
