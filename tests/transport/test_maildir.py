@@ -20,6 +20,7 @@ from marrow.mailer.transport.maildir import MaildirTransport
 log = logging.getLogger('tests')
 
 
+
 class TestMailDirectoryTransport(TestCase):
     def setUp(self):
         self.path = tempfile.mkdtemp()
@@ -38,7 +39,7 @@ class TestMailDirectoryTransport(TestCase):
     
     def test_startup(self):
         self.transport.startup()
-        self.assertIsInstance(self.transport.box, mailbox.Maildir)
+        self.assertTrue(isinstance(self.transport.box, mailbox.Maildir)
     
     def test_child_folder_startup(self):
         self.transport.folder = 'test'
@@ -48,7 +49,7 @@ class TestMailDirectoryTransport(TestCase):
     def test_shutdown(self):
         self.transport.startup()
         self.transport.shutdown()
-        self.assertIsNone(self.transport.box)
+        self.assertTrue(self.transport.box is None)
     
     def test_delivery(self):
         message = Message('from@example.com', 'to@example.com', "Test subject.")

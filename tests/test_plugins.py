@@ -21,9 +21,9 @@ def test_managers():
         try:
             plug = plugin.load()
         except ImportError as e:
-            raise SkipTest("Skipped {} manager due to ImportError:\n{}".format(plugin.name, str(e)))
+            raise SkipTest("Skipped {name} manager due to ImportError:\n{err}".format(name=plugin.name, err=str(e)))
         
-        ok_(isinstance(plug, IManager), "{} does not conform to the IManager API.".format(plugin.name))
+        ok_(isinstance(plug, IManager), "{name} does not conform to the IManager API.".format(name=plugin.name))
     
     entrypoint = None
     for entrypoint in pkg_resources.iter_entry_points('marrow.mailer.manager', None):
@@ -38,9 +38,9 @@ def test_transports():
         try:
             plug = plugin.load()
         except ImportError as e:
-            raise SkipTest("Skipped {} transport due to ImportError:\n{}".format(plugin.name, str(e)))
+            raise SkipTest("Skipped {name} transport due to ImportError:\n{err}".format(name=plugin.name, err=str(e)))
         
-        ok_(isinstance(plug, ITransport), "{} does not conform to the ITransport API.".format(plugin.name))
+        ok_(isinstance(plug, ITransport), "{name} does not conform to the ITransport API.".format(name=plugin.name))
     
     entrypoint = None
     for entrypoint in pkg_resources.iter_entry_points('marrow.mailer.transport', None):
