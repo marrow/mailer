@@ -68,27 +68,43 @@ If you would like to make changes and contribute them back to the project, fork 
 
 h2(#basic). %3.% Basic Usage
 
-To use Marrow Mailer you instantiate a @marrow.mailer.Delivery@ object with the configuration, then pass @Message@ instances to the @Delivery@ instance's @send()@ method.  This allows you to configure multiple delivery mechanisms and choose, within your code, how you want each message delivered.  The configuration is a dictionary of dot-notation keys and their values.  Each manager and transport has their own configuration keys.
+To use Marrow Mailer you instantiate a @marrow.mailer.Mailer@ object with the configuration, then pass @Message@ instances to the @Mailer@ instance's @send()@ method.  This allows you to configure multiple delivery mechanisms and choose, within your code, how you want each message delivered.  The configuration is a dictionary of dot-notation keys and their values.  Each manager and transport has their own configuration keys.
 
-Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.  Manager and transport configurations are each additionally prefixed with @manager.@ and @transport.@, respectively.
+Configuration keys may utilize a shared, common prefix, such as @mail.@.  By default no prefix is assumed.  Manager and transport configurations are each additionally prefixed with @manager.@ and @transport.@, respectively.  The following is an example of how to send a message by SMTP:
 
-<pre><code>from marrow.mailer import Delivery, Message
+<pre><code>from marrow.mailer import Mailer, Message
 
-mailer = Delivery({...}, prefix=None)
+mailer = Mailer(dict(
+        transport = dict(
+                use = 'smtp',
+                host = 'localhost')))
 mailer.start()
 
-message = Message(...)
+message = Message(author="user@example.com", to="user-two@example.com")
+message.subject = "Testing Marrow Mailer"
+message.plain = "This is a test."
 mailer.send(message)
 
 mailer.stop()</code></pre>
 
-A full example configuration, delivering to an on-disk @maildir@ mailbox:
+Another example configuration, using a flat dictionary and delivering to an on-disk @maildir@ mailbox:
 
 <pre><code>{
-    'manager': 'immediate',
-    'transport': 'maildir',
+    'transport.use': 'maildir',
     'transport.directory': 'data/maildir'
 }</pre></code>
+
+
+h3(#mailer-methods). %3.1.% Mailer Methods
+
+table(methods).
+|_. Method |_. Description |
+| @__init__(config, prefix=None)@ | Create and configure a new Mailer. |
+| @start()@ | Start the mailer. Returns the Mailer instance and can thus be chained with construction. |
+| @stop()@ | Stop the mailer.  This cascades through to the active manager and transports. |
+| @send(message)@ | Deliver the given Message instance. |
+| @new(author=None, to=None, subject=None, **kw)@ | Create a new bound instance of Message using configured default values. |
+
 
 
 h2(#message). %4.% The Message Class
@@ -105,6 +121,7 @@ table(methods).
 | @__str__@ | You can easily get the MIME encoded version of the message using the @str()@ built-in. |
 | @attach(name, data=None, maintype=None, subtype=None, inline=False)@ | Attach a file (data=None) or string-like. For on-disk files, mimetype will be guessed. |
 | @embed(name, data=None)@ | Embed an image from disk or string-like. Only embed images! |
+| @send()@ | If the Message instance is bound to a Mailer instance, e.g. having been created by the @Mailer.new()@ factory method, deliver the message via that instance. |
 
 h3(#message-attributes). %4.2.% Message Attributes
 
@@ -132,7 +149,17 @@ table(attributes).
 | @sender@ | The designated sender of the message; may differ from @author@. This is primarily utilized by SMTP delivery. |
 | @subject@ | The subject of the message. |
 
-fn1. The message bodies may be callables which will be executed when the message is delivered, allowing you to easily utilize templates.  Pro tip: to pass arguments to your template, while still allowing for later execution, use @functools.partial@.
+fn1. The message bodies may be callables which will be executed when the message is delivered, allowing you to easily utilize templates.  Pro tip: to pass arguments to your template, while still allowing for later execution, use @functools.partial@.  When using a threaded manager please be aware of thread-safe issues within your templates.
+
+Any of these attributes can also be defined within your mailer configuration.  When you wish to use default values from the configuration you must use the @Mailer.new()@ factory method.  For example:
+
+<pre><code>mail = Mailer({
+        'message.author': 'Example User <user@example.com',
+        'message.subject': "Test subject."
+    })
+message = mail.new()
+message.subject == "Test subject."
+message.send()</code></pre>
 
 h4. %4.2.2.% Read-Only Attributes
 
@@ -269,7 +296,7 @@ The @appengine@ transport translates between Mailer's Message representation and
 * @subject@
 * @plain@
 * @rich@
-* @attachments@ (not counting embedded files)
+* @attachments@ (excluding inline/embedded files)
 
 
 h4(#logging-transport). %6.3.1.% Python Logging
@@ -394,7 +421,7 @@ Additionally, a transport must not:
 
 A transport may:
 
-# Return data from the @deliver()@ method; this data will be passed through as the return value of the @Delivery.send()@ call or Future callback response value.
+# Return data from the @deliver()@ method; this data will be passed through as the return value of the @Mailer.send()@ call or Future callback response value.
 
 
 h3(#exceptions). %7.3.% Exceptions

@@ -18,7 +18,7 @@ except ImportError:
 
 try:
     from concurrent import futures
-except ImportError:
+except ImportError: # pragma: no cover
     raise ImportError("You must install the futures package to use background delivery.")
 
 
@@ -45,20 +45,21 @@ def thread_worker(executor, jobs, timeout, maximum):
                         log.debug("Worker instructed to shut down.")
                         break
                     
-                    del runner
-                    continue
+                    # Can't think of a test case for this; best to be safe.
+                    del runner # pragma: no cover
+                    continue # pragma: no cover
             
-            except queue.Empty:
+            except queue.Empty: # pragma: no cover
                 log.debug("Worker death from starvation.")
                 break
             
             else:
                 work.run()
         
-        else:
+        else: # pragma: no cover
             log.debug("Worker death from exhaustion.")
     
-    except:
+    except: # pragma: no cover
         log.critical("Unhandled exception in worker.", exc_info=True)
     
     runner = executor()
@@ -116,7 +117,7 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
             for thread in list(self._threads):
                 thread.join()
     
-    def _atexit(self):
+    def _atexit(self): # pragma: no cover
         self.shutdown(True)
     
     def _spawn(self):

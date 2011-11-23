@@ -25,6 +25,8 @@ class Address(object):
     well."""
     
     def __init__(self, name_or_email, email=None, encoding='utf-8'):
+        self.encoding = encoding
+        
         if email is None:
             if isinstance(name_or_email, AddressList):
                 if not 0 < len(name_or_email) < 2:
@@ -74,13 +76,13 @@ class Address(object):
         return not self == other
     
     def __len__(self):
-        return len(unicode(self))
+        return len(self.__unicode__())
     
     def __repr__(self):
         return 'Address("{0}")'.format(unicode(self).encode('ascii', 'backslashreplace'))
     
     def __unicode__(self):
-        return formataddr((self.name, self.address))
+        return self.encode('utf8').decode('utf8')
     
     def __bytes__(self):
         return self.encode()
@@ -91,9 +93,11 @@ class Address(object):
     else:  # pragma: no cover
         __str__ = __unicode__
     
-    def encode(self, encoding='utf-8'):
+    def encode(self, encoding=None):
+        if encoding is None:
+            encoding = self.encoding
+        
         name_string = Header(self.name, encoding).encode()
-        # print name_string
         
         # Encode punycode for internationalized domains.
         localpart, domain = self.address.split('@', 1)
@@ -133,7 +137,7 @@ class AddressList(list):
         if not self:
             return "AddressList()"
         
-        return "AddressList(\"{0}\")".format(", ".join([unicode(i).encode('ascii', 'backslashreplace') for i in self]))
+        return "AddressList(\"{0}\")".format(", ".join([str(i) for i in self]))
     
     def __bytes__(self):
         return self.encode()

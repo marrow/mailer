@@ -5,7 +5,6 @@
 import imghdr
 import os
 import time
-import warnings
 
 from datetime import datetime
 from email.mime.text import MIMEText
@@ -17,7 +16,7 @@ from mimetypes import guess_type
 
 from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
-from marrow.util.compat import basestring
+from marrow.util.compat import basestring, unicode
 
 __all__ = ['Message']
 
@@ -48,6 +47,7 @@ class Message(object):
         self._id = None
         self._processed = False
         self._dirty = False
+        self.mailer = None
         
         # Default values.
         
@@ -109,6 +109,9 @@ class Message(object):
     def envelope(self):
         """Returns the address of the envelope sender address (SMTP from, if
         not set the sender, if this one isn't set too, the author)."""
+        if not self.sender and not self.author:
+            raise ValueError("Unable to determine message sender; no author or sender defined.")
+        
         return self.sender or self.author[0]
     
     @property
@@ -183,33 +186,22 @@ class Message(object):
     
     def _add_headers_to_message(self, message, headers):
         for header in headers:
-            if isinstance(header, (tuple, list)):
-                if header[1] is None or (isinstance(header[1], list) and not header[1]):
-                    continue
-                
-                name, value = header
-                
-                if isinstance(value, Address):
-                    # print type(value), repr(value), value
-                    value = value.encode(self.encoding)
-                
-                elif isinstance(value, AddressList):
-                    # print type(value), repr(value), value
-                    value = value.encode(self.encoding)
-                    # print '->', type(value), repr(value), value
-                
-                if isinstance(value, unicode):
-                    # print type(value), repr(value), value
-                    value = Header(value, self.encoding)
-                
-                else:
-                    # print type(value), repr(value), value
-                    value = Header(value)
-                
-                message[name] = value
+            if header[1] is None or (isinstance(header[1], list) and not header[1]):
+                continue
             
-            elif isinstance(header, dict):
-                message.add_header(**header)
+            name, value = header
+            
+            if isinstance(value, Address):
+                value = value.encode(self.encoding)
+            elif isinstance(value, AddressList):
+                value = value.encode(self.encoding)
+            
+            if isinstance(value, unicode):
+                value = Header(value, self.encoding)
+            else:
+                value = Header(value)
+            
+            message[name] = value
     
     @property
     def mime(self):
@@ -272,10 +264,14 @@ class Message(object):
         :param inline: Whether to set the Content-Disposition for the file to
                        "inline" (True) or "attachment" (False)
         """
+        self._dirty = True
+        
         if not maintype:
-            maintype, subtype = guess_type(name)
+            maintype, _ = guess_type(name)
             if not maintype:
                 maintype, subtype = 'application', 'octet-stream'
+            else:
+                maintype, _, subtype = maintype.partition('/')
 
         part = MIMENonMultipart(maintype, subtype)
 
@@ -309,9 +305,9 @@ class Message(object):
                      be read from the file pointed to by the ``name`` argument
         """
         if data is None:
-            name = os.path.basename(name)
-            with open(file, 'rb') as fp:
+            with open(name, 'rb') as fp:
                 data = fp.read()
+            name = os.path.basename(name)
         elif isinstance(data, bytes):
             pass
         elif hasattr(data, 'read'):
@@ -328,3 +324,9 @@ class Message(object):
             return var()
         
         return var
+    
+    def send(self):
+        if not self.mailer:
+            raise NotImplementedError("Message instance is not bound to a Mailer.  Use mailer.send() instead.")
+        
+        return self.mailer.send(self)

@@ -3,7 +3,6 @@
 """marrow.mailer mail delivery framework and MIME message abstraction."""
 
 
-import logging
 import warnings
 import pkg_resources
 
@@ -19,12 +18,12 @@ from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
 
-__all__ = ['Delivery', 'Message']
+__all__ = ['Mailer', 'Delivery', 'Message']
 
 log = __import__('logging').getLogger(__name__)
 
 
-class Delivery(object):
+class Mailer(object):
     """The primary marrow.mailer interface.
     
     Instantiate and configure marrow.mailer, then use the instance to initiate mail delivery.
@@ -34,7 +33,7 @@ class Delivery(object):
     """
     
     def __repr__(self):
-        return "Delivery(manager=%s, transport=%s)" % (self.Manager.__name__, self.Transport.__name__)
+        return "Mailer(manager=%s, transport=%s)" % (self.Manager.__name__, self.Transport.__name__)
     
     def __init__(self, config, prefix=None):
         self.manager, self.Manager = None, None
@@ -46,21 +45,38 @@ class Delivery(object):
             self.config = config = Bunch.partial(prefix, config)
         
         try:
-            self.manager_config = manager_config = Bunch.partial('manager', config)
-        except ValueError:
+            if 'manager' in config and isinstance(config.manager, dict):
+                self.manager_config = manager_config = config.manager
+            else:
+                self.manager_config = manager_config = Bunch.partial('manager', config)
+        except ValueError: # pragma: no cover
             self.manager_config = manager_config = Bunch()
         
+        if isinstance(config.manager, basestring):
+            warnings.warn("Use of the manager directive is deprecated; use manager.use instead.", DeprecationWarning)
+            manager_config.use = config.manager
+        
         try:
-            self.transport_config = transport_config = Bunch.partial('transport', config)
-        except ValueError:
+            if 'transport' in config and isinstance(config.transport, dict):
+                self.transport_config = transport_config = Bunch(config.transport)
+            else:
+                self.transport_config = transport_config = Bunch.partial('transport', config)
+        except ValueError: # pragma: no cover
             self.transport_config = transport_config = Bunch()
         
+        if isinstance(config.transport, basestring):
+            warnings.warn("Use of the transport directive is deprecated; use transport.use instead.", DeprecationWarning)
+            transport_config.use = config.transport
+        
         try:
-            self.message_config = Bunch.partial('message', config)
-        except ValueError:
+            if 'message' in config and isinstance(config.message, dict):
+                self.message_config = Bunch(config.message)
+            else:
+                self.message_config = Bunch.partial('message', config)
+        except ValueError: # pragma: no cover
             self.message_config = Bunch()
         
-        self.Manager = Manager = self._load(config.manager, 'marrow.mailer.manager')
+        self.Manager = Manager = self._load(manager_config.use if 'use' in manager_config else 'immediate', 'marrow.mailer.manager')
         
         if not Manager:
             raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
@@ -68,7 +84,7 @@ class Delivery(object):
         if not isinstance(Manager, IManager):
             raise TypeError("Chosen manager does not conform to the manager API.")
         
-        self.Transport = Transport = self._load(config.transport, 'marrow.mailer.transport')
+        self.Transport = Transport = self._load(transport_config.use, 'marrow.mailer.transport')
         
         if not Transport:
             raise LookupError("Unable to determine transport from specification: %r" % (config.transport, ))
@@ -94,7 +110,7 @@ class Delivery(object):
     
     def start(self):
         if self.running:
-            log.warning("Attempt made to start an already running delivery service.")
+            log.warning("Attempt made to start an already running Mailer service.")
             return
         
         log.info("Mail delivery service starting.")
@@ -108,7 +124,7 @@ class Delivery(object):
     
     def stop(self):
         if not self.running:
-            log.warning("Attempt made to stop an already stopped delivery service.")
+            log.warning("Attempt made to stop an already stopped Mailer service.")
             return
         
         log.info("Mail delivery service stopping.")
@@ -135,6 +151,27 @@ class Delivery(object):
         
         log.debug("Message %s delivered.", message.id)
         return result
+    
+    def new(self, author=None, to=None, subject=None, **kw):
+        data = dict(self.message_config)
+        data['mailer'] = self
+        
+        if author:
+            kw['author'] = author
+        if to:
+            kw['to'] = to
+        if subject:
+            kw['subject'] = subject
+        
+        data.update(kw)
+        
+        return Message(**data)
+
+
+class Delivery(Mailer):
+    def __init__(self, *args, **kw):
+        warnings.warn("Use of the Delivery class is deprecated; use Mailer instead.", DeprecationWarning)
+        super(Delivery, self).__init__(*args, **kw)
 
 
 # Import-time side-effect: un-fscking the default use of base-64 encoding for UTF-8 e-mail.

@@ -2,16 +2,15 @@
 
 """Deliver messages using (E)SMTP."""
 
+import socket
+
 from smtplib import (SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused,
                      SMTPSenderRefused, SMTPServerDisconnected)
-import socket
-import sys
-
-from marrow.mailer.exc import (MailConfigurationException,
-    TransportExhaustedException, TransportException, TransportFailedException)
 
 from marrow.util.convert import boolean
 from marrow.util.compat import native
+
+from marrow.mailer.exc import TransportExhaustedException, TransportException, TransportFailedException, MessageFailedException
 
 
 log = __import__('logging').getLogger(__name__)
@@ -24,10 +23,7 @@ class SMTPTransport(object):
     __slots__ = ('ephemeral', 'host', 'tls', 'certfile', 'keyfile', 'port', 'local_hostname', 'username', 'password', 'timeout', 'debug', 'pipeline', 'connection', 'sent')
     
     def __init__(self, config):
-        if not 'host' in config:
-            raise MailConfigurationException('No server configured for SMTP')
-        
-        self.host = native(config.get('host'))
+        self.host = native(config.get('host', '127.0.0.1'))
         self.tls = config.get('tls', 'optional')
         self.certfile = config.get('certfile', None)
         self.keyfile = config.get('keyfile', None)
@@ -43,7 +39,7 @@ class SMTPTransport(object):
         self.debug = boolean(config.get('debug', False))
         
         self.pipeline = config.get('pipeline', None)
-        if self.pipeline is not None:
+        if self.pipeline not in (None, True, False):
             self.pipeline = int(self.pipeline)
         
         self.connection = None
@@ -61,17 +57,17 @@ class SMTPTransport(object):
                 try:
                     self.connection.quit()
                 
-                except SMTPServerDisconnected:
+                except SMTPServerDisconnected: # pragma: no cover
                     pass
                 
-                except (SMTPException, socket.error):
+                except (SMTPException, socket.error): # pragma: no cover
                     log.exception("Unhandled error while closing connection.")
             
             finally:
                 self.connection = None
     
     def connect_to_server(self):
-        if self.tls == 'ssl':
+        if self.tls == 'ssl': # pragma: no cover
             connection = SMTP_SSL(local_hostname=self.local_hostname, keyfile=self.keyfile,
                                   certfile=self.certfile, timeout=self.timeout)
         else:
@@ -83,8 +79,8 @@ class SMTPTransport(object):
 
         # Do TLS handshake if configured
         connection.ehlo()
-        if self.tls in ('required', 'optional'):
-            if connection.has_extn('STARTTLS'):
+        if self.tls in ('required', 'optional', True):
+            if connection.has_extn('STARTTLS'): # pragma: no cover
                 connection.starttls(self.keyfile, self.certfile)
             elif self.tls == 'required':
                 raise TransportException('TLS is required but not available on the server -- aborting')
@@ -109,41 +105,37 @@ class SMTPTransport(object):
             self.send_with_smtp(message)
         
         finally:
-            if self.pipeline is True:
-                return
-            
             if not self.pipeline or self.sent >= self.pipeline:
                 raise TransportExhaustedException()
     
     def send_with_smtp(self, message):
-        try:
-            sender = bytes(message.envelope)
-            recipients = message.recipients.string_addresses
-            self.sent += 1
-            self.connection.sendmail(sender, recipients, bytes(message))
+        sender = bytes(message.envelope)
+        recipients = message.recipients.string_addresses
+        content = bytes(message)
         
-        except SMTPSenderRefused:
+        try:
+            self.connection.sendmail(sender, recipients, content)
+            self.sent += 1
+        
+        except SMTPSenderRefused as e:
             # The envelope sender was refused.  This is bad.
-            e = sys.exc_info()[1]
             log.error("%s REFUSED %s %s", message.id, e.__class__.__name__, e)
             raise MessageFailedException(str(e))
         
-        except SMTPRecipientsRefused:
+        except SMTPRecipientsRefused as e:
             # All recipients were refused. Log which recipients.
             # This allows you to automatically parse your logs for bad e-mail addresses.
-            e = sys.exc_info()[1]
             log.warning("%s REFUSED %s %s", message.id, e.__class__.__name__, e)
             raise MessageFailedException(str(e))
         
-        except SMTPServerDisconnected:
+        except SMTPServerDisconnected as e: # pragma: no cover
             if message.retries >= 0:
                 log.warning("%s DEFERRED %s", message.id, "SMTPServerDisconnected")
                 message.retries -= 1
             
             raise TransportFailedException()
         
-        except:
-            e = sys.exc_info()[1]
+        except Exception as e: # pragma: no cover
             cls_name = e.__class__.__name__
             log.debug("%s EXCEPTION %s", message.id, cls_name, exc_info=True)
             

@@ -61,9 +61,6 @@ class MockTransport(object):
         if success == 1.0:
             return True
         
-        if success == 0.0:
-            return False
-        
         chance = random.randint(0,100001) / 100000.0
         if chance <= success:
             return True
