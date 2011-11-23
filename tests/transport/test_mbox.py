@@ -36,12 +36,12 @@ class TestMailboxTransport(TestCase):
     
     def test_startup(self):
         self.transport.startup()
-        self.assertIsInstance(self.transport.box, mailbox.mbox)
+        self.assertTrue(isinstance(self.transport.box, mailbox.mbox))
     
     def test_shutdown(self):
         self.transport.startup()
         self.transport.shutdown()
-        self.assertIsNone(self.transport.box)
+        self.assertTrue(self.transport.box is None)
     
     def test_delivery(self):
         message = Message('from@example.com', 'to@example.com', "Test subject.")

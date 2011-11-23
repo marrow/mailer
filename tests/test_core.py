@@ -42,9 +42,9 @@ class TestInitialization(TestCase):
             
             self.assertEqual(len(w), 1, "No, or more than one, warning issued.")
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning), "Category of warning is not DeprecationWarning.")
-            self.assertIn('deprecated', str(w[-1].message), "Warning does not include 'deprecated'.")
-            self.assertIn('Mailer', str(w[-1].message), "Warning does not include correct class name.")
-            self.assertIn('Delivery', str(w[-1].message), "Warning does not include old class name.")
+            self.assertTrue('deprecated' in str(w[-1].message, "Warning does not include 'deprecated'.")
+            self.assertTrue('Mailer' in str(w[-1].message, "Warning does not include correct class name.")
+            self.assertTrue('Delivery' in str(w[-1].message, "Warning does not include old class name.")
     
     def test_use_deprecation(self):
         with warnings.catch_warnings(record=True) as w:
@@ -55,12 +55,12 @@ class TestInitialization(TestCase):
             self.assertEqual(len(w), 2, "Too few or too many warnings issued.")
             
             self.assertTrue(issubclass(w[0].category, DeprecationWarning), "Category of warning is not DeprecationWarning.")
-            self.assertIn('deprecated', str(w[0].message), "Warning does not include 'deprecated'.")
-            self.assertIn('manager.use', str(w[0].message), "Warning does not include correct use.")
+            self.assertTrue('deprecated' in str(w[0].message), "Warning does not include 'deprecated'.")
+            self.assertTrue('manager.use' in str(w[0].message), "Warning does not include correct use.")
             
             self.assertTrue(issubclass(w[1].category, DeprecationWarning), "Category of warning is not DeprecationWarning.")
-            self.assertIn('deprecated', str(w[1].message), "Warning does not include 'deprecated'.")
-            self.assertIn('transport.use', str(w[1].message), "Warning does not include correct use.")
+            self.assertTrue('deprecated' in str(w[1].message), "Warning does not include 'deprecated'.")
+            self.assertTrue('transport.use' in str(w[1].message), "Warning does not include correct use.")
     
     def test_standard(self):
         log.info("Testing configuration: %r", dict(base_config))
@@ -225,7 +225,7 @@ class TestMethods(TestCase):
         self.assertEqual(message.author, ["from@example.com"])
         self.assertEqual(message.bcc, [])
         self.assertEqual(message.retries, 2)
-        self.assertIs(message.mailer, interface)
+        self.assertTrue(message.mailer is interface)
         self.assertEqual(message.brand, False)
         
         self.assertRaises(NotImplementedError, Message().send)
