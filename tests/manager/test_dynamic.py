@@ -149,7 +149,6 @@ class TestDynamicManager(ManagerTestCase):
         
         self.manager.deliver(exc).result()
         
-        print repr(self.states)
         self.assertEquals(self.states, ['running', 'stopped', 'running'])
         self.assertEquals(self.messages, [exc, exc])
         

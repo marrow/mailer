@@ -30,7 +30,7 @@ class MailboxTransport(object):
     
     def deliver(self, message):
         self.box.lock()
-        self.box.add(mailbox.mboxMessage(bytes(message)))
+        self.box.add(mailbox.mboxMessage(str(message)))
         self.box.unlock()
     
     def shutdown(self):

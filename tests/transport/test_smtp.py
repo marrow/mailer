@@ -12,8 +12,11 @@ from unittest import TestCase
 from nose.tools import ok_, eq_, raises
 from nose.plugins.skip import Skip, SkipTest
 
-from pymta.api import IMTAPolicy, PolicyDecision, IAuthenticator
-from pymta.test_util import BlackholeDeliverer, DebuggingMTA, MTAThread
+try:
+    from pymta.api import IMTAPolicy, PolicyDecision, IAuthenticator
+    from pymta.test_util import BlackholeDeliverer, DebuggingMTA, MTAThread
+except ImportError: # pragma: no cover
+    raise SkipTest("PyMTA not installed; skipping SMTP tests.")
 
 from marrow.mailer import Message
 from marrow.mailer.exc import TransportException, TransportExhaustedException, MessageFailedException
