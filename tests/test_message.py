@@ -65,6 +65,12 @@ class TestBasicMessage(unittest.TestCase):
         
         self.assertEquals(msg.id, id_)
     
+    def test_missing_author(self):
+        message = self.build_message()
+        message.author = []
+        
+        self.assertRaises(ValueError, lambda: message.envelope)
+    
     def test_message_properties(self):
         message = self.build_message()
         self.assertEqual(message.author, [("Author", "author@example.com")])
