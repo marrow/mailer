@@ -68,7 +68,7 @@ class TestWorkItem(TestCase):
         self.wi.fn = lambda: 1/0
         self.wi.run()
         
-        self.assertIsInstance(self.f.exception, ZeroDivisionError)
+        self.assertTrue(isinstance(self.f.exception, ZeroDivisionError))
 
 
 class ManagerTestCase(TestCase):
