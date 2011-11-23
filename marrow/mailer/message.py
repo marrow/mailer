@@ -5,7 +5,6 @@
 import imghdr
 import os
 import time
-import warnings
 
 from datetime import datetime
 from email.mime.text import MIMEText

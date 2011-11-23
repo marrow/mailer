@@ -4,7 +4,7 @@ import imaplib
 
 from datetime import datetime
 
-from marrow.mailer.exc import TransportException, MessageFailedException
+from marrow.mailer.exc import MailConfigurationException, TransportException, MessageFailedException
 
 
 __all__ = ['IMAPTransport']
