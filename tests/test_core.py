@@ -62,6 +62,12 @@ class TestInitialization(TestCase):
             self.assertTrue('deprecated' in str(w[1].message), "Warning does not include 'deprecated'.")
             self.assertTrue('transport.use' in str(w[1].message), "Warning does not include correct use.")
     
+    def test_default_manager(self):
+        a = Mailer(dict(transport=dict(use='mock')))
+        
+        self.assertEqual(a.Manager, ImmediateManager)
+        self.assertEqual(a.Transport, MockTransport)
+    
     def test_standard(self):
         log.info("Testing configuration: %r", dict(base_config))
         a = Mailer(base_config)

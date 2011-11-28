@@ -44,15 +44,12 @@ class Mailer(object):
         if prefix is not None:
             self.config = config = Bunch.partial(prefix, config)
         
-        try:
-            if 'manager' in config and isinstance(config.manager, dict):
-                self.manager_config = manager_config = config.manager
-            else:
-                self.manager_config = manager_config = Bunch.partial('manager', config)
-        except ValueError: # pragma: no cover
-            self.manager_config = manager_config = Bunch()
+        if 'manager' in config and isinstance(config.manager, dict):
+            self.manager_config = manager_config = config.manager
+        else:
+            self.manager_config = manager_config = Bunch.partial('manager', config)
         
-        if isinstance(config.manager, basestring):
+        if 'manager' in config and isinstance(config.manager, basestring):
             warnings.warn("Use of the manager directive is deprecated; use manager.use instead.", DeprecationWarning)
             manager_config.use = config.manager
         
@@ -61,20 +58,17 @@ class Mailer(object):
                 self.transport_config = transport_config = Bunch(config.transport)
             else:
                 self.transport_config = transport_config = Bunch.partial('transport', config)
-        except ValueError: # pragma: no cover
+        except AttributeError: # pragma: no cover
             self.transport_config = transport_config = Bunch()
         
-        if isinstance(config.transport, basestring):
+        if 'transport' in config and isinstance(config.transport, basestring):
             warnings.warn("Use of the transport directive is deprecated; use transport.use instead.", DeprecationWarning)
             transport_config.use = config.transport
         
-        try:
-            if 'message' in config and isinstance(config.message, dict):
-                self.message_config = Bunch(config.message)
-            else:
-                self.message_config = Bunch.partial('message', config)
-        except ValueError: # pragma: no cover
-            self.message_config = Bunch()
+        if 'message' in config and isinstance(config.message, dict):
+            self.message_config = Bunch(config.message)
+        else:
+            self.message_config = Bunch.partial('message', config)
         
         self.Manager = Manager = self._load(manager_config.use if 'use' in manager_config else 'immediate', 'marrow.mailer.manager')
         
