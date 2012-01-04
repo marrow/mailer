@@ -2,6 +2,7 @@
 
 """MIME-encoded electronic mail message classes."""
 
+from base64 import b64encode
 import imghdr
 import os
 import time
@@ -274,17 +275,18 @@ class Message(object):
                 maintype, _, subtype = maintype.partition('/')
 
         part = MIMENonMultipart(maintype, subtype)
+        part.add_header('Content-Transfer-Encoding', 'base64')
 
         if data is None:
             with open(name, 'rb') as fp:
-                part.set_payload(fp.read())
+                data = fp.read()
             name = os.path.basename(name)
-        elif isinstance(data, bytes):
-            part.set_payload(data)
         elif hasattr(data, 'read'):
-            part.set_payload(data.read())
-        else:
+            data = data.read()
+
+        if not isinstance(data, bytes):
             raise TypeError("Unable to read attachment contents")
+        part.set_payload(b64encode(data))
         
         if inline:
             part.add_header('Content-Disposition', 'inline', filename=name)
