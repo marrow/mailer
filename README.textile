@@ -22,7 +22,7 @@ By using Marrow Mailer you can:
 * Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even via direct on-disk mbox/maildir.
 * Multiple simultaneous configurations for more targeted delivery.
 
-Mailer supports Python 2.6+ and 3.1+ and there are only light-weight dependencies: @marrow.util@ and @boto@ if using Amazon SES.
+Mailer supports Python 2.6+ and 3.1+ and there are only light-weight dependencies: @marrow.util@, @marrow.interface@, and @boto@ if using Amazon SES.
 
 
 h3(#goals). %1.1.% Goals
