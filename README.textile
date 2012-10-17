@@ -154,7 +154,7 @@ fn1. The message bodies may be callables which will be executed when the message
 Any of these attributes can also be defined within your mailer configuration.  When you wish to use default values from the configuration you must use the @Mailer.new()@ factory method.  For example:
 
 <pre><code>mail = Mailer({
-        'message.author': 'Example User <user@example.com',
+        'message.author': 'Example User <user@example.com>',
         'message.subject': "Test subject."
     })
 message = mail.new()
