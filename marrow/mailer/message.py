@@ -277,12 +277,12 @@ class Message(object):
 
         if data is None:
             with open(name, 'rb') as fp:
-                part.set_payload(fp.read())
+                part.set_payload(base64.b64encode(fp.read()))
             name = os.path.basename(name)
         elif isinstance(data, bytes):
-            part.set_payload(data)
+            part.set_payload(base64.b64encode(data))
         elif hasattr(data, 'read'):
-            part.set_payload(data.read())
+            part.set_payload(base64.b64encode(data.read()))
         else:
             raise TypeError("Unable to read attachment contents")
 
@@ -292,6 +292,7 @@ class Message(object):
             self.embedded.append(part)
         else:
             part.add_header('Content-Disposition', 'attachment', filename=name)
+            part.add_header('Content-Transfer-Encoding','base64')
             self.attachments.append(part)
 
     def embed(self, name, data=None):
