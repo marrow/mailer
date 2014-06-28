@@ -441,7 +441,7 @@ table(exceptions).
 
 h2(#license). %8.% License
 
-Marrow Tags has been released under the MIT Open Source license.
+Marrow Mailer has been released under the MIT Open Source license.
 
 
 h3(#license-mit). %8.1.% The MIT License
