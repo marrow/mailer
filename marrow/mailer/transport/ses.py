@@ -26,7 +26,7 @@ class AmazonTransport(object): # pragma: no cover
         self.connection = None
     
     def startup(self):
-        self.connection = boto.ses.connect_to_region('us-east-1',
+        self.connection = boto.ses.connect_to_region(self.region,
                 aws_access_key_id = self.id,
                 aws_secret_access_key = self.key
             )
