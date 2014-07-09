@@ -33,9 +33,11 @@ class AmazonTransport(object): # pragma: no cover
     
     def deliver(self, message):
         try:
+            destinations = [r.encode(encoding='utf-8') for r in message.recipients]
+
             response = self.connection.send_raw_email(
                     source = message.author.encode(),
-                    destinations = message.recipients.encode(),
+                    destinations = destinations,
                     raw_message = str(message)
                 )
             
