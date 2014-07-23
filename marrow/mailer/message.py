@@ -5,6 +5,7 @@
 import imghdr
 import os
 import time
+import base64
 
 from datetime import datetime
 from email.mime.text import MIMEText
@@ -249,7 +250,7 @@ class Message(object):
         return message
 
     def attach(self, name, data=None, maintype=None, subtype=None,
-        inline=False):
+        inline=False, attachment_filename=None):
         """Attach a file to this message.
 
         :param name: Path to the file to attach if data is None, or the name
@@ -263,6 +264,8 @@ class Message(object):
                         automatically guessed if not given
         :param inline: Whether to set the Content-Disposition for the file to
                        "inline" (True) or "attachment" (False)
+        :param attachment_filename: The file name of the attached file as seen
+                                    by the user in his/her mail client.
         """
         self._dirty = True
 
@@ -277,12 +280,12 @@ class Message(object):
 
         if data is None:
             with open(name, 'rb') as fp:
-                part.set_payload(fp.read())
+                part.set_payload(base64.b64encode(fp.read()))
             name = os.path.basename(name)
         elif isinstance(data, bytes):
-            part.set_payload(data)
+            part.set_payload(base64.b64encode(data))
         elif hasattr(data, 'read'):
-            part.set_payload(data.read())
+            part.set_payload(base64.b64encode(data.read()))
         else:
             raise TypeError("Unable to read attachment contents")
 
@@ -291,7 +294,12 @@ class Message(object):
             part.add_header('Content-ID', '<%s>' % name)
             self.embedded.append(part)
         else:
-            part.add_header('Content-Disposition', 'attachment', filename=name)
+            if attachment_filename:
+               attachment_filename = os.path.basename(attachment_filename)
+            else:
+               attachment_filename = name
+            part.add_header('Content-Disposition', 'attachment', filename=attachment_filename)
+            part.add_header('Content-Transfer-Encoding','base64')
             self.attachments.append(part)
 
     def embed(self, name, data=None):
