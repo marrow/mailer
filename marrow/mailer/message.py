@@ -8,6 +8,7 @@ import time
 import base64
 
 from datetime import datetime
+from textwrap import TextWrapper
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
@@ -19,7 +20,10 @@ from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring, unicode
 
+
 __all__ = ['Message']
+
+WRAP = TextWrapper(width=76, expand_tabs=False)
 
 
 class Message(object):
@@ -280,18 +284,21 @@ class Message(object):
 
         if data is None:
             with open(name, 'rb') as fp:
-                part.set_payload(base64.b64encode(fp.read()))
+                value = base64.b64encode(fp.read())
             name = os.path.basename(name)
         elif isinstance(data, bytes):
-            part.set_payload(base64.b64encode(data))
+            value = base64.b64encode(data)
         elif hasattr(data, 'read'):
-            part.set_payload(base64.b64encode(data.read()))
+            value = base64.b64encode(data.read())
         else:
             raise TypeError("Unable to read attachment contents")
-
+        
+        part.set_payload(WRAP.fill(value))
+        
         if inline:
             part.add_header('Content-Disposition', 'inline', filename=name)
             part.add_header('Content-ID', '<%s>' % name)
+            part.add_header('Content-Transfer-Encoding','base64')
             self.embedded.append(part)
         else:
             if filename:
