@@ -250,7 +250,7 @@ class Message(object):
         return message
 
     def attach(self, name, data=None, maintype=None, subtype=None,
-        inline=False, attachment_filename=None):
+        inline=False, filename=None):
         """Attach a file to this message.
 
         :param name: Path to the file to attach if data is None, or the name
@@ -264,7 +264,7 @@ class Message(object):
                         automatically guessed if not given
         :param inline: Whether to set the Content-Disposition for the file to
                        "inline" (True) or "attachment" (False)
-        :param attachment_filename: The file name of the attached file as seen
+        :param filename: The file name of the attached file as seen
                                     by the user in his/her mail client.
         """
         self._dirty = True
@@ -294,11 +294,11 @@ class Message(object):
             part.add_header('Content-ID', '<%s>' % name)
             self.embedded.append(part)
         else:
-            if attachment_filename:
-               attachment_filename = os.path.basename(attachment_filename)
+            if filename:
+               filename = os.path.basename(filename)
             else:
-               attachment_filename = name
-            part.add_header('Content-Disposition', 'attachment', filename=attachment_filename)
+               filename = name
+            part.add_header('Content-Disposition', 'attachment', filename=filename)
             part.add_header('Content-Transfer-Encoding','base64')
             self.attachments.append(part)
 
