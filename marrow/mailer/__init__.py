@@ -65,11 +65,14 @@ class Mailer(object):
             warnings.warn("Use of the transport directive is deprecated; use transport.use instead.", DeprecationWarning)
             transport_config.use = config.transport
         
-        if 'message' in config and isinstance(config.message, dict):
-            self.message_config = Bunch(config.message)
-        else:
-            self.message_config = Bunch.partial('message', config)
-        
+        try:
+            if 'message' in config and isinstance(config.message, dict):
+                self.message_config = Bunch(config.message)
+            else:
+                self.message_config = Bunch.partial('message', config)
+        except ValueError:
+            self.message_config = Bunch()
+
         self.Manager = Manager = self._load(manager_config.use if 'use' in manager_config else 'immediate', 'marrow.mailer.manager')
         
         if not Manager:
