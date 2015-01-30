@@ -8,14 +8,14 @@ __all__ = ['IManager', 'ITransport']
 
 
 class IPlugin(Interface):
-    startup = Method(args=0)
-    deliver = Method(args=1)
-    shutdown = Method(args=0)
+	startup = Method(args=0)
+	deliver = Method(args=1)
+	shutdown = Method(args=0)
 
 
 class IManager(IPlugin):
-    __init__ = Method(args=2)
+	__init__ = Method(args=2)
 
 
 class ITransport(IPlugin):
-    __init__ = Method(args=1)
+	__init__ = Method(args=1)

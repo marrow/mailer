@@ -3,14 +3,14 @@ from marrow.mailer import Message, Mailer
 logging.basicConfig(level=logging.DEBUG)
 
 mail = Mailer({
-        'manager.use': 'futures',
-        'transport.use': 'imap',
-        'transport.host': '',
-        'transport.ssl': True,
-        'transport.username': '',
-        'transport.password': '',
-        'transport.folder': 'Marrow'
-    })
+		'manager.use': 'futures',
+		'transport.use': 'imap',
+		'transport.host': '',
+		'transport.ssl': True,
+		'transport.username': '',
+		'transport.password': '',
+		'transport.folder': 'Marrow'
+	})
 
 mail.start()
 

@@ -20,21 +20,21 @@ log = logging.getLogger('tests')
 
 
 class TestMockTransport(TestCase):
-    def test_success(self):
-        transport = MockTransport(dict(success=1.1))
-        self.assertTrue(transport.deliver(None))
-    
-    def test_failure(self):
-        transport = MockTransport(dict(success=0.0))
-        self.assertFalse(transport.deliver(None))
-        
-        transport = MockTransport(dict(success=0.0, failure=1.0))
-        self.assertRaises(TransportFailedException, transport.deliver, None)
-    
-    def test_death(self):
-        transport = MockTransport(dict())
-        self.assertRaises(ZeroDivisionError, transport.deliver, Bunch(die=True))
-    
-    def test_exhaustion(self):
-        transport = MockTransport(dict(success=0.0, exhaustion=1.0))
-        self.assertRaises(TransportExhaustedException, transport.deliver, None)
+	def test_success(self):
+		transport = MockTransport(dict(success=1.1))
+		self.assertTrue(transport.deliver(None))
+	
+	def test_failure(self):
+		transport = MockTransport(dict(success=0.0))
+		self.assertFalse(transport.deliver(None))
+		
+		transport = MockTransport(dict(success=0.0, failure=1.0))
+		self.assertRaises(TransportFailedException, transport.deliver, None)
+	
+	def test_death(self):
+		transport = MockTransport(dict())
+		self.assertRaises(ZeroDivisionError, transport.deliver, Bunch(die=True))
+	
+	def test_exhaustion(self):
+		transport = MockTransport(dict(success=0.0, exhaustion=1.0))
+		self.assertRaises(TransportExhaustedException, transport.deliver, None)
