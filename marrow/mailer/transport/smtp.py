@@ -112,7 +112,7 @@ class SMTPTransport(object):
         sender = str(message.envelope)
         recipients = [addr.decode('utf-8') for addr in message.recipients.string_addresses]
         content = str(message)
-
+        
         try:
             self.connection.sendmail(sender, recipients, content)
             self.sent += 1
