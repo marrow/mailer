@@ -23,7 +23,13 @@ class SendmailTransport(object): # pragma: no cover
     def deliver(self, message):
         # TODO: Utilize -F full_name (sender full name), -f sender (envelope sender), -V envid (envelope ID), and space-separated BCC recipients
         # TODO: Record the output of STDOUT and STDERR to capture errors.
-        proc = Popen('%s -t -i' % (self.executable,), shell=True, stdin=PIPE)
+        # proc = Popen('%s -t -i' % (self.executable,), shell=True, stdin=PIPE)
+        args = [self.executable, '-t', '-i']
+
+        if message.sendmail_f:
+            args.extend(['-f', message.sendmail_f])
+
+        proc = Popen(args, shell=False, stdin=PIPE)
         proc.communicate(bytes(message))
         proc.stdin.close()
         if proc.wait() != 0:
