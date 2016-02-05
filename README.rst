@@ -4,9 +4,9 @@ bq(subtitle). A highly efficient and modular mail delivery framework for Python 
 
 bq(byline). (C) 2006-2016, Alice Bevan-McGregor and contributors.
 
-bq(byline). "https://github.com/marrow/marrow.mailer":github-project
+bq(byline). "https://github.com/marrow/mailer":github-project
 
-[github-project]https://github.com/marrow/marrow.mailer
+[github-project]https://github.com/marrow/mailer
 
 
 
@@ -46,16 +46,16 @@ If you add @marrow.mailer@ to the @install_requires@ argument of the call to @se
 
 h3(#install-dev). %2.1.% Development Version
 
-Development takes place on "GitHub":github in the "marrow.mailer":github-project project.  Issue tracking, documentation, and downloads are provided there.
+Development takes place on "GitHub":github in the "marrow/mailer":github-project project.  Issue tracking, documentation, and downloads are provided there.
 
 Installing the current development version requires "Git":git, a distributed source code management system.  If you have Git, you can run the following to download and _link_ the development version into your Python runtime:
 
-<pre><code>git clone https://github.com/marrow/marrow.mailer.git
-(cd marrow.mailer; python setup.py develop)</code></pre>
+<pre><code>git clone https://github.com/marrow/mailer.git
+(cd mailer; python setup.py develop)</code></pre>
 
 You can upgrade to the latest version at any time:
 
-<pre><code>(cd marrow.mailer; git pull; python setup.py develop)</code></pre>
+<pre><code>(cd mailer; git pull; python setup.py develop)</code></pre>
 
 If you would like to make changes and contribute them back to the project, fork the GitHub project, make your changes, and submit a pull request.  This process is beyond the scope of this documentation; for more information, see "GitHub's documentation":github-help.
 
