@@ -17,7 +17,9 @@ python:
 
 install: travis_retry .travis/install.sh
 
-script: tox
+script:
+  - python setup.py test
+  - codecov --file coverage.xml
 
 notifications:
   irc:
