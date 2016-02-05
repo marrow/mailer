@@ -1,12 +1,32 @@
 language: python
+sudo: false
+
+branches:
+  except:
+    - /^feature/.*$/
+
 python:
+  - pypy
+  - pypy3
   - "2.6"
   - "2.7"
-  - "3.1"
   - "3.2"
   - "3.3"
   - "3.4"
-install:
-  - pip install coverage
-  - pip install -e . --use-mirrors
-script: python setup.py test
+  - "3.5"
+
+install: travis_retry .travis/install.sh
+
+script: tox
+
+notifications:
+  irc:
+    channels:
+      - 'irc.freenode.org#webcore'
+    use_notice: true
+    skip_join: true
+    on_success: change
+    on_failure: always
+    template:
+      - "%{repository_slug}:%{branch}@%{commit} %{message}"
+      - "Duration: %{duration} - Details: %{build_url}"
