@@ -284,6 +284,7 @@ class Message(object):
                 maintype, _, subtype = maintype.partition('/')
 
         part = MIMENonMultipart(maintype, subtype)
+        part.add_header('Content-Transfer-Encoding', 'base64')
 
         if encoding:
             part.add_header('Content-Encoding', encoding)
@@ -304,7 +305,6 @@ class Message(object):
         if inline:
             part.add_header('Content-Disposition', 'inline', filename=name)
             part.add_header('Content-ID', '<%s>' % name)
-            part.add_header('Content-Transfer-Encoding','base64')
             self.embedded.append(part)
         else:
             if filename:
@@ -312,7 +312,6 @@ class Message(object):
             else:
                filename = name
             part.add_header('Content-Disposition', 'attachment', filename=filename)
-            part.add_header('Content-Transfer-Encoding','base64')
             self.attachments.append(part)
 
     def embed(self, name, data=None):
