@@ -8,10 +8,10 @@ from setuptools import setup, find_packages
 
 
 if sys.version_info < (2, 6):
-    raise SystemExit("marrow.mailer requires Python 2.6 or later.")
+    raise SystemExit("Python 2.6 later is required.")
 
-if sys.version_info > (3, 0):
-    warnings.warn("Marrow Mailer is untested on Python 3; some features may be broken.", RuntimeWarning)
+elif sys.version_info > (3, 0) and sys.version_info < (3, 2):
+    raise SystemExit("Python 3.2 or later is required.")
 
 exec(open(os.path.join("marrow", "mailer", "release.py")).read())
 
