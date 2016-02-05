@@ -58,7 +58,7 @@ class Mailer(object):
                 self.transport_config = transport_config = Bunch(config.transport)
             else:
                 self.transport_config = transport_config = Bunch.partial('transport', config)
-        except AttributeError: # pragma: no cover
+        except (AttributeError, ValueError): # pragma: no cover
             self.transport_config = transport_config = Bunch()
         
         if 'transport' in config and isinstance(config.transport, basestring):
@@ -70,7 +70,7 @@ class Mailer(object):
                 self.message_config = Bunch(config.message)
             else:
                 self.message_config = Bunch.partial('message', config)
-        except ValueError:
+        except (AttributeError, ValueError):
             self.message_config = Bunch()
 
         self.Manager = Manager = self._load(manager_config.use if 'use' in manager_config else 'immediate', 'marrow.mailer.manager')
