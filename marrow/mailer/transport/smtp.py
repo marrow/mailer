@@ -109,12 +109,12 @@ class SMTPTransport(object):
                 raise TransportExhaustedException()
 
     def send_with_smtp(self, message):
-        sender = str(message.envelope)
-        recipients = message.recipients.string_addresses
-        recipients = [addr.decode('utf-8') for addr in message.recipients.string_addresses]
-        content = str(message)
-        
         try:
+            sender = str(message.envelope)
+            recipients = message.recipients.string_addresses
+            recipients = [addr.decode('utf-8') for addr in message.recipients.string_addresses]
+            content = str(message)
+
             self.connection.sendmail(sender, recipients, content)
             self.sent += 1
 
