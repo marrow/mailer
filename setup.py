@@ -36,9 +36,7 @@ https://github.com/marrow/marrow.mailer""",
     tests_require=[
         'nose',
         'coverage',
-        'PyDNS',
         'transaction',
-        'pymta'
     ] + [
         'futures'
     ] if sys.version_info < (3, 0) else [],
@@ -78,7 +76,7 @@ https://github.com/marrow/marrow.mailer""",
             'sendmail = marrow.mailer.transport.sendmail:SendmailTransport',
             'imap = marrow.mailer.transport.imap:IMAPTransport',
             'appengine = marrow.mailer.transport.gae:AppEngineTransport',
-            'logging = marrow.mailer.transport.log:LoggingTransport'
+            'logging = marrow.mailer.transport.log:LoggingTransport',
             'postmark = marrow.mailer.transport.postmark:PostmarkTransport',
             'sendgrid = marrow.mailer.transport.sendgrid:SendgridTransport'
         ]
