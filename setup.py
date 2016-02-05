@@ -88,7 +88,7 @@ setup(
 			],
 		
 		extras_require = {
-				':python_version<"3.0"': ['futures'],
+				":python_version<'3.0.0'": ['futures'],
 				'develop': tests_require,
 			},
 		
