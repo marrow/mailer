@@ -1,8 +1,8 @@
 h1(#title). Marrow Mailer
 
-bq(subtitle). A highly efficient and modular mail delivery framework for Python 2.6+ and 3.1+, formerly called TurboMail.
+bq(subtitle). A highly efficient and modular mail delivery framework for Python 2.6+ and 3.2+, formerly called TurboMail.
 
-bq(byline). (C) 2006-2014, Alice Bevan-McGregor and contributors.
+bq(byline). (C) 2006-2016, Alice Bevan-McGregor and contributors.
 
 bq(byline). "https://github.com/marrow/marrow.mailer":github-project
 
@@ -22,7 +22,7 @@ By using Marrow Mailer you can:
 * Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even via direct on-disk mbox/maildir.
 * Multiple simultaneous configurations for more targeted delivery.
 
-Mailer supports Python 2.6+ and 3.1+ and there are only light-weight dependencies: @marrow.util@, @marrow.interface@, and @boto@ if using Amazon SES.
+Mailer supports Python 2.6+ and 3.2+ and there are only light-weight dependencies: @marrow.util@, @marrow.interface@, and @boto@ if using Amazon SES.
 
 
 h3(#goals). %1.1.% Goals
@@ -446,7 +446,7 @@ Marrow Mailer has been released under the MIT Open Source license.
 
 h3(#license-mit). %8.1.% The MIT License
 
-Copyright (C) 2006-2014 Alice Bevan-McGregor and contributors.
+Copyright (C) 2006-2016 Alice Bevan-McGregor and contributors.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
