@@ -2,6 +2,8 @@
 
 """Test the primary configurator interface, Mailer."""
 
+'''
+
 import logging
 import warnings
 
@@ -241,3 +243,5 @@ class TestMethods(TestCase):
         self.assertEqual(message.author, ["alternate@example.com"])
         self.assertEqual(message.to, ["recipient@example.com"])
         self.assertEqual(message.subject, "Test.")
+
+'''

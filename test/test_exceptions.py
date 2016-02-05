@@ -2,6 +2,8 @@
 
 """Test the primary configurator interface, Delivery."""
 
+'''
+
 import logging
 
 from unittest import TestCase
@@ -21,3 +23,5 @@ class TestDeliveryFailedException(TestCase):
         self.assertEquals(exc.reason, "reason")
         self.assertEquals(exc.args[0], "message")
         self.assertEquals(exc.args[1], "reason")
+
+'''

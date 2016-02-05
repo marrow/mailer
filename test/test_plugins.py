@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 from __future__ import unicode_literals
 
 import logging
@@ -48,3 +50,5 @@ def test_transports():
     
     if entrypoint is None:
         raise SkipTest("No transports found, have you run `setup.py develop` yet?")
+
+'''

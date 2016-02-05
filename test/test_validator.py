@@ -2,6 +2,8 @@
 
 """Test the primary configurator interface, Delivery."""
 
+'''
+
 import logging
 
 from unittest import TestCase
@@ -202,3 +204,5 @@ def test_harvester():
 
     for text, expect in dataset:
         yield closure, text, expect
+
+'''

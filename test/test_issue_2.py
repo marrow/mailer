@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 from __future__ import unicode_literals
 
 import logging
@@ -24,3 +26,5 @@ def test_issue_2():
     
     mail.start()
     mail.stop()
+
+'''

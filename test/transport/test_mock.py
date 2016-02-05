@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 from __future__ import unicode_literals
 
 import logging
@@ -38,3 +40,5 @@ class TestMockTransport(TestCase):
     def test_exhaustion(self):
         transport = MockTransport(dict(success=0.0, exhaustion=1.0))
         self.assertRaises(TransportExhaustedException, transport.deliver, None)
+
+'''

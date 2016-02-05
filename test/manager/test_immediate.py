@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 from __future__ import unicode_literals
 
 import logging
@@ -113,3 +115,5 @@ class TestImmediateManager(ManagerTestCase):
         
         self.manager.shutdown()
         self.assertEquals(self.states, ['running', 'stopped'])
+
+'''
