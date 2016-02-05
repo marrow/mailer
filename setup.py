@@ -40,7 +40,7 @@ class PyTest(TestCommand):
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-tests_require = ['pytest', 'pytest-cov', 'pytest-spec', 'pytest-flakes', 'pytest-cagoule', 'coverage', 'transaction']
+tests_require = ['pytest', 'pytest-cov', 'pytest-spec', 'pytest-flakes', 'coverage', 'transaction']
 
 
 # # Entry Point
