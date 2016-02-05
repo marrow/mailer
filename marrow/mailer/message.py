@@ -254,7 +254,7 @@ class Message(object):
         return message
 
     def attach(self, name, data=None, maintype=None, subtype=None,
-        inline=False, filename=None):
+        inline=False, filename=None, encoding=None):
         """Attach a file to this message.
 
         :param name: Path to the file to attach if data is None, or the name
@@ -270,17 +270,23 @@ class Message(object):
                        "inline" (True) or "attachment" (False)
         :param filename: The file name of the attached file as seen
                                     by the user in his/her mail client.
+        :param encoding: Value of the Content-Encoding MIME header (e.g. "gzip"
+                         in case of .tar.gz, but usually empty)
         """
         self._dirty = True
 
         if not maintype:
-            maintype, _ = guess_type(name)
+            maintype, guessed_encoding = guess_type(name)
+            encoding = encoding or guessed_encoding
             if not maintype:
                 maintype, subtype = 'application', 'octet-stream'
             else:
                 maintype, _, subtype = maintype.partition('/')
 
         part = MIMENonMultipart(maintype, subtype)
+
+        if encoding:
+            part.add_header('Content-Encoding', encoding)
 
         if data is None:
             with open(name, 'rb') as fp:
