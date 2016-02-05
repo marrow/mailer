@@ -298,16 +298,16 @@ class Message(object):
             raise TypeError("Unable to read attachment contents")
         
         part.set_payload(base64.b64encode(value))
+
+        if not filename:
+            filename = name
+        filename = os.path.basename(filename)
         
         if inline:
-            part.add_header('Content-Disposition', 'inline', filename=name)
-            part.add_header('Content-ID', '<%s>' % name)
+            part.add_header('Content-Disposition', 'inline', filename=filename)
+            part.add_header('Content-ID', '<%s>' % filename)
             self.embedded.append(part)
         else:
-            if filename:
-               filename = os.path.basename(filename)
-            else:
-               filename = name
             part.add_header('Content-Disposition', 'attachment', filename=filename)
             self.attachments.append(part)
 
