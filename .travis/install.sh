@@ -7,6 +7,5 @@ git config --global user.name "Travis: Marrow"
 
 pip install --upgrade setuptools 'pip<8.0.0' pytest
 pip install codecov
-pip install pytest-cov
-pip install pyflakes
-pip install pytest-spec
+
+pip install -e .[develop]
