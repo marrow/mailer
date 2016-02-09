@@ -297,7 +297,7 @@ class Message(object):
         else:
             raise TypeError("Unable to read attachment contents")
         
-        part.set_payload(base64.b64encode(value))
+        part.set_payload(base64.encodestring(value))
 
         if not filename:
             filename = name
