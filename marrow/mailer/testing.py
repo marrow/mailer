@@ -85,10 +85,12 @@ class DebuggingSMTPServer(SMTPServer, Thread):
 		return iter(self.messages)
 	
 	def drain(self):
-		self.messages.clear()
+		with self._lock:  # Protect against parallel access.
+			self.messages.clear()
 	
 	def next(self):
-		return self.messages.popleft()
+		with self._lock:  # Protect against parallel access.
+			return self.messages.popleft()
 
 
 
