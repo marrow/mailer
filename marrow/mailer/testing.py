@@ -94,16 +94,17 @@ class DebuggingSMTPServer(SMTPServer, Thread):
 
 
 
-@fixture
+@fixture(scope='session')
 def smtp(request):
-	# Identify a random port number that is available.
+	# TODO: Identify a random port number that is available.
 	
 	# Construct the debugging server instance.
-	server = DebuggingServer(('localhost', ))
+	server = DebuggingSMTPServer()
+	server.start()
 	
-	request.add_finalizer(server.close)
+	request.add_finalizer(server.stop)
 	
-	return serve
+	return server
 
 
 
