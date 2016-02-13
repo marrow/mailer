@@ -50,7 +50,7 @@ setup(
 		version = version,
 		
 		description = description,
-		long_description = codecs.open(os.path.join(here, 'README.rst'), 'r', 'utf8').read(),
+		long_description = "", # codecs.open(os.path.join(here, 'README.rst'), 'r', 'utf8').read(),
 		url = url,
 		
 		author = author.name,
