@@ -176,7 +176,7 @@ class Message(object):
 				('Sender', sender),
 				('From', author),
 				('Reply-To', self.reply),
-				('Subject', subject),
+				('Subject', self.subject),
 				('Date', date_value),
 				('To', self.to),
 				('Cc', self.cc),
