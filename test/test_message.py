@@ -10,6 +10,7 @@ import logging
 import re
 import time
 import pytest
+import base64
 
 from unittest import TestCase
 from email.header import Header
@@ -196,7 +197,7 @@ class TestBasicMessage(TestCase):
 		message.rich = "Farewell cruel world."
 		
 		with tempfile.NamedTemporaryFile() as fh:
-			fh.write(codecs.decode(self.gif, 'base64'))
+			fh.write(base64.b64decode(self.gif))
 			fh.flush()
 			
 			message.embed(fh.name)
@@ -212,7 +213,7 @@ class TestBasicMessage(TestCase):
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."
-		message.embed('test.gif', bytes(codecs.decode(self.gif, 'base64')))
+		message.embed('test.gif', base64.b64decode(self.gif))
 		
 		result = bytes(message)
 		
@@ -221,7 +222,7 @@ class TestBasicMessage(TestCase):
 		
 		class Mock(object):
 			def read(s):
-				return codecs.decode(self.gif, 'base64')
+				return base64.b64decode(self.gif)
 		
 		message = self.build_message()
 		message.plain = "Hello world."
