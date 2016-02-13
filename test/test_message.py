@@ -24,7 +24,7 @@ from marrow.util.compat import basestring, unicode, native, binary
 class TestBasicMessage(TestCase):
 	"""Test the basic output of the Message class."""
 	
-	gif = b'47494638396101000100910000000000000000fe010200000021f904041400ff002c00000000010001000002024401003b'
+	gif = b'R0lGODlhAQABAJEAAAAAAAAAAP4BAgAAACH5BAQUAP8ALAAAAAABAAEAAAICRAEAOw==\n'
 	
 	def build_message(self, **kw):
 		return Message(
@@ -196,7 +196,7 @@ class TestBasicMessage(TestCase):
 		message.rich = "Farewell cruel world."
 		
 		with tempfile.NamedTemporaryFile() as fh:
-			fh.write(codecs.decode(self.gif, 'hex'))
+			fh.write(codecs.decode(self.gif, 'base64'))
 			fh.flush()
 			
 			message.embed(fh.name)
@@ -212,7 +212,7 @@ class TestBasicMessage(TestCase):
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."
-		message.embed('test.gif', bytes(codecs.decode(self.gif, 'hex')))
+		message.embed('test.gif', bytes(codecs.decode(self.gif, 'base64')))
 		
 		result = bytes(message)
 		
@@ -221,7 +221,7 @@ class TestBasicMessage(TestCase):
 		
 		class Mock(object):
 			def read(s):
-				return codecs.decode(self.gif, 'hex')
+				return codecs.decode(self.gif, 'base64')
 		
 		message = self.build_message()
 		message.plain = "Hello world."
