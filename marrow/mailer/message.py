@@ -172,11 +172,6 @@ class Message(object):
 	def _build_header_list(self, author, sender):
 		date_value = self._build_date_header_string(self.date)
 		
-		try:
-			subject = Header(bytes(self.subject, 'ascii'), 'ascii')
-		except UnicodeError:
-			subject = Header(self.subject, self.encoding)
-		
 		headers = [
 				('Sender', sender),
 				('From', author),
