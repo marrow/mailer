@@ -17,7 +17,15 @@ from mimetypes import guess_type
 
 from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
-from marrow.util.compat import basestring, unicode
+from marrow.util.compat import basestring, unicode, native
+
+
+#from marrow.schema import Container, DataAttribute, Attribute, CallbackAttribute, Attributes
+#from marrow.schema.util import 
+#from marrow.schema.compat import py2, py3, native, unicode, str
+
+
+
 
 
 __all__ = ['Message']
@@ -93,10 +101,15 @@ class Message(object):
 		object.__setattr__(self, name, value)
 		if name not in ('bcc', '_id', '_dirty', '_processed'):
 			object.__setattr__(self, '_dirty', True)
-
+	
 	def __str__(self):
 		return self.mime.as_string()
-
+	
+	__unicode__ = __str__
+	
+	def __bytes__(self):
+		return self.mime.as_string().encode('ascii')
+	
 	@property
 	def id(self):
 		if not self._id or (self._processed and self._dirty):
@@ -154,15 +167,21 @@ class Message(object):
 			date_value = formatdate(date_value, localtime=True)
 		# Encode it here to avoid this:
 		# Date: =?utf-8?q?Sat=2C_01_Sep_2012_13=3A08=3A29_-0300?=
-		return date_value.encode('ascii')
+		return native(date_value)
 
 	def _build_header_list(self, author, sender):
 		date_value = self._build_date_header_string(self.date)
+		
+		try:
+			subject = Header(bytes(self.subject, 'ascii'), 'ascii')
+		except UnicodeError:
+			subject = Header(self.subject, self.encoding)
+		
 		headers = [
 				('Sender', sender),
 				('From', author),
 				('Reply-To', self.reply),
-				('Subject', self.subject),
+				('Subject', subject),
 				('Date', date_value),
 				('To', self.to),
 				('Cc', self.cc),
@@ -189,19 +208,12 @@ class Message(object):
 		for header in headers:
 			if header[1] is None or (isinstance(header[1], list) and not header[1]):
 				continue
-
+			
 			name, value = header
-
-			if isinstance(value, Address):
-				value = value.encode(self.encoding)
-			elif isinstance(value, AddressList):
-				value = value.encode(self.encoding)
-
-			if isinstance(value, unicode):
-				value = Header(value, self.encoding)
-			else:
-				value = Header(value)
-
+			
+			if isinstance(value, (Address, AddressList)):
+				value = unicode(value)
+			
 			message[name] = value
 
 	@property
@@ -209,7 +221,7 @@ class Message(object):
 		"""Produce the final MIME message."""
 		author = self.author
 		sender = self.sender
-
+		
 		if not author:
 			raise ValueError("You must specify an author.")
 
