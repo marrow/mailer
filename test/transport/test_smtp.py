@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 from __future__ import unicode_literals
 
 import os
@@ -174,7 +176,7 @@ class TestSMTPTransportRefusedRecipients(TransportTestCase):
         self.assertRaises(MessageFailedException, self.transport.deliver, self.msg)
         self.assertEquals(self.collector.received_messages.qsize(), 0)
 
-
+'''
 '''
     def get_connection(self):
         # We can not use the id of transport.connection because sometimes Python

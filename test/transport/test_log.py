@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 import logging
 
 from unittest import TestCase
@@ -53,3 +55,5 @@ class TestLoggingTransport(TestCase):
         self.assertEqual(self.messages[1].levelname, 'INFO')
         self.assertEqual(self.messages[2].getMessage(), str(message))
         self.assertEqual(self.messages[2].levelname, 'CRITICAL')
+
+'''

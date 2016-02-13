@@ -1,6 +1,31 @@
+*.py[co]
+
+# Packaging
+*.egg
 *.egg-info
-*.pyc
+dist
+build
+eggs
+.eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
 .coverage
-build/
-dist/
-examples/local.py
+.tox
+.cache
+htmlcov
+coverage.xml
+
+# Translations
+*.mo
+
+# Mac
+.DS_Store

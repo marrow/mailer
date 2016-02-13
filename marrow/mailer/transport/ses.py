@@ -1,8 +1,7 @@
 # encoding: utf-8
 
-# TODO: Port: https://github.com/pankratiev/python-amazon-ses-api/blob/master/amazon_ses.py
-
 try:
+    import boto.ses 
     from boto.ses import SESConnection
 
 except ImportError:
@@ -16,28 +15,24 @@ log = __import__('logging').getLogger(__name__)
 
 
 class AmazonTransport(object): # pragma: no cover
-    __slots__ = ('ephemeral', 'id', 'key', 'host', 'connection')
+    __slots__ = ('ephemeral', 'config', 'region', 'connection')
     
     def __init__(self, config):
-        self.id = config.get('id')
-        self.key = config.get('key')
-        self.host = config.get('host', "email.us-east-1.amazonaws.com")
+        # Give our configuration aliases their proper names.
+        config['aws_access_key_id'] = config.pop('id')
+        config['aws_secret_access_key'] = config.pop('key')
+        
+        self.region = config.pop('region', "us-east-1")
+        self.config = config  # All other configuration directives are passed to connect_to_region.
         self.connection = None
     
     def startup(self):
-        self.connection = SESConnection(
-                aws_access_key_id = self.id,
-                aws_secret_access_key = self.key,
-                host = self.host
-            )
+        self.connection = boto.ses.connect_to_region(self.region, **self.config)
     
     def deliver(self, message):
         try:
-            response = self.connection.send_raw_email(
-                    source = message.author.encode(),
-                    destinations = message.recipients.encode(),
-                    raw_message = str(message)
-                )
+            destinations = [r.encode(encoding='utf-8') for r in message.recipients]
+            response = self.connection.send_raw_email(str(message), message.author.encode(), destinations)
             
             return (
                     response['SendRawEmailResponse']['SendRawEmailResult']['MessageId'],

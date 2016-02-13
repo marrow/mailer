@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 from __future__ import unicode_literals
 
 import logging
@@ -11,64 +13,11 @@ from nose.tools import ok_, eq_, raises
 from nose.plugins.skip import Skip, SkipTest
 
 from marrow.mailer.exc import TransportExhaustedException, TransportFailedException, DeliveryFailedException, MessageFailedException
-from marrow.mailer.manager.dynamic import DynamicManager, WorkItem
+from marrow.mailer.manager.immediate import ImmediateManager
 
 
 log = logging.getLogger('tests')
 
-
-
-class MockFuture(object):
-    def __init__(self):
-        self.cancelled = False
-        self.running = False
-        self.exception = None
-        self.result = None
-        
-        super(MockFuture, self).__init__()
-    
-    def set_running_or_notify_cancel(self):
-        if self.cancelled:
-            return False
-        
-        self.running = True
-        return True
-    
-    def set_exception(self, e):
-        self.exception = e
-    
-    def set_result(self, r):
-        self.result = r
-
-
-class TestWorkItem(TestCase):
-    calls = list()
-    
-    def closure(self):
-        self.calls.append(True)
-        return True
-    
-    def setUp(self):
-        self.f = MockFuture()
-        self.wi = WorkItem(self.f, self.closure, (), {})
-        
-    def test_success(self):
-        self.wi.run()
-        
-        self.assertEquals(self.calls, [True])
-        self.assertTrue(self.f.result)
-    
-    def test_cancelled(self):
-        self.f.cancelled = True
-        self.wi.run()
-        
-        self.assertEquals(self.calls, [])
-    
-    def test_exception(self):
-        self.wi.fn = lambda: 1/0
-        self.wi.run()
-        
-        self.assertTrue(isinstance(self.f.exception, ZeroDivisionError))
 
 
 class ManagerTestCase(TestCase):
@@ -96,15 +45,15 @@ class ManagerTestCase(TestCase):
             self.states.append('stopped')
     
     def setUp(self):
-        self.manager = self.manager(self.config, partial(self.MockTransport, self.states, self.messages))
+        self.manager = ImmediateManager(self.config, partial(self.MockTransport, self.states, self.messages))
     
     def tearDown(self):
         del self.states[:]
         del self.messages[:]
 
 
-class TestDynamicManager(ManagerTestCase):
-    manager = DynamicManager
+class TestImmediateManager(ManagerTestCase):
+    manager = ImmediateManager
     
     def test_startup(self):
         # TODO: Test logging messages.
@@ -133,8 +82,7 @@ class TestDynamicManager(ManagerTestCase):
         
         exc = MessageFailedException()
         
-        receipt = self.manager.deliver(exc)
-        self.assertRaises(DeliveryFailedException, receipt.result)
+        self.assertRaises(DeliveryFailedException, self.manager.deliver, exc)
         
         self.assertEquals(self.states, ['running', 'stopped'])
         self.assertEquals(self.messages, [exc])
@@ -147,7 +95,7 @@ class TestDynamicManager(ManagerTestCase):
         
         exc = TransportFailedException()
         
-        self.manager.deliver(exc).result()
+        self.manager.deliver(exc)
         
         self.assertEquals(self.states, ['running', 'stopped', 'running'])
         self.assertEquals(self.messages, [exc, exc])
@@ -160,10 +108,12 @@ class TestDynamicManager(ManagerTestCase):
         
         exc = TransportExhaustedException()
         
-        self.manager.deliver(exc).result()
+        self.manager.deliver(exc)
         
         self.assertEquals(self.states, ['running', 'stopped'])
         self.assertEquals(self.messages, [exc])
         
         self.manager.shutdown()
         self.assertEquals(self.states, ['running', 'stopped'])
+
+'''

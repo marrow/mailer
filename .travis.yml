@@ -1,0 +1,31 @@
+language: python
+sudo: false
+
+branches:
+  except:
+    - /^feature/.*$/
+
+python:
+  - pypy
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+
+install: travis_retry .travis/install.sh
+
+script:
+  - python setup.py test
+  - codecov --file coverage.xml
+
+notifications:
+  irc:
+    channels:
+      - 'irc.freenode.org#webcore'
+    use_notice: true
+    skip_join: true
+    on_success: change
+    on_failure: always
+    template:
+      - "%{repository_slug}:%{branch}@%{commit} %{message}"
+      - "Duration: %{duration} - Details: %{build_url}"

@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+'''
+
 from __future__ import unicode_literals
 
 import logging
@@ -11,7 +13,7 @@ from nose.tools import ok_, eq_, raises
 from nose.plugins.skip import Skip, SkipTest
 
 from marrow.mailer.exc import TransportExhaustedException, TransportFailedException, DeliveryFailedException, MessageFailedException
-from marrow.mailer.manager.immediate import ImmediateManager
+from marrow.mailer.manager.futures import FuturesManager
 
 
 log = logging.getLogger('tests')
@@ -43,7 +45,7 @@ class ManagerTestCase(TestCase):
             self.states.append('stopped')
     
     def setUp(self):
-        self.manager = ImmediateManager(self.config, partial(self.MockTransport, self.states, self.messages))
+        self.manager = self.manager(self.config, partial(self.MockTransport, self.states, self.messages))
     
     def tearDown(self):
         del self.states[:]
@@ -51,7 +53,7 @@ class ManagerTestCase(TestCase):
 
 
 class TestImmediateManager(ManagerTestCase):
-    manager = ImmediateManager
+    manager = FuturesManager
     
     def test_startup(self):
         # TODO: Test logging messages.
@@ -80,7 +82,8 @@ class TestImmediateManager(ManagerTestCase):
         
         exc = MessageFailedException()
         
-        self.assertRaises(DeliveryFailedException, self.manager.deliver, exc)
+        receipt = self.manager.deliver(exc)
+        self.assertRaises(DeliveryFailedException, receipt.result)
         
         self.assertEquals(self.states, ['running', 'stopped'])
         self.assertEquals(self.messages, [exc])
@@ -93,7 +96,7 @@ class TestImmediateManager(ManagerTestCase):
         
         exc = TransportFailedException()
         
-        self.manager.deliver(exc)
+        self.manager.deliver(exc).result()
         
         self.assertEquals(self.states, ['running', 'stopped', 'running'])
         self.assertEquals(self.messages, [exc, exc])
@@ -106,10 +109,12 @@ class TestImmediateManager(ManagerTestCase):
         
         exc = TransportExhaustedException()
         
-        self.manager.deliver(exc)
+        self.manager.deliver(exc).result()
         
         self.assertEquals(self.states, ['running', 'stopped'])
         self.assertEquals(self.messages, [exc])
         
         self.manager.shutdown()
         self.assertEquals(self.states, ['running', 'stopped'])
+
+'''
