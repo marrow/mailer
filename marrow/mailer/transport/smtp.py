@@ -111,8 +111,11 @@ class SMTPTransport(object):
     def send_with_smtp(self, message):
         try:
             sender = str(message.envelope)
-            recipients = message.recipients.string_addresses
-            recipients = [addr.decode('utf-8') for addr in message.recipients.string_addresses]
+            if hasattr(str, "decode"):
+                # don't attempt to utf-8-decode strings in Python 3
+                recipients = [addr.decode('utf-8') for addr in message.recipients.string_addresses]
+            else:
+                recipients = message.recipients.string_addresses
             content = str(message)
 
             self.connection.sendmail(sender, recipients, content)
