@@ -352,6 +352,15 @@ table(configuration).
 | @host@ | @"email.us-east-1.amazonaws.com"@ | The API endpoint to utilize. |
 
 
+h4(#sendgrid-transport). %6.3.1.% SendGrid
+
+The @sendgrid@ transport uses the email service provider SendGrid to deliver your transactional and marketing messages.  Use your SendGrid username and password (@user@ and @key@), or supply an API key (only @key@).
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @user@ | — | Your SendGrid username.  Don't include this if you're using an API key. |
+| @key@ | — | Your SendGrid password, or a SendGrid account API key. |
+
 
 h2(#extending). %7.% Extending Marrow Mailer
 
