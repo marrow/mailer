@@ -267,7 +267,7 @@ table(configuration).
 | @pipeline@ | @None@ | If a non-zero positive integer, this represents the number of messages to pipeline across a single SMTP connection. Most servers allow up to 10 messages to be delivered. |
 
 
-h4(#imap-transport). %5.2.2.% Internet Mail Access Protocol (IMAP)
+h4(#imap-transport). %6.2.2.% Internet Mail Access Protocol (IMAP)
 
 Marrow Mailer, via the @imap@ transport, allows you to dump messages directly into folders on remote servers.
 
