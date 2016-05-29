@@ -267,7 +267,7 @@ table(configuration).
 | @pipeline@ | @None@ | If a non-zero positive integer, this represents the number of messages to pipeline across a single SMTP connection. Most servers allow up to 10 messages to be delivered. |
 
 
-h4(#imap-transport). %5.2.2.% Internet Mail Access Protocol (IMAP)
+h4(#imap-transport). %6.2.2.% Internet Mail Access Protocol (IMAP)
 
 Marrow Mailer, via the @imap@ transport, allows you to dump messages directly into folders on remote servers.
 
@@ -341,16 +341,24 @@ table(configuration).
 | @path@ | @"/usr/sbin/sendmail"@ | The path to the @sendmail@ executable. |
 
 
-h4(#ses-transport). %6.3.1.% Amazon Simple E-Mail Service (SES)
+h4(#amazon-transport). %6.3.1.% Amazon Simple E-Mail Service (SES)
 
-Deliver your messages via the Amazon Simple E-Mail Service.  While Amazon allow you to utilize SMTP for communication, using the correct API allows you to get much richer information back from delivery upon both success *and* failure.  To utilize this transport you must have the @boto@ package installed.
+Deliver your messages via the Amazon Simple E-Mail Service with the @amazon@ transport.  While Amazon allows you to utilize SMTP for communication, using the correct API allows you to get much richer information back from delivery upon both success *and* failure.  To utilize this transport you must have the @boto@ package installed.
 
 table(configuration).
 |_. Directive |_. Default |_. Description |
 | @id@ | — | Your Amazon AWS access key identifier. |
 | @key@ | — | Your Amazon AWS secret access key. |
-| @host@ | @"email.us-east-1.amazonaws.com"@ | The API endpoint to utilize. |
 
+
+h4(#sendgrid-transport). %6.3.1.% SendGrid
+
+The @sendgrid@ transport uses the email service provider SendGrid to deliver your transactional and marketing messages.  Use your SendGrid username and password (@user@ and @key@), or supply an API key (only @key@).
+
+table(configuration).
+|_. Directive |_. Default |_. Description |
+| @user@ | — | Your SendGrid username.  Don't include this if you're using an API key. |
+| @key@ | — | Your SendGrid password, or a SendGrid account API key. |
 
 
 h2(#extending). %7.% Extending Marrow Mailer
