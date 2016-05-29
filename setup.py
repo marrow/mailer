@@ -88,6 +88,7 @@ setup(
 		extras_require = {
 				":python_version<'3.0.0'": ['futures'],
 				'develop': tests_require,
+				'requests': ['requests'],
 			},
 		
 		tests_require = tests_require,
@@ -113,7 +114,8 @@ setup(
 						'appengine = marrow.mailer.transport.gae:AppEngineTransport',
 						'logging = marrow.mailer.transport.log:LoggingTransport',
 						'postmark = marrow.mailer.transport.postmark:PostmarkTransport',
-						'sendgrid = marrow.mailer.transport.sendgrid:SendgridTransport'
+						'sendgrid = marrow.mailer.transport.sendgrid:SendgridTransport',
+						'mailgun = marrow.mailer.transport.mailgun:MailgunTransport[requests]',
 					]
 			},
 		
