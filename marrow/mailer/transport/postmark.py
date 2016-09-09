@@ -65,7 +65,7 @@ class PostmarkTransport(object):
 
         try:
             response = urllib2.urlopen(request)
-        except (urllib2.HTTPError, urllib2.URLError), e:
+        except (urllib2.HTTPError, urllib2.URLError) as e:
             raise DeliveryFailedException(e, "Could not connect to Postmark.")
         else:
             respcode = response.getcode()
