@@ -159,6 +159,40 @@ class TestBasicMessage(TestCase):
 		
 		with pytest.raises(TypeError):
 			message.attach('foo', object())
+
+	def test_non_ascii_attachment_names(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("☃.txt", b"unicode snowman", filename_charset='utf-8')
+		
+		assert 'Hello world.' in unicode(message)
+		assert 'Farewell cruel world.' in unicode(message)
+		assert 'filename*="utf-8\'\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+
+	def test_language_specification_and_charset_for_attachment_name(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("☃.txt", b"unicode snowman", filename_charset='utf-8', filename_language='en-us')
+		
+		assert 'Hello world.' in unicode(message)
+		assert 'Farewell cruel world.' in unicode(message)
+		assert 'filename*="utf-8\'en-us\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+
+	def test_language_specification_but_no_charset_for_attachment_name(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("☃.txt", b"unicode snowman", filename_language='en-us')
+		
+		assert 'Hello world.' in unicode(message)
+		assert 'Farewell cruel world.' in unicode(message)
+		assert 'filename*="\'en-us\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+	
 	
 	def test_mime_attachments_file(self):
 		import tempfile
