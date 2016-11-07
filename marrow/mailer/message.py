@@ -258,7 +258,8 @@ class Message(object):
 		return message
 
 	def attach(self, name, data=None, maintype=None, subtype=None,
-		inline=False, filename=None, encoding=None):
+		inline=False, filename=None, filename_charset='', filename_language='',
+		encoding=None):
 		"""Attach a file to this message.
 
 		:param name: Path to the file to attach if data is None, or the name
@@ -274,6 +275,9 @@ class Message(object):
 					   "inline" (True) or "attachment" (False)
 		:param filename: The file name of the attached file as seen
 									by the user in his/her mail client.
+		:param filename_charset: Charset used for the filename paramenter. Allows for 
+						attachment names with characters from UTF-8 or Latin 1. See RFC 2231.
+		:param filename_language: Used to specify what language the filename is in. See RFC 2231.
 		:param encoding: Value of the Content-Encoding MIME header (e.g. "gzip"
 						 in case of .tar.gz, but usually empty)
 		"""
@@ -309,7 +313,15 @@ class Message(object):
 		if not filename:
 			filename = name
 		filename = os.path.basename(filename)
-		
+
+		if filename_charset or filename_language:
+			# See https://docs.python.org/2/library/email.message.html#email.message.Message.add_header
+			# for more information.
+			# add_header() in the email module expects its arguments to be ASCII strings. Go ahead and handle
+			# the case where these arguments come in as unicode strings, since encoding ASCII strings
+			# as UTF-8 can't hurt.
+			filename=(filename_charset.encode('utf-8'), filename_language.encode('utf-8'), filename.encode('utf-8'))
+
 		if inline:
 			part.add_header('Content-Disposition', 'inline', filename=filename)
 			part.add_header('Content-ID', '<%s>' % filename)
