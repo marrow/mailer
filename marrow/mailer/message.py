@@ -259,7 +259,7 @@ class Message(object):
 
 	def attach(self, name, data=None, maintype=None, subtype=None,
 		inline=False, filename=None, filename_charset='', filename_language='',
-		content_encoding=None):
+		encoding=None):
 		"""Attach a file to this message.
 
 		:param name: Path to the file to attach if data is None, or the name
@@ -278,14 +278,14 @@ class Message(object):
 		:param filename_charset: Charset used for the filename paramenter. Allows for 
 						attachment names with characters from UTF-8 or Latin 1. See RFC 2231.
 		:param filename_language: Used to specify what language the filename is in. See RFC 2231.
-		:param content_encoding: Value of the Content-Encoding MIME header (e.g. "gzip"
+		:param encoding: Value of the Content-Encoding MIME header (e.g. "gzip"
 						 in case of .tar.gz, but usually empty)
 		"""
 		self._dirty = True
 
 		if not maintype:
 			maintype, guessed_encoding = guess_type(name)
-			content_encoding = content_encoding or guessed_encoding
+			encoding = encoding or guessed_encoding
 			if not maintype:
 				maintype, subtype = 'application', 'octet-stream'
 			else:
@@ -294,7 +294,7 @@ class Message(object):
 		part = MIMENonMultipart(maintype, subtype)
 		part.add_header('Content-Transfer-Encoding', 'base64')
 
-		if content_encoding:
+		if encoding:
 			part.add_header('Content-Encoding', encoding)
 
 		if data is None:
