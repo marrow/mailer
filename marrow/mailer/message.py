@@ -2,8 +2,11 @@
 
 """MIME-encoded electronic mail message class."""
 
+from __future__ import unicode_literals
+
 import imghdr
 import os
+import sys
 import time
 import base64
 
@@ -11,21 +14,12 @@ from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
-from email.header import Header
 from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
 
 from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import basestring, unicode, native
-
-
-#from marrow.schema import Container, DataAttribute, Attribute, CallbackAttribute, Attributes
-#from marrow.schema.util import 
-#from marrow.schema.compat import py2, py3, native, unicode, str
-
-
-
 
 
 __all__ = ['Message']
@@ -315,13 +309,18 @@ class Message(object):
 		filename = os.path.basename(filename)
 
 		if filename_charset or filename_language:
+			if not filename_charset:
+				filename_charset = 'utf-8'
 			# See https://docs.python.org/2/library/email.message.html#email.message.Message.add_header
 			# for more information.
 			# add_header() in the email module expects its arguments to be ASCII strings. Go ahead and handle
 			# the case where these arguments come in as unicode strings, since encoding ASCII strings
 			# as UTF-8 can't hurt.
-			filename=(filename_charset.encode('utf-8'), filename_language.encode('utf-8'), filename.encode('utf-8'))
-
+			if sys.version_info < (3, 0):
+				filename=(filename_charset.encode('utf-8'), filename_language.encode('utf-8'), filename.encode('utf-8'))
+			else:
+				filename=(filename_charset, filename_language, filename)
+		
 		if inline:
 			part.add_header('Content-Disposition', 'inline', filename=filename)
 			part.add_header('Content-ID', '<%s>' % filename)
