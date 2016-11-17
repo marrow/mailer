@@ -16,7 +16,7 @@ python:
 
 install:
   - travis_retry pip install --upgrade setuptools pip codecov
-  - pip install -e '.[development]'
+  - ./setup.py develop
 
 script:
     python setup.py test
