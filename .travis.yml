@@ -1,22 +1,28 @@
 language: python
 sudo: false
+cache: pip
 
 branches:
   except:
-    - /^feature/.*$/
+    - /^[^/]+/.*$/
 
 python:
-  - pypy
   - "2.7"
+  - "pypy"
+  - "pypy3"
   - "3.3"
   - "3.4"
   - "3.5"
 
-install: travis_retry .travis/install.sh
+install:
+  - travis_retry pip install --upgrade setuptools pip codecov
+  - pip install -e '.[development]'
 
 script:
-  - python setup.py test
-  - codecov --file coverage.xml
+    python setup.py test
+
+after_script:
+    bash <(curl -s https://codecov.io/bash)
 
 notifications:
   irc:

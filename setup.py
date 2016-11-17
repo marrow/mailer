@@ -3,17 +3,11 @@
 
 import os
 import sys
-import codecs
-
-import warnings
 
 try:
 	from setuptools.core import setup, find_packages
 except ImportError:
 	from setuptools import setup, find_packages
-
-from setuptools.command.test import test as TestCommand
-
 
 if sys.version_info < (2, 6):
 	raise SystemExit("Python 2.6 later is required.")
@@ -22,21 +16,8 @@ elif sys.version_info > (3, 0) and sys.version_info < (3, 2):
 	raise SystemExit("Python 3.2 or later is required.")
 
 
+version = description = url = author = ""  # Satisfy linter.
 exec(open(os.path.join("marrow", "mailer", "release.py")).read())
-
-
-
-class PyTest(TestCommand):
-	def finalize_options(self):
-		TestCommand.finalize_options(self)
-		
-		self.test_args = []
-		self.test_suite = True
-	
-	def run_tests(self):
-		import pytest
-		sys.exit(pytest.main(self.test_args))
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -93,6 +74,8 @@ setup(
 		
 		tests_require = tests_require,
 		
+		setup_requires = ['pytest-runner'] if {'pytest', 'test', 'ptr'}.intersection(sys.argv) else [],
+		
 		# ## Plugin Registration
 		
 		entry_points = {
@@ -119,8 +102,5 @@ setup(
 					]
 			},
 		
-		zip_safe = True,
-		cmdclass = dict(
-				test = PyTest,
-			)
+		zip_safe = False,
 	)
