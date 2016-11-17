@@ -15,7 +15,7 @@ python:
   - "3.5"
 
 install:
-  - travis_retry pip install --upgrade setuptools pip codecov
+  - travis_retry pip install --upgrade setuptools pip codecov 'setuptools_scm>=1.9'
   - ./setup.py develop
 
 script:
