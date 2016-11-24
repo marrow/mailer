@@ -6,20 +6,19 @@ from __future__ import print_function, unicode_literals
 import calendar
 from datetime import datetime, timedelta
 import email
-import logging
+import sys
 import re
 import time
 import pytest
 import base64
 
 from unittest import TestCase
-from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import formatdate, parsedate_tz
 
 from marrow.mailer import Message
 from marrow.mailer.address import AddressList
-from marrow.util.compat import basestring, unicode, native, binary
+from marrow.util.compat import unicode
 
 
 class TestBasicMessage(TestCase):
@@ -159,6 +158,50 @@ class TestBasicMessage(TestCase):
 		
 		with pytest.raises(TypeError):
 			message.attach('foo', object())
+
+	def test_non_ascii_attachment_names(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("☃.txt", b"unicode snowman", filename_charset='utf-8')
+		
+		assert 'Hello world.' in unicode(message)
+		assert 'Farewell cruel world.' in unicode(message)
+		if sys.version_info < (3, 0):
+			assert 'filename*="utf-8\'\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		else:
+			assert 'filename*=utf-8\'\'%E2%98%83.txt' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+
+	def test_language_specification_and_charset_for_attachment_name(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("☃.txt", b"unicode snowman", filename_charset='utf-8', filename_language='en-us')
+		
+		assert 'Hello world.' in unicode(message)
+		assert 'Farewell cruel world.' in unicode(message)
+		
+		if sys.version_info < (3, 0):
+			assert 'filename*="utf-8\'en-us\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		else:
+			assert 'filename*=utf-8\'en-us\'%E2%98%83.txt' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+
+	def test_language_specification_but_no_charset_for_attachment_name(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("☃.txt", b"unicode snowman", filename_language='en-us')
+		
+		assert 'Hello world.' in unicode(message)
+		assert 'Farewell cruel world.' in unicode(message)
+		if sys.version_info < (3, 0):
+			assert 'filename*="utf-8\'en-us\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		else:
+			assert 'filename*=utf-8\'en-us\'%E2%98%83.txt' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+	
 	
 	def test_mime_attachments_file(self):
 		import tempfile
@@ -190,7 +233,6 @@ class TestBasicMessage(TestCase):
 	
 	def test_mime_embed_gif_file(self):
 		import tempfile
-		import codecs
 		
 		message = self.build_message()
 		message.plain = "Hello world."
@@ -208,8 +250,6 @@ class TestBasicMessage(TestCase):
 			assert b'R0lGODlh' in result  # GIF89a in base64
 	
 	def test_mime_embed_gif_bytes(self):
-		import codecs
-		
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."

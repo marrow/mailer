@@ -11,10 +11,14 @@ log = __import__('logging').getLogger(__name__)
 
 
 class SendgridTransport(object):
-    __slots__ = ('ephemeral', 'user', 'key')
+    __slots__ = ('ephemeral', 'user', 'key', 'bearer')
     
     def __init__(self, config):
-        self.user = config.get('user')
+        self.bearer = False
+        if not 'user' in config:
+            self.bearer = True
+        else:
+            self.user = config.get('user')
         self.key = config.get('key')
     
     def startup(self):
@@ -29,8 +33,6 @@ class SendgridTransport(object):
             to.extend(message.cc)
 
         args = dict({
-                'api_user': self.user,
-                'api_key': self.key,
                 'from': [fromaddr.address.encode(message.encoding) for fromaddr in message.author],
                 'fromname': [fromaddr.name.encode(message.encoding) for fromaddr in message.author],
                 'to': [toaddr.address.encode(message.encoding) for toaddr in to],
@@ -62,12 +64,19 @@ class SendgridTransport(object):
             msg.attachments = attachments
             """
             raise MailConfigurationException()
+        
+        if not self.bearer:
+            args['api_user'] = self.user
+            args['api_key'] = self.key
 
         request = urllib2.Request(
                 "https://sendgrid.com/api/mail.send.json",
                 urllib.urlencode(args, True)
             )
 
+        if self.bearer:
+            request.add_header("Authorization", "Bearer %s" % self.key)
+        
         try:
             response = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError):

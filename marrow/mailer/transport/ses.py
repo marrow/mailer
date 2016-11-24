@@ -23,6 +23,7 @@ class AmazonTransport(object): # pragma: no cover
         config['aws_secret_access_key'] = config.pop('key')
         
         self.region = config.pop('region', "us-east-1")
+        config.pop('use') #boto throws an error if we leave this in the next line
         self.config = config  # All other configuration directives are passed to connect_to_region.
         self.connection = None
     
