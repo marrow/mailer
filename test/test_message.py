@@ -281,6 +281,26 @@ class TestBasicMessage(TestCase):
 		
 		with pytest.raises(TypeError):
 			message.embed('test.gif', object())
+
+	def test_that_add_header_and_collapse_header_are_inverses_ascii_filename(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("wat.txt", b"not a unicode snowman") # calls add_header() under the covers
+		attachment = message.attachments[0]
+		filename = attachment.get_filename() # calls email.utils.collapse_rfc2231_value() under the covers
+		assert filename == "wat.txt"
+
+	def test_that_add_header_and_collapse_header_are_inverses_non_ascii_filename(self):
+		message = self.build_message()
+		message.plain = "Hello world."
+		message.rich = "Farewell cruel world."
+		message.attach("☃.txt", b"unicode snowman", filename_language='en-us')
+		attachment = message.attachments[0]
+		filename = attachment.get_param('filename', object(), 'content-disposition') # get_filename() calls this under the covers
+		assert isinstance(filename, tuple)  # Since attachment encoded according to RFC2231, should be represented as a tuple		
+		filename = attachment.get_filename()  # Calls email.utils.collapse_rfc2231_value() under the covers, currently fails
+		assert isinstance(filename, basestring)  # Successfully converts tuple to Unicode string
 	
 	def test_recipients_collection(self):
 		message = self.build_message()
