@@ -322,11 +322,18 @@ class Message(object):
 				filename=(filename_charset, filename_language, filename)
 		
 		if inline:
-			part.add_header('Content-Disposition', 'inline', filename=filename)
-			part.add_header('Content-ID', '<%s>' % filename)
+			if sys.version_info < (3, 0):
+				part.add_header('Content-Disposition'.encode('utf-8'), 'inline'.encode('utf-8'), filename=filename)
+				part.add_header('Content-ID'.encode('utf-8'), '<%s>'.encode('utf-8') % filename)
+			else:	
+				part.add_header('Content-Disposition', 'inline', filename=filename)
+				part.add_header('Content-ID', '<%s>' % filename)
 			self.embedded.append(part)
 		else:
-			part.add_header('Content-Disposition', 'attachment', filename=filename)
+			if sys.version_info < (3, 0):
+				part.add_header('Content-Disposition'.encode('utf-8'), 'attachment'.encode('utf-8'), filename=filename)
+			else:
+				part.add_header('Content-Disposition', 'attachment', filename=filename)
 			self.attachments.append(part)
 
 	def embed(self, name, data=None):
