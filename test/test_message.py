@@ -300,7 +300,10 @@ class TestBasicMessage(TestCase):
 		filename = attachment.get_param('filename', object(), 'content-disposition') # get_filename() calls this under the covers
 		assert isinstance(filename, tuple)  # Since attachment encoded according to RFC2231, should be represented as a tuple		
 		filename = attachment.get_filename()  # Calls email.utils.collapse_rfc2231_value() under the covers, currently fails
-		assert isinstance(filename, basestring)  # Successfully converts tuple to Unicode string
+		if sys.version_info < (3, 0):
+			assert isinstance(filename, basestring)  # Successfully converts tuple to a string
+		else:
+			assert isinstance(filename, str)
 	
 	def test_recipients_collection(self):
 		message = self.build_message()
