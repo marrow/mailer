@@ -26,7 +26,7 @@ class SendmailTransport(object): # pragma: no cover
         # proc = Popen('%s -t -i' % (self.executable,), shell=True, stdin=PIPE)
         args = [self.executable, '-t', '-i']
 
-        if message.sendmail_f:
+        if hasattr(message, 'sendmail_f') and message.sendmail_f:
             log.info("sendmail_f : {}".format(message.sendmail_f))
             args.extend(['-f', message.sendmail_f])
 
