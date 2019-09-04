@@ -192,7 +192,7 @@ class Message(object):
 			headers.extend(self.headers)
 
 		if 'message-id' not in (header[0].lower() for header in headers):
-			headers.append('Message-Id', self.id)
+			headers.append(('Message-Id', self.id))
 
 		return headers
 
