@@ -18,7 +18,7 @@ from email.utils import formatdate, parsedate_tz
 
 from marrow.mailer import Message
 from marrow.mailer.address import AddressList
-from marrow.util.compat import unicode
+from marrow.util.compat import basestring, unicode
 
 
 class TestBasicMessage(TestCase):
