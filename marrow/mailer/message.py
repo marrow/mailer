@@ -191,6 +191,9 @@ class Message(object):
 		else:
 			headers.extend(self.headers)
 
+		if 'message-id' not in (i[0].lower() for header in headers):
+			headers.append('Message-Id', self.id)
+
 		return headers
 
 	def _add_headers_to_message(self, message, headers):
