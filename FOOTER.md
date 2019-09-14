@@ -1,0 +1,1 @@
+Copyright © 2006-2019 [Alice Bevan-McGregor](https://github.com/amcgregor/) and [contributors](https://github.com/marrow/mailer/graphs/contributors "GitHub Contributors"). Released under an [MIT license](/license.md).

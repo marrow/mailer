@@ -1,0 +1,134 @@
+/* Web Theme Customizations */
+
+.markdown-section h1,
+.markdown-section h2,
+.markdown-section h3,
+.markdown-section h4,
+.markdown-section h5,
+.markdown-section h6
+{
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+}
+
+.markdown-section h1:first-child,
+.markdown-section h2:first-child,
+.markdown-section h3:first-child,
+.markdown-section h4:first-child,
+.markdown-section h5:first-child,
+.markdown-section h6:first-child
+{
+	margin-top: 0;
+}
+
+.markdown-section h4 {
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.2ex;
+}
+
+.markdown-section {
+	padding: 30px;
+}
+
+.markdown-section h1 {
+	font-weight: 100;
+	margin-bottom: 30px;
+	font-size: 2.25em;
+}
+
+.markdown-section h1#the-marrow-mongo-document-mapper {
+	text-align: center;
+}
+
+/*
+.markdown-section h1:not(#the-marrow-mongo-document-mapper) {
+	display: none;
+}
+*/
+
+.markdown-section h1 strong {
+	font-weight: 300;
+}
+
+.markdown-section h2 {
+	color: rgba(0, 0, 0, 0.8);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	font-weight: 300;
+}
+
+.book.two-columns .api-method .api-method-definition h2:first-child {
+	padding-top: 30px;
+}
+
+.book.color-theme-3 .book-body section .api-method-code h2 {
+	border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.book .book-body .page-wrapper .page-inner {
+	max-width: 100%;
+}
+
+.book .book-body section #page-footer {
+	text-align: center;
+	font-size: 70%;
+	text-transform: uppercase;
+	opacity: 0.8;
+}
+
+.book .book-header h1 {
+	opacity: 0.85;
+}
+
+nav ul.summary > :nth-child(-n+2), nav ul.summary > :nth-last-child(-n+2) {
+	display: none;
+}
+
+.markdown-section dl dt {
+	font-style: inherit;
+	font-weight: inherit;
+	text-align: right;
+	float: left;
+	clear: left;
+	width: 11.75em;
+	margin-top: 0;
+}
+
+.markdown-section dl dt h5 {
+	margin: 0;
+}
+
+.markdown-section dl dt h5 code {
+	font-size: inherit;
+}
+
+.markdown-section dl dt small {
+	color: rgba(0, 0, 0, 0.5);
+}
+
+.markdown-section dl dt small,
+.markdown-section dl dd label {
+	margin: 0;
+	padding: .2em;
+	font-size: .85em;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+	text-transform: uppercase;
+}
+
+.markdown-section dl dd label {
+	margin-right: .85em;
+}
+
+.markdown-section dl dd {
+	margin-top: .85em;
+	margin-left: 12em;
+}
+
+.markdown-section dl dd:after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
+.markdown-section dl dd:not(:last-child) {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}

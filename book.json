@@ -1,0 +1,58 @@
+{
+	"plugins": [
+		"anchors",
+		"codeblock-label",
+		"bootstrap-callout",
+		"multipart",
+		"collapsible-chapters",
+		"localized-footer",
+		"editlink",
+		"scrollablecode",
+		"book-summary-scroll-position-saver",
+		"wide-page",
+		"theme-api",
+		"timeline"
+	],
+	"pluginsConfig": {
+		"editlink": {
+			"base": "https://github.com/marrow/mailer/tree/book",
+			"label": "Edit This Page",
+			"multilingual": false
+		},
+		"versions": {
+			"type": "tags",
+			"includeFilepath": true
+		},
+		"sharing": {
+			"facebook": true,
+			"twitter": true,
+			"google": false,
+			"weibo": false,
+			"instapaper": false,
+			"vk": false,
+			"all": []
+		},
+		"fontsettings": {
+			"theme": "night",
+			"family": "serif",
+			"size": 2
+		},
+		"theme-default": {
+			"showLevel": true
+		},
+		"theme-api": {
+			"split": true,
+			"theme": "dark",
+			"languages": [
+				{
+					"lang": "bash",
+					"name": "Terminal"
+				}, {
+					"lang": "python",
+					"name": "Python",
+					"default": true
+				}
+			]
+		}
+	}
+}
