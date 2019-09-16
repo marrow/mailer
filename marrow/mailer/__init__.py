@@ -1,7 +1,4 @@
-# encoding: utf-8
-
 """marrow.mailer mail delivery framework and MIME message abstraction."""
-
 
 import warnings
 import pkg_resources
@@ -9,12 +6,10 @@ import pkg_resources
 from email import charset
 from functools import partial
 
+from ..package import load
+
 from marrow.mailer.message import Message
 from marrow.mailer.exc import MailerNotRunning
-
-from marrow.util.compat import basestring
-from marrow.util.bunch import Bunch
-from marrow.util.object import load_object
 
 
 __all__ = ['Mailer', 'Delivery', 'Message']
@@ -22,7 +17,7 @@ __all__ = ['Mailer', 'Delivery', 'Message']
 log = __import__('logging').getLogger(__name__)
 
 
-class Mailer(object):
+class Mailer:
 	"""The primary marrow.mailer interface.
 	
 	Instantiate and configure marrow.mailer, then use the instance to initiate mail delivery.
@@ -53,7 +48,7 @@ class Mailer(object):
 			except ValueError:
 				self.manager_config = manager_config = dict()
 		
-		if 'manager' in config and isinstance(config.manager, basestring):
+		if 'manager' in config and isinstance(config.manager, str):
 			warnings.warn("Use of the manager directive is deprecated; use manager.use instead.", DeprecationWarning)
 			manager_config.use = config.manager
 		
@@ -65,7 +60,7 @@ class Mailer(object):
 		except (AttributeError, ValueError): # pragma: no cover
 			self.transport_config = transport_config = Bunch()
 		
-		if 'transport' in config and isinstance(config.transport, basestring):
+		if 'transport' in config and isinstance(config.transport, str):
 			warnings.warn("Use of the transport directive is deprecated; use transport.use instead.", DeprecationWarning)
 			transport_config.use = config.transport
 		
@@ -99,13 +94,13 @@ class Mailer(object):
 	
 	@staticmethod
 	def _load(spec, group):
-		if not isinstance(spec, basestring):
+		if not isinstance(spec, str):
 			# It's already an object, just use it.
 			return spec
 		
 		if ':' in spec:
 			# Load the Python package(s) and target object.
-			return load_object(spec)
+			return load(spec)
 		
 		# Load the entry point.
 		for entrypoint in pkg_resources.iter_entry_points(group, spec):
