@@ -1,5 +1,5 @@
 try:
-	import boto.ses 
+	import boto.ses
 	from boto.ses import SESConnection
 
 except ImportError:

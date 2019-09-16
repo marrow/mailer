@@ -1,12 +1,8 @@
+from concurrent import futures
 from functools import partial
 
-from marrow.mailer.exc import TransportFailedException, TransportExhaustedException, MessageFailedException, DeliveryFailedException
-from marrow.mailer.manager.util import TransportPool
-
-try:
-	from concurrent import futures
-except ImportError: # pragma: no cover
-	raise ImportError("You must install the futures package to use background delivery.")
+from .util import TransportPool
+from ..exc import TransportFailedException, TransportExhaustedException, MessageFailedException, DeliveryFailedException
 
 
 __all__ = ['FuturesManager']

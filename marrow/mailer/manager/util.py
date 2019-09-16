@@ -1,7 +1,4 @@
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+import queue
 
 
 __all__ = ['TransportPool']

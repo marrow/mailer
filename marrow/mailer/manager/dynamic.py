@@ -1,23 +1,15 @@
 import atexit
-import weakref
-import sys
 import math
+import queue
+import sys
+import weakref
 
+from concurrent import futures
 from functools import partial
 from threading import Thread, Lock, current_thread
 
-from marrow.mailer.manager.futures import worker
-from marrow.mailer.manager.util import TransportPool
-
-try:
-	import queue
-except ImportError:
-	import Queue as queue
-
-try:
-	from concurrent import futures
-except ImportError:  # pragma: no cover
-	raise ImportError("You must install the futures package to use background delivery.")
+from .futures import worker
+from .util import TransportPool
 
 
 __all__ = ['DynamicManager']

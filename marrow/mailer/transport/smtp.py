@@ -2,8 +2,7 @@
 
 import socket
 
-from smtplib import (SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused,
-					 SMTPSenderRefused, SMTPServerDisconnected)
+from smtplib import SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused, SMTPSenderRefused, SMTPServerDisconnected
 
 from marrow.util.convert import boolean
 from marrow.util.compat import native
