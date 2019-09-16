@@ -1,10 +1,10 @@
 import atexit
-import threading
 import weakref
 import sys
 import math
 
 from functools import partial
+from threading import Thread, Lock, current_thread
 
 from marrow.mailer.manager.futures import worker
 from marrow.mailer.manager.util import TransportPool
@@ -61,7 +61,7 @@ def thread_worker(executor, jobs, timeout, maximum):
 	
 	runner = executor()
 	if runner:
-		runner._threads.discard(threading.current_thread())
+		runner._threads.discard(current_thread())
 
 
 class WorkItem:
@@ -98,8 +98,8 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
 		
 		self._threads = set()
 		self._shutdown = False
-		self._shutdown_lock = threading.Lock()
-		self._management_lock = threading.Lock()
+		self._shutdown_lock = Lock()
+		self._management_lock = Lock()
 		
 		atexit.register(self._atexit)
 	
@@ -118,7 +118,7 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
 		self.shutdown(True)
 	
 	def _spawn(self):
-		t = threading.Thread(target=thread_worker, args=(weakref.ref(self), self._work_queue, self.divisor, self.timeout))
+		t = Thread(target=thread_worker, args=(weakref.ref(self), self._work_queue, self.divisor, self.timeout))
 		t.daemon = True
 		t.start()
 		
