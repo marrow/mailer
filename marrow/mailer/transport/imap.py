@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import imaplib
 
 from datetime import datetime

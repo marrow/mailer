@@ -1,4 +1,3 @@
-# encoding: utf-8
 #
 # This file was taken from webpyte (r179):
 # http://code.google.com/p/webpyte/source/browse/trunk/webpyte/email_validator.py

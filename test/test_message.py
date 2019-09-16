@@ -1,7 +1,4 @@
-# encoding: utf-8
 """Test the TurboMail Message class."""
-
-from __future__ import print_function, unicode_literals
 
 import calendar
 from datetime import datetime, timedelta

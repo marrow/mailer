@@ -1,6 +1,3 @@
-# encoding: utf-8
-
-
 __all__ = ['LoggingTransport']
 
 log = __import__('logging').getLogger(__name__)

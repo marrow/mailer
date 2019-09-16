@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from functools import partial
 
 from marrow.mailer.exc import TransportFailedException, TransportExhaustedException, MessageFailedException, DeliveryFailedException

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from marrow.mailer.exc import TransportExhaustedException, TransportFailedException, DeliveryFailedException, MessageFailedException
 from marrow.mailer.manager.util import TransportPool
 

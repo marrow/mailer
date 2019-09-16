@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 try:
 	import boto.ses 
 	from boto.ses import SESConnection

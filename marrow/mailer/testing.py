@@ -1,8 +1,4 @@
-# encoding: utf-8
-
 """Utilities for testing Marrow Mailer and applications that use it."""
-
-from __future__ import print_function
 
 from threading import Thread
 from socket import socket

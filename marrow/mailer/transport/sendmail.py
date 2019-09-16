@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from subprocess import Popen, PIPE
 
 from marrow.mailer.exc import MessageFailedException

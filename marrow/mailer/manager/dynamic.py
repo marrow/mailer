@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import atexit
 import threading
 import weakref

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """Test the primary configurator interface, Delivery."""
 
 from unittest import TestCase

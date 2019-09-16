@@ -1,8 +1,5 @@
-# encoding: utf-8
+"""Marrow Mailer utility functions and support classes."""
 
-"""TurboMail utility functions and support classes."""
-
-from __future__ import unicode_literals
 import sys
 
 from email.utils import formataddr, parseaddr

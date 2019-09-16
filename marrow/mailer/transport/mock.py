@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import random
 
 from marrow.mailer.exc import TransportFailedException, TransportExhaustedException

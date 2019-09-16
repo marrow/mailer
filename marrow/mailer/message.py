@@ -1,8 +1,4 @@
-# encoding: utf-8
-
 """MIME-encoded electronic mail message class."""
-
-from __future__ import unicode_literals
 
 import imghdr
 import os

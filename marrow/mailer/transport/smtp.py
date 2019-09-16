@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """Deliver messages using (E)SMTP."""
 
 import socket

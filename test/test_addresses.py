@@ -1,7 +1,4 @@
-# encoding: utf-8
 """Test the TurboMail Message class."""
-
-from __future__ import unicode_literals
 
 import pytest
 
