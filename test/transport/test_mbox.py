@@ -1,4 +1,3 @@
-'''
 import os
 import sys
 import logging
@@ -49,5 +48,3 @@ class TestMailboxTransport(TestCase):
         
         with open(self.filename, 'rb') as fh:
             self.assertEqual(str(message), b"\n".join(fh.read().splitlines()[1:]))
-
-'''

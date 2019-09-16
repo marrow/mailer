@@ -1,4 +1,3 @@
-'''
 import logging
 import pkg_resources
 import pytest
@@ -44,5 +43,3 @@ def test_transports():
 	
 	if entrypoint is None:
 		pytest.skip("No transports found, have you run `setup.py develop` yet?")
-
-'''

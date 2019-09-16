@@ -1,4 +1,3 @@
-'''
 import os
 import sys
 import shutil
@@ -59,5 +58,3 @@ class TestMailDirectoryTransport(TestCase):
         
         with open(os.path.join(self.path, 'new', filename), 'rb') as fh:
             self.assertEqual(str(message), fh.read())
-
-'''

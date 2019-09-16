@@ -1,4 +1,3 @@
-'''
 import os
 import sys
 import socket
@@ -278,5 +277,3 @@ class TestSMTPTransportRefusedRecipients(TransportTestCase):
         
         queue = self.get_received_messages()
         self.assertEqual(1, queue.qsize())
-
-'''

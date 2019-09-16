@@ -1,4 +1,3 @@
-'''
 import logging
 
 from unittest import TestCase
@@ -35,5 +34,3 @@ class TestMockTransport(TestCase):
     def test_exhaustion(self):
         transport = MockTransport(dict(success=0.0, exhaustion=1.0))
         self.assertRaises(TransportExhaustedException, transport.deliver, None)
-
-'''
