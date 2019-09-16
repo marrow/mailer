@@ -5,6 +5,7 @@ import urllib2
 
 from marrow.mailer.exc import MailConfigurationException, DeliveryFailedException, MessageFailedException
 
+
 __all__ = ['SendgridTransport']
 
 log = __import__('logging').getLogger(__name__)
@@ -25,13 +26,12 @@ class SendgridTransport(object):
 		pass
 	
 	def deliver(self, message):
-
 		to = message.to
-
+		
 		# Sendgrid doesn't accept CC over the api
 		if message.cc:
 			to.extend(message.cc)
-
+		
 		args = dict({
 				'from': [fromaddr.address.encode(message.encoding) for fromaddr in message.author],
 				'fromname': [fromaddr.name.encode(message.encoding) for fromaddr in message.author],
@@ -40,7 +40,7 @@ class SendgridTransport(object):
 				'subject': message.subject.encode(message.encoding),
 				'text': message.plain.encode(message.encoding)
 			})
-
+		
 		if message.bcc:
 			args['bcc'] = [bcc.address.encode(message.encoding) for bcc in message.bcc]
 		
@@ -68,12 +68,12 @@ class SendgridTransport(object):
 		if not self.bearer:
 			args['api_user'] = self.user
 			args['api_key'] = self.key
-
+		
 		request = urllib2.Request(
 				"https://sendgrid.com/api/mail.send.json",
 				urllib.urlencode(args, True)
 			)
-
+		
 		if self.bearer:
 			request.add_header("Authorization", "Bearer %s" % self.key)
 		
@@ -83,7 +83,7 @@ class SendgridTransport(object):
 			raise DeliveryFailedException(message, "Could not connect to Sendgrid.")
 		else:
 			respcode = response.getcode()
-
+			
 			if respcode >= 400 and respcode <= 499:
 				raise MessageFailedException(response.read())
 			elif respcode >= 500 and respcode <= 599:

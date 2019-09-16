@@ -16,7 +16,6 @@ __all__ = ['FuturesManager']
 log = __import__('logging').getLogger(__name__)
 
 
-
 def worker(pool, message):
 	# This may be non-obvious, but there are several conditions which
 	# we trap later that require us to retry the entire delivery.
@@ -45,7 +44,6 @@ def worker(pool, message):
 		break
 	
 	return message, result
-
 
 
 class FuturesManager(object):

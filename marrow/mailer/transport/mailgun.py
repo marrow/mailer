@@ -23,7 +23,7 @@ class MailgunTransport(object): # pragma: no cover
 			self.keys = {config['domain']: config['key']}
 		else:
 			self.keys = config.get('keys', {})
-
+		
 		if not self.keys:
 			raise ValueError("Must either define a `domain` and `key` configuration, or `keys` mapping.")
 		

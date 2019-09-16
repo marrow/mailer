@@ -25,10 +25,10 @@ class PostmarkTransport(object):
 			'Subject': message.subject.encode(message.encoding),
 			'TextBody': message.plain.encode(message.encoding),
 		})
-			
+		
 		if message.cc:
 			args['Cc'] = message.cc.encode()
-
+		
 		if message.bcc:
 			args['Bcc'] = message.bcc.encode(message.encoding)
 		
@@ -49,9 +49,9 @@ class PostmarkTransport(object):
 						"ContentType": attachment.get_content_type()
 					}
 				)
-
+		
 		return args
-
+	
 	def _batchsend(self):
 		request = urllib2.Request(
 			"https://api.postmarkapp.com/email/batch",
@@ -62,7 +62,7 @@ class PostmarkTransport(object):
 				'X-Postmark-Server-Token': self.key,
 			}
 		)
-
+		
 		try:
 			response = urllib2.urlopen(request)
 		except (urllib2.HTTPError, urllib2.URLError) as e:
@@ -73,9 +73,9 @@ class PostmarkTransport(object):
 				raise MessageFailedException(response.read())
 			elif respcode >= 500 and respcode <= 599:
 				raise DeliveryFailedException(self.messages[0], "Postmark service unavailable. Just diplaying first message of batch")
-
+		
 		del self.messages[:]
-
+	
 	def startup(self):
 		self.messages = []
 	

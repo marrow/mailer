@@ -1,7 +1,4 @@
-# encoding: utf-8
-
 """Exceptions used by marrow.mailer to report common errors."""
-
 
 __all__ = [
 		'MailException',
@@ -12,7 +9,6 @@ __all__ = [
 		'TransportExhaustedException',
 		'ManagerException'
 	]
-
 
 
 class MailException(Exception):

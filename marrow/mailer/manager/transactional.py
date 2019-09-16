@@ -11,7 +11,7 @@ from functools import partial
 
 from zope.interface import implements
 from transaction.interfaces import IDataManager
-  
+
 from marrow.mailer.manager.dynamic import ScalingPoolExecutor, DynamicManager
 
 
