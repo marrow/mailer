@@ -8,5 +8,5 @@ version = ".".join([str(i) for i in version_info[:3]]) + ((version_info.releasel
 
 author = namedtuple('Author', ['name', 'email'])("Alice Bevan-McGregor", 'alice@gothcandy.com')
 
-description = "A light-weight modular mail delivery framework for Python 2.7+, 3.3+, Pypy, and Pypy3."
+description = "A light-weight modular mail delivery framework for Python 3.7+ and Pypy3."
 url = 'https://github.com/marrow/mailer/'
