@@ -41,7 +41,7 @@ def thread_worker(executor, jobs, timeout, maximum):
 					runner = executor()
 
 					if runner is None or runner._shutdown:
-						log.debug("Worker instructed to shut down.")
+						if __debug__: log.debug("Worker instructed to shut down.")
 						break
 
 					# Can't think of a test case for this; best to be safe.
@@ -49,15 +49,15 @@ def thread_worker(executor, jobs, timeout, maximum):
 					continue  # pragma: no cover
 
 			except queue.Empty:  # pragma: no cover
-				log.debug("Worker death from starvation.")
+				if __debug__: log.debug("Worker death from starvation.")
 				break
 
 			else:
 				work.run()
 
 		else:  # pragma: no cover
-			log.debug("Worker death from exhaustion.")
 
+			if __debug__: log.debug("Worker death from exhaustion.")
 	except:  # pragma: no cover
 		log.critical("Unhandled exception in worker.", exc_info=True)
 
@@ -132,8 +132,8 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
 
 		if pool < self._optimum_workers:
 			tospawn = int(self._optimum_workers - pool)
-			log.debug("Spawning %d thread%s." % (tospawn, tospawn != 1 and "s" or ""))
 
+			if __debug__: log.debug("Spawning %d thread%s." % (tospawn, tospawn != 1 and "s" or ""))
 			for i in range(tospawn):
 				self._spawn()
 
@@ -161,11 +161,11 @@ class DynamicManager(object):
 	def startup(self):
 		log.info("%s manager starting up.", self.name)
 
-		log.debug("Initializing transport queue.")
+		if __debug__: log.debug("Initializing transport queue.")
 		self.transport.startup()
 
 		workers = self.workers
-		log.debug("Starting thread pool with %d workers." % (workers, ))
+		if __debug__: log.debug("Starting thread pool with %d workers." % (workers, ))
 		self.executor = self.Executor(workers, self.divisor, self.timeout)
 
 		log.info("%s manager ready.", self.name)
@@ -179,10 +179,10 @@ class DynamicManager(object):
 	def shutdown(self, wait=True):
 		log.info("%s manager stopping.", self.name)
 
-		log.debug("Stopping thread pool.")
+		if __debug__: log.debug("Stopping thread pool.")
 		self.executor.shutdown(wait=wait)
 
-		log.debug("Draining transport queue.")
+		if __debug__: log.debug("Draining transport queue.")
 		self.transport.shutdown()
 
 		log.info("%s manager stopped.", self.name)

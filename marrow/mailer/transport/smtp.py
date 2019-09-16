@@ -51,7 +51,7 @@ class SMTPTransport(object):
 
 	def shutdown(self):
 		if self.connected:
-			log.debug("Closing SMTP connection")
+			if __debug__: log.debug("Closing SMTP connection")
 
 			try:
 				try:
@@ -137,7 +137,7 @@ class SMTPTransport(object):
 
 		except Exception as e: # pragma: no cover
 			cls_name = e.__class__.__name__
-			log.debug("%s EXCEPTION %s", message.id, cls_name, exc_info=True)
+			if __debug__: log.debug("%s EXCEPTION %s", message.id, cls_name, exc_info=True)
 
 			if message.retries >= 0:
 				log.exception("%s DEFERRED %s", message.id, cls_name)

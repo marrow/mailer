@@ -62,11 +62,11 @@ class FuturesManager(object):
 	def startup(self):
 		log.info("Futures delivery manager starting.")
 		
-		log.debug("Initializing transport queue.")
+		if __debug__: log.debug("Initializing transport queue.")
 		self.transport.startup()
 		
 		workers = self.workers
-		log.debug("Starting thread pool with %d workers." % (workers, ))
+		if __debug__: log.debug("Starting thread pool with %d workers." % (workers, ))
 		self.executor = futures.ThreadPoolExecutor(workers)
 		
 		log.info("Futures delivery manager ready.")
@@ -80,10 +80,10 @@ class FuturesManager(object):
 	def shutdown(self, wait=True):
 		log.info("Futures delivery manager stopping.")
 		
-		log.debug("Stopping thread pool.")
+		if __debug__: log.debug("Stopping thread pool.")
 		self.executor.shutdown(wait=wait)
 		
-		log.debug("Draining transport queue.")
+		if __debug__: log.debug("Draining transport queue.")
 		self.transport.shutdown()
 		
 		log.info("Futures delivery manager stopped.")

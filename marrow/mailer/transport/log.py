@@ -14,7 +14,7 @@ class LoggingTransport(object):
 		self.log = log if 'name' not in config else __import__('logging').getLogger(config.name)
 	
 	def startup(self):
-		log.debug("Logging transport starting.")
+		if __debug__: log.debug("Logging transport starting.")
 	
 	def deliver(self, message):
 		msg = str(message)
@@ -23,4 +23,4 @@ class LoggingTransport(object):
 		self.log.critical(msg)
 	
 	def shutdown(self):
-		log.debug("Logging transport stopping.")
+		if __debug__: log.debug("Logging transport stopping.")

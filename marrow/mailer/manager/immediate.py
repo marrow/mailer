@@ -29,7 +29,7 @@ class ImmediateManager(object):
 		
 		log.info("Immediate delivery manager starting.")
 		
-		log.debug("Initializing transport queue.")
+		if __debug__: log.debug("Initializing transport queue.")
 		self.transport.startup()
 		
 		log.info("Immediate delivery manager started.")
@@ -64,7 +64,7 @@ class ImmediateManager(object):
 	def shutdown(self):
 		log.info("Immediate delivery manager stopping.")
 		
-		log.debug("Draining transport queue.")
+		if __debug__: log.debug("Draining transport queue.")
 		self.transport.shutdown()
 		
 		log.info("Immediate delivery manager stopped.")
