@@ -2,7 +2,7 @@ h1(#title). Marrow Mailer
 
 bq(subtitle). A highly efficient and modular mail delivery framework for Python 2.6+ and 3.2+, formerly called TurboMail.
 
-bq(byline). (C) 2006-2016, Alice Bevan-McGregor and contributors.
+bq(byline). (C) 2006-2019, Alice Bevan-McGregor and contributors.
 
 bq(byline). "https://github.com/marrow/mailer":github-project
 
@@ -42,6 +42,8 @@ Installing @marrow.mailer@ is easy, just execute the following in a terminal: [2
 <pre><code>pip install marrow.mailer</code></pre>
 
 If you add @marrow.mailer@ to the @install_requires@ argument of the call to @setup()@ in your application's @setup.py@ file, @marrow.mailer@ will be automatically installed and made available when your own application is installed.  We recommend using "less than" version numbers to ensure there are no unintentional side-effects when updating.  Use @"marrow.mailer<4.1"@ to get all bugfixes for the current release, and @"marrow.mailer<5.0"@ to get bugfixes and feature updates, but ensure that large breaking changes are not installed.
+
+*Warning:* The 4.0 series is the last to support Python 2.
 
 
 h3(#install-dev). %2.1.% Development Version
@@ -454,7 +456,7 @@ Marrow Mailer has been released under the MIT Open Source license.
 
 h3(#license-mit). %8.1.% The MIT License
 
-Copyright (C) 2006-2016 Alice Bevan-McGregor and contributors.
+Copyright (C) 2006-2019 Alice Bevan-McGregor and contributors.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
