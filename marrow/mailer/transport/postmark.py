@@ -9,7 +9,7 @@ __all__ = ['PostmarkTransport']
 log = __import__('logging').getLogger(__name__)
 
 
-class PostmarkTransport(object):
+class PostmarkTransport:
 	__slots__ = ('ephemeral', 'key', 'messages')
 	
 	def __init__(self, config):

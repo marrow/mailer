@@ -3,8 +3,7 @@ __all__ = ['LoggingTransport']
 log = __import__('logging').getLogger(__name__)
 
 
-
-class LoggingTransport(object):
+class LoggingTransport:
 	__slots__ = ('ephemeral', 'log')
 	
 	def __init__(self, config):

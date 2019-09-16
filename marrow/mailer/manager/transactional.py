@@ -19,7 +19,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class ExecutorDataManager(object):
+class ExecutorDataManager:
 	implements(IDataManager)
 	
 	__slots__ = ('callback', 'abort_callback')

@@ -8,7 +8,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class ImmediateManager(object):
+class ImmediateManager:
 	__slots__ = ('transport', )
 	
 	def __init__(self, config, Transport):

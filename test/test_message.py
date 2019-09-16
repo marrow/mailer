@@ -216,7 +216,7 @@ class TestBasicMessage(TestCase):
 			assert 'Zm9v' in str(message)  # foo in base64
 	
 	def test_mime_attachments_filelike(self):
-		class Mock(object):
+		class Mock:
 			def read(self):
 				return b'foo'
 		
@@ -257,7 +257,7 @@ class TestBasicMessage(TestCase):
 		assert b'image/gif' in result
 		assert b'R0lGODlh' in result  # GIF89a in base64
 		
-		class Mock(object):
+		class Mock:
 			def read(s):
 				return base64.b64decode(self.gif)
 		

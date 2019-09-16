@@ -7,7 +7,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class MaildirTransport(object):
+class MaildirTransport:
 	"""A modern UNIX maildir on-disk file delivery transport."""
 	
 	__slots__ = ('ephemeral', 'box', 'directory', 'folder', 'create', 'separator')

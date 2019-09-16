@@ -64,7 +64,7 @@ def thread_worker(executor, jobs, timeout, maximum):
 		runner._threads.discard(threading.current_thread())
 
 
-class WorkItem(object):
+class WorkItem:
 	__slots__ = ('future', 'fn', 'args', 'kwargs')
 	
 	def __init__(self, future, fn, args, kwargs):
@@ -140,7 +140,7 @@ class ScalingPoolExecutor(futures.ThreadPoolExecutor):
 		return min(self._max_workers, math.ceil(self._work_queue.qsize() / float(self.divisor)))
 
 
-class DynamicManager(object):
+class DynamicManager:
 	__slots__ = ('workers', 'divisor', 'timeout', 'executor', 'transport')
 	
 	name = "Dynamic"

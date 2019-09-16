@@ -21,7 +21,7 @@ from marrow.util.compat import basestring, unicode, native
 __all__ = ['Message']
 
 
-class Message(object):
+class Message:
 	"""Represents an e-mail message."""
 	
 	sender = AutoConverter('_sender', Address, False)

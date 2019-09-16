@@ -11,7 +11,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class MockTransport(object):
+class MockTransport:
 	"""A no-op dummy transport.
 	
 	Accepts two configuration directives:

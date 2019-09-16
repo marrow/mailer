@@ -11,7 +11,7 @@ from marrow.util.compat import basestring, unicode, unicodestr, native
 __all__ = ['Address', 'AddressList']
 
 
-class Address(object):
+class Address:
 	"""Validated electronic mail address class.
 	
 	This class knows how to validate and format e-mail addresses.  It uses
@@ -198,7 +198,7 @@ class AddressList(list):
 		return [Address(i.address).encode(encoding).decode(encoding) for i in self]
 
 
-class AutoConverter(object):
+class AutoConverter:
 	"""Automatically converts an assigned value to the given type."""
 	
 	def __init__(self, attr, cls, can=True):

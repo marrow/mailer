@@ -9,7 +9,7 @@ __all__ = ['SendgridTransport']
 log = __import__('logging').getLogger(__name__)
 
 
-class SendgridTransport(object):
+class SendgridTransport:
 	__slots__ = ('ephemeral', 'user', 'key', 'bearer')
 	
 	def __init__(self, config):

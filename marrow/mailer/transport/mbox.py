@@ -7,7 +7,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class MailboxTransport(object):
+class MailboxTransport:
 	"""A classic UNIX mailbox on-disk file delivery transport.
 	
 	Due to the file locking inherent in this format, using a background

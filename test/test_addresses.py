@@ -6,7 +6,7 @@ from marrow.mailer.address import Address, AddressList, AutoConverter
 from marrow.util.compat import bytes, unicode
 
 
-class TestAddress(object):
+class TestAddress:
 	def test_punycode(self):
 		addr = Address('Foo', 'foo@exámple.test')
 		assert bytes(addr) == b'Foo <foo@xn--exmple-qta.test>'
@@ -143,7 +143,7 @@ class TestAddress(object):
 #		Address('jsmith@[192.168.2.1]')
 
 
-class TestAddressList(object):
+class TestAddressList:
 	"""Test the AddressList helper class."""
 	
 	addresses = AutoConverter('_addresses', AddressList)

@@ -11,7 +11,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class MailgunTransport(object): # pragma: no cover
+class MailgunTransport: # pragma: no cover
 	__slots__ = ('ephemeral', 'keys', 'session')
 	
 	API_URL_TMPL = "https://api.mailgun.net/v3/{domain}/messages.mime"
