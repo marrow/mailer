@@ -18,7 +18,7 @@ log = logging.getLogger('tests')
 
 
 
-class MockFuture(object):
+class MockFuture:
     def __init__(self):
         self.cancelled = False
         self.running = False
@@ -77,7 +77,7 @@ class ManagerTestCase(TestCase):
     states = []
     messages = []
     
-    class MockTransport(object):
+    class MockTransport:
         def __init__(self, states, messages):
             self.ephemeral = False
             self.states = states

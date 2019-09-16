@@ -15,7 +15,7 @@ from marrow.mailer.exc import (
 log = __import__('logging').getLogger(__name__)
 
 
-class SMTPTransport(object):
+class SMTPTransport:
 	"""An (E)SMTP pipelining transport."""
 	
 	__slots__ = ('ephemeral', 'host', 'tls', 'certfile', 'keyfile', 'port', 'local_hostname', 'username', 'password', 'timeout', 'debug', 'pipeline', 'connection', 'sent')

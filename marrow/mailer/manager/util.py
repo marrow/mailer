@@ -10,7 +10,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class TransportPool(object):
+class TransportPool:
 	__slots__ = ('factory', 'transports')
 	
 	def __init__(self, factory):
@@ -29,7 +29,7 @@ class TransportPool(object):
 		except queue.Empty:
 			pass
 	
-	class Context(object):
+	class Context:
 		__slots__ = ('pool', 'transport')
 		
 		def __init__(self, pool):

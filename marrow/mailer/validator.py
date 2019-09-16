@@ -106,7 +106,7 @@ class ValidationException(ValueError):
 	pass
 
 
-class BaseValidator(object):
+class BaseValidator:
 	def validate_or_raise(self, *a, **k):
 		"""Some people would condemn this whole module screaming:
 		"Don't return success codes, use exceptions!"

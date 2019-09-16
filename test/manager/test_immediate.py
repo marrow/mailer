@@ -24,7 +24,7 @@ class ManagerTestCase(TestCase):
     states = []
     messages = []
     
-    class MockTransport(object):
+    class MockTransport:
         def __init__(self, states, messages):
             self.ephemeral = False
             self.states = states

@@ -44,7 +44,7 @@ def worker(pool, message):
 	return message, result
 
 
-class FuturesManager(object):
+class FuturesManager:
 	__slots__ = ('workers', 'executor', 'transport')
 	
 	def __init__(self, config, transport):
