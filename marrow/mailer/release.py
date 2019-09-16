@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """Release information about Marrow Mailer."""
 
 from collections import namedtuple
