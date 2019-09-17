@@ -1,4 +1,4 @@
-"""Test the TurboMail Message class."""
+"""Test the Message class."""
 
 import calendar
 from datetime import datetime, timedelta

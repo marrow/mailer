@@ -1,4 +1,4 @@
-"""Test the TurboMail Message class."""
+"""Test the Address and AddressList classes."""
 
 import pytest
 

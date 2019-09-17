@@ -18,10 +18,10 @@ class MailHandler(logging.Handler):
 	"""
 	
 	def __init__(self, *args, **config):
-		"""Initialize the instance, optionally configuring TurboMail itself.
+		"""Initialize the instance, optionally configuring Marrow Mailer itself.
 		
 		If no additional arguments are supplied to the handler, re-use any
-		existing running TurboMail configuration.
+		existing running configuration.
 		
 		To get around limitations of the INI parser, you can pass in a tuple
 		of name, value pairs to populate the dictionary.  (Use `{}` dict
@@ -37,7 +37,7 @@ class MailHandler(logging.Handler):
 		
 		self.mailer = Mailer(config).start()
 		
-		# If we get a configuration that doesn't explicitly start TurboMail
+		# If we get a configuration that doesn't explicitly start Marrow Mailer
 		# we use the configuration to populate the Message instance.
 		self.config = config
 	
