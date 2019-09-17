@@ -7,13 +7,9 @@ branches:
     - /^[^/]+/.*$/
 
 python:
-  - "2.7"
-  - "pypy"
   - "pypy3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
   - "3.7"
+  - "3.8-dev"
 
 install:
   - travis_retry pip install --upgrade setuptools pip codecov 'setuptools_scm>=1.9'
