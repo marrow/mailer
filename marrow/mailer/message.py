@@ -24,6 +24,11 @@ __all__ = ['Message']
 class Message:
 	"""Represents an e-mail message."""
 	
+	_id: Optional[str] = None  # Message-Id
+	_processed: bool = False  # Has the MIME generation process been completed?
+	_dirty: bool = False  # Has some aspect of the message changed since generation?
+	mailer: Optional[object] = None  # The mailer instance the message is "bound" to.
+	
 	sender = AutoConverter('_sender', Address, False)
 	author = AutoConverter('_author', AddressList)
 	authors = author
@@ -41,12 +46,6 @@ class Message:
 		constructor, using named arguments.  The first three positional
 		arguments can be used to quickly prepare a simple message.
 		"""
-		
-		# Internally used attributes
-		self._id = None
-		self._processed = False
-		self._dirty = False
-		self.mailer = None
 		
 		# Default values
 		self.subject = None
