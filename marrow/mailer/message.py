@@ -14,9 +14,8 @@ from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
 from typing import Optional
 
-from marrow.mailer import release
-from marrow.mailer.address import Address, AddressList, AutoConverter
-from marrow.util.compat import basestring, unicode, native
+from . import release
+from .address import Address, AddressList, AutoConverter
 
 
 __all__ = ['Message']
@@ -159,12 +158,12 @@ class Message:
 		return message
 	
 	def _build_date_header_string(self, date_value):
-		"""Gets the date_value (may be None, basestring, float or datetime.datetime instance) and returns a valid date
+		"""Gets the date_value (may be None, str, float or datetime.datetime instance) and returns a valid date
 		string as per RFC 2822."""
 		
 		if isinstance(date_value, datetime):
 			date_value = time.mktime(date_value.timetuple())
-		if not isinstance(date_value, basestring):
+		if not isinstance(date_value, str):
 			date_value = formatdate(date_value, localtime=True)
 		
 		# Encode it here to avoid this:
@@ -213,7 +212,7 @@ class Message:
 			name, value = header
 			
 			if isinstance(value, (Address, AddressList)):
-				value = unicode(value)
+				value = str(value)
 			
 			message[name] = value
 	
@@ -327,7 +326,7 @@ class Message:
 			# See https://docs.python.org/2/library/email.message.html#email.message.Message.add_header
 			# for more information.
 			# add_header() in the email module expects its arguments to be ASCII strings. Go ahead and handle
-			# the case where these arguments come in as unicode strings, since encoding ASCII strings
+			# the case where these arguments come in as str strings, since encoding ASCII strings
 			# as UTF-8 can't hurt.
 			if sys.version_info < (3, 0):
 				filename=(filename_charset.encode('utf-8'), filename_language.encode('utf-8'), filename.encode('utf-8'))

@@ -2,8 +2,6 @@ import random
 
 from marrow.mailer.exc import TransportFailedException, TransportExhaustedException
 
-from marrow.util.bunch import Bunch
-
 
 __all__ = ['MockTransport']
 
@@ -30,7 +28,7 @@ class MockTransport:
 	def __init__(self, config):
 		base = {'success': 1.0, 'failure': 0.0, 'exhaustion': 0.0}
 		base.update(dict(config))
-		self.config = Bunch(base)
+		self.config = dict(base)
 	
 	def startup(self):
 		pass

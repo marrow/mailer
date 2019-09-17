@@ -11,7 +11,6 @@ from marrow.mailer.exc import MailerNotRunning
 from marrow.mailer.manager.immediate import ImmediateManager
 from marrow.mailer.transport.mock import MockTransport
 
-from marrow.util.bunch import Bunch
 
 log = logging.getLogger('tests')
 
@@ -183,7 +182,7 @@ class TestMethods(TestCase):
 		#assert messages[-1] == "Attempt made to stop an already stopped Mailer service."
 	
 	def test_send(self):
-		message = Bunch(id='foo')
+		message = dict(id='foo')
 		
 		interface = Mailer(base_config)
 		
@@ -200,7 +199,7 @@ class TestMethods(TestCase):
 		#assert messages[0] == "Attempting delivery of message foo."
 		#assert messages[-1] == "Message foo delivered."
 		
-		message_fail = Bunch(id='bar', die=True)
+		message_fail = dict(id='bar', die=True)
 		
 		with pytest.raises(Exception):
 			interface.send(message_fail)

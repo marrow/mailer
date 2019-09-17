@@ -4,12 +4,8 @@ import socket
 
 from smtplib import SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused, SMTPSenderRefused, SMTPServerDisconnected
 
-from marrow.util.convert import boolean
-from marrow.util.compat import native
+from marrow.mailer.exc import TransportExhaustedException, TransportException, TransportFailedException, MessageFailedException
 
-from marrow.mailer.exc import (
-	TransportExhaustedException, TransportException, TransportFailedException,
-	MessageFailedException)
 
 log = __import__('logging').getLogger(__name__)
 
@@ -20,20 +16,20 @@ class SMTPTransport:
 	__slots__ = ('ephemeral', 'host', 'tls', 'certfile', 'keyfile', 'port', 'local_hostname', 'username', 'password', 'timeout', 'debug', 'pipeline', 'connection', 'sent')
 	
 	def __init__(self, config):
-		self.host = native(config.get('host', '127.0.0.1'))
+		self.host = str(config.get('host', '127.0.0.1'))
 		self.tls = config.get('tls', 'optional')
 		self.certfile = config.get('certfile', None)
 		self.keyfile = config.get('keyfile', None)
 		self.port = int(config.get('port', 465 if self.tls == 'ssl' else 25))
-		self.local_hostname = native(config.get('local_hostname', '')) or None
-		self.username = native(config.get('username', '')) or None
-		self.password = native(config.get('password', '')) or None
+		self.local_hostname = (config.get('local_hostname', '')) or None
+		self.username = str(config.get('username', '')) or None
+		self.password = str(config.get('password', '')) or None
 		self.timeout = config.get('timeout', None)
 		
 		if self.timeout:
 			self.timeout = int(self.timeout)
 		
-		self.debug = boolean(config.get('debug', False))
+		self.debug = bool(config.get('debug', False))
 		
 		self.pipeline = config.get('pipeline', None)
 		if self.pipeline not in (None, True, False):

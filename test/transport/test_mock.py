@@ -6,8 +6,6 @@ from marrow.mailer import Message
 from marrow.mailer.exc import TransportFailedException, TransportExhaustedException
 from marrow.mailer.transport.mock import MockTransport
 
-from marrow.util.bunch import Bunch
-
 
 log = logging.getLogger('tests')
 
@@ -27,7 +25,7 @@ class TestMockTransport(TestCase):
 	
 	def test_death(self):
 		transport = MockTransport(dict())
-		self.assertRaises(ZeroDivisionError, transport.deliver, Bunch(die=True))
+		self.assertRaises(ZeroDivisionError, transport.deliver, dict(die=True))
 	
 	def test_exhaustion(self):
 		transport = MockTransport(dict(success=0.0, exhaustion=1.0))

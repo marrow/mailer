@@ -15,7 +15,6 @@ from email.utils import formatdate, parsedate_tz
 
 from marrow.mailer import Message
 from marrow.mailer.address import AddressList
-from marrow.util.compat import basestring, unicode
 
 
 class TestBasicMessage(TestCase):
@@ -35,24 +34,24 @@ class TestBasicMessage(TestCase):
 	def test_missing_values(self):
 		message = Message()
 		with pytest.raises(ValueError):
-			unicode(message)
+			str(message)
 		
 		message.author = "bob.dole@whitehouse.gov"
 		with pytest.raises(ValueError):
-			unicode(message)
+			str(message)
 		
 		message.subject = "Attn: Bob Dole"
 		with pytest.raises(ValueError):
-			unicode(message)
+			str(message)
 		
 		message.to = "user@example.com"
 		with pytest.raises(ValueError):
-			unicode(message)
+			str(message)
 		
 		message.plain = "Testing!"
 		
 		try:
-			unicode(message)
+			str(message)
 		except ValueError:
 			assert False, "Message should be valid."
 	
@@ -76,7 +75,7 @@ class TestBasicMessage(TestCase):
 	def test_message_properties(self):
 		message = self.build_message()
 		assert message.author == [("Author", "author@example.com")]
-		assert unicode(message.author) == "Author <author@example.com>"
+		assert str(message.author) == "Author <author@example.com>"
 		assert isinstance(message.mime, MIMEText)
 	
 	def test_message_string_with_basic(self):
@@ -96,7 +95,7 @@ class TestBasicMessage(TestCase):
 		message.reply = 'replyto@example.com'
 		message.notify = 'disposition@example.com'
 		
-		msg = email.message_from_string(unicode(message))
+		msg = email.message_from_string(str(message))
 		
 		assert msg['cc'] == 'cc@example.com'
 		assert msg['bcc'] == None
@@ -127,10 +126,10 @@ class TestBasicMessage(TestCase):
 		
 		message.attach("hello.txt", b"Fnord.", "text", "plain", True)
 		
-		assert 'Hello world.' in unicode(message)
-		assert 'Farewell cruel world.' in unicode(message)
-		assert 'hello.txt' in unicode(message)
-		assert 'Rm5vcmQu' in unicode(message)  # Fnord. in base64
+		assert 'Hello world.' in str(message)
+		assert 'Farewell cruel world.' in str(message)
+		assert 'hello.txt' in str(message)
+		assert 'Rm5vcmQu' in str(message)  # Fnord. in base64
 	
 	def test_mime_attachments(self):
 		message = self.build_message()
@@ -139,11 +138,11 @@ class TestBasicMessage(TestCase):
 		
 		message.attach("hello.txt", b"Fnord.")
 		
-		assert 'Hello world.' in unicode(message)
-		assert 'Farewell cruel world.' in unicode(message)
-		assert 'hello.txt' in unicode(message)
-		assert 'Rm5vcmQu' in unicode(message)  # Fnord. in base64
-		assert 'text/plain\n' in unicode(message)
+		assert 'Hello world.' in str(message)
+		assert 'Farewell cruel world.' in str(message)
+		assert 'hello.txt' in str(message)
+		assert 'Rm5vcmQu' in str(message)  # Fnord. in base64
+		assert 'text/plain\n' in str(message)
 	
 	def test_mime_attachments_unknown(self):
 		message = self.build_message()
@@ -160,44 +159,44 @@ class TestBasicMessage(TestCase):
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."
-		message.attach("☃.txt", b"unicode snowman", filename_charset='utf-8')
+		message.attach("☃.txt", b"str snowman", filename_charset='utf-8')
 		
-		assert 'Hello world.' in unicode(message)
-		assert 'Farewell cruel world.' in unicode(message)
+		assert 'Hello world.' in str(message)
+		assert 'Farewell cruel world.' in str(message)
 		if sys.version_info < (3, 0):
-			assert 'filename*="utf-8\'\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+			assert 'filename*="utf-8\'\'%E2%98%83.txt"' in str(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
 		else:
-			assert 'filename*=utf-8\'\'%E2%98%83.txt' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
-		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+			assert 'filename*=utf-8\'\'%E2%98%83.txt' in str(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in str(message)  # str snowman in base64
 
 	def test_language_specification_and_charset_for_attachment_name(self):
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."
-		message.attach("☃.txt", b"unicode snowman", filename_charset='utf-8', filename_language='en-us')
+		message.attach("☃.txt", b"str snowman", filename_charset='utf-8', filename_language='en-us')
 		
-		assert 'Hello world.' in unicode(message)
-		assert 'Farewell cruel world.' in unicode(message)
+		assert 'Hello world.' in str(message)
+		assert 'Farewell cruel world.' in str(message)
 		
 		if sys.version_info < (3, 0):
-			assert 'filename*="utf-8\'en-us\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+			assert 'filename*="utf-8\'en-us\'%E2%98%83.txt"' in str(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
 		else:
-			assert 'filename*=utf-8\'en-us\'%E2%98%83.txt' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
-		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+			assert 'filename*=utf-8\'en-us\'%E2%98%83.txt' in str(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in str(message)  # str snowman in base64
 
 	def test_language_specification_but_no_charset_for_attachment_name(self):
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."
-		message.attach("☃.txt", b"unicode snowman", filename_language='en-us')
+		message.attach("☃.txt", b"str snowman", filename_language='en-us')
 		
-		assert 'Hello world.' in unicode(message)
-		assert 'Farewell cruel world.' in unicode(message)
+		assert 'Hello world.' in str(message)
+		assert 'Farewell cruel world.' in str(message)
 		if sys.version_info < (3, 0):
-			assert 'filename*="utf-8\'en-us\'%E2%98%83.txt"' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+			assert 'filename*="utf-8\'en-us\'%E2%98%83.txt"' in str(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
 		else:
-			assert 'filename*=utf-8\'en-us\'%E2%98%83.txt' in unicode(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
-		assert 'dW5pY29kZSBzbm93bWFu' in unicode(message)  # unicode snowman in base64
+			assert 'filename*=utf-8\'en-us\'%E2%98%83.txt' in str(message) # ☃ is encoded in ASCII as \xe2\x98\x83, which is URL encoded as %E2%98%83
+		assert 'dW5pY29kZSBzbm93bWFu' in str(message)  # str snowman in base64
 	
 	
 	def test_mime_attachments_file(self):
@@ -283,7 +282,7 @@ class TestBasicMessage(TestCase):
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."
-		message.attach("wat.txt", b"not a unicode snowman") # calls add_header() under the covers
+		message.attach("wat.txt", b"not a str snowman") # calls add_header() under the covers
 		attachment = message.attachments[0]
 		filename = attachment.get_filename() # calls email.utils.collapse_rfc2231_value() under the covers
 		assert filename == "wat.txt"
@@ -292,15 +291,12 @@ class TestBasicMessage(TestCase):
 		message = self.build_message()
 		message.plain = "Hello world."
 		message.rich = "Farewell cruel world."
-		message.attach("☃.txt", b"unicode snowman", filename_language='en-us')
+		message.attach("☃.txt", b"str snowman", filename_language='en-us')
 		attachment = message.attachments[0]
 		filename = attachment.get_param('filename', object(), 'content-disposition') # get_filename() calls this under the covers
 		assert isinstance(filename, tuple)  # Since attachment encoded according to RFC2231, should be represented as a tuple		
 		filename = attachment.get_filename()  # Calls email.utils.collapse_rfc2231_value() under the covers, currently fails
-		if sys.version_info < (3, 0):
-			assert isinstance(filename, basestring)  # Successfully converts tuple to a string
-		else:
-			assert isinstance(filename, str)
+		assert isinstance(filename, str)
 	
 	def test_recipients_collection(self):
 		message = self.build_message()
@@ -467,14 +463,13 @@ class TestBasicMessage(TestCase):
 		message = self.build_message()
 		message.cc = 'cc@example.com'
 		message.bcc = 'bcc@example.com'
-		expected_recipients = ['recipient@example.com', 'cc@example.com', 
-							   'bcc@example.com']
+		expected_recipients = ['recipient@example.com', 'cc@example.com', 'bcc@example.com']
 		recipients = list(map(str, list(message.recipients.addresses)))
 		assert recipients == expected_recipients
 	
 	def test_can_set_encoding_for_message_explicitely(self):
 		message = self.build_message()
-		assert 'iso-8859-1' not in unicode(message).lower()
+		assert 'iso-8859-1' not in str(message).lower()
 		message.encoding = 'ISO-8859-1'
 		msg = email.message_from_string(str(message))
 		assert msg['Content-Type'] == 'text/plain; charset="iso-8859-1"'
@@ -498,6 +493,5 @@ class TestBasicMessage(TestCase):
 		message.plain = lambda: "plain text"
 		message.rich = lambda: "rich text"
 		
-		assert 'plain text' in unicode(message)
-		assert 'rich text' in unicode(message)
-
+		assert 'plain text' in str(message)
+		assert 'rich text' in str(message)

@@ -3,7 +3,6 @@
 import pytest
 
 from marrow.mailer.address import Address, AddressList, AutoConverter
-from marrow.util.compat import bytes, unicode
 
 
 class TestAddress:
@@ -18,7 +17,7 @@ class TestAddress:
 	def test_address_from_addresslist(self):
 		email = 'foo@example.com'
 		addr = Address(AddressList([Address(email)]))
-		assert unicode(addr) == email
+		assert str(addr) == email
 	
 	def test_address_from_addresslist_limit_0(self):
 		with pytest.raises(ValueError):
@@ -34,17 +33,17 @@ class TestAddress:
 		name = 'Foo'
 		emailaddress = 'foo@example.com'
 		address = Address((name, emailaddress))
-		assert '%s <%s>' % (name, emailaddress) == unicode(address)
+		assert '%s <%s>' % (name, emailaddress) == str(address)
 	
 	def test_initialization_with_string(self):
 		emailaddress = 'foo@example.com'
 		address = Address(emailaddress)
-		assert unicode(address) == emailaddress
+		assert str(address) == emailaddress
 	
 	def test_initialization_with_named_string(self):
 		emailaddress = 'My Name <foo@example.com>'
 		address = Address(emailaddress)
-		assert unicode(address) == emailaddress
+		assert str(address) == emailaddress
 	
 	def test_invalid_initialization(self):
 		with pytest.raises(TypeError):
@@ -55,7 +54,7 @@ class TestAddress:
 		addr2 = Address(' foo@example.com  ')
 		assert addr1 == addr2
 	
-	def test_compare_unicode(self):
+	def test_compare_str(self):
 		addr = Address('foo@example.com')
 		assert addr == 'foo@example.com'
 	
@@ -168,20 +167,20 @@ class TestAddressList:
 		self.addresses = address
 		
 		assert [address] == self.addresses
-		assert unicode(self.addresses) == address
+		assert str(self.addresses) == address
 	
 	def test_assign_list_of_addresses(self):
 		addresses = ['user1@example.com', 'user2@example.com']
 		self.addresses = addresses
-		assert ', '.join(addresses) == unicode(self.addresses)
+		assert ', '.join(addresses) == str(self.addresses)
 		assert addresses == self.addresses
 	
 	def test_assign_list_of_named_addresses(self):
 		addresses = [('Test User 1', 'user1@example.com'), ('Test User 2', 'user2@example.com')]
 		self.addresses = addresses
 		
-		string_addresses = [unicode(Address(*value)) for value in addresses]
-		assert ', '.join(string_addresses) == unicode(self.addresses)
+		string_addresses = [str(Address(*value)) for value in addresses]
+		assert ', '.join(string_addresses) == str(self.addresses)
 		assert string_addresses == self.addresses
 	
 	def test_assign_item(self):
@@ -202,7 +201,7 @@ class TestAddressList:
 		addresses = 'user1@example.com, user2@example.com'
 		self.addresses = addresses
 		
-		assert addresses == unicode(self.addresses)
+		assert addresses == str(self.addresses)
 	
 	def test_init_accepts_tuple(self):
 		addresses = AddressList(('foo', 'foo@example.com'))
