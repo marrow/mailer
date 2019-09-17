@@ -12,6 +12,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
+from typing import Optional
 
 from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
