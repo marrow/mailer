@@ -7,7 +7,6 @@ __all__ = [
 		'TransportFailedException',
 		'MessageFailedException',
 		'TransportExhaustedException',
-		'ManagerException'
 	]
 
 
@@ -79,9 +78,4 @@ class TransportExhaustedException(TransportException):
 	be used for future message delivery; a new instance should be used on the
 	next request."""
 	
-	pass
-
-
-class ManagerException(MailException):
-	"""The base for all marrow.mailer Manager exceptions."""
 	pass

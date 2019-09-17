@@ -89,7 +89,6 @@ class DebuggingSMTPServer(SMTPServer, Thread):
 			return self.messages.popleft()
 
 
-
 @fixture(scope='session')
 def smtp(request):
 	# TODO: Identify a random port number that is available.
@@ -103,6 +102,5 @@ def smtp(request):
 	return server
 
 
-
-if __name__ == '__main__':	# pragma: no cover
+if __name__ == '__main__':  # pragma: no cover
 	DebuggingSMTPServer.main()

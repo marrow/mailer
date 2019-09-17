@@ -27,16 +27,16 @@ class Address:
 				if not 0 < len(name_or_email) < 2:
 					raise ValueError("AddressList to convert must only contain a single Address.")
 				
-				name_or_email = unicode(name_or_email[0])
+				name_or_email = str(name_or_email[0])
 			
 			if isinstance(name_or_email, (tuple, list)):
-				self.name = unicodestr(name_or_email[0], encoding)
-				self.address = unicodestr(name_or_email[1], encoding)
+				self.name = str(name_or_email[0], encoding)
+				self.address = str(name_or_email[1], encoding)
 			
 			elif isinstance(name_or_email, bytes):
-				self.name, self.address = parseaddr(unicodestr(name_or_email, encoding))
+				self.name, self.address = parseaddr(str(name_or_email, encoding))
 			
-			elif isinstance(name_or_email, unicode):
+			elif isinstance(name_or_email, str):
 				self.name, self.address = parseaddr(name_or_email)
 			
 			else:
@@ -44,8 +44,8 @@ class Address:
 						repr(type(name_or_email))
 					))
 		else:
-			self.name = unicodestr(name_or_email, encoding)
-			self.address = unicodestr(email, encoding)
+			self.name = str(name_or_email, encoding)
+			self.address = str(email, encoding)
 		
 		email, err = EmailValidator().validate_email(self.address)
 		
@@ -56,8 +56,8 @@ class Address:
 		if isinstance(other, Address):
 			return (self.name, self.address) == (other.name, other.address)
 		
-		elif isinstance(other, unicode):
-			return unicode(self) == other
+		elif isinstance(other, str):
+			return str(self) == other
 		
 		elif isinstance(other, bytes):
 			return bytes(self) == other
@@ -71,22 +71,16 @@ class Address:
 		return not self == other
 	
 	def __len__(self):
-		return len(self.__unicode__())
+		return len(str(self))
 	
 	def __repr__(self):
 		return 'Address("{0}")'.format(unicode(self).encode('ascii', 'backslashreplace').decode('ascii'))
 	
-	def __unicode__(self):
+	def __str__(self):
 		return self.encode('utf8').decode('utf8')
 	
 	def __bytes__(self):
 		return self.encode()
-	
-	if sys.version_info < (3, 0):
-		__str__ = __bytes__
-	
-	else:  # pragma: no cover
-		__str__ = __unicode__
 	
 	def encode(self, encoding=None):
 		name_string = None
@@ -120,14 +114,14 @@ class Address:
 
 class AddressList(list):
 	def __init__(self, addresses=None, encoding="utf-8"):
-		super(AddressList, self).__init__()
+		super().__init__()
 		
 		self.encoding = encoding
 		
 		if addresses is None:
 			return
 		
-		if isinstance(addresses, basestring):
+		if isinstance(addresses, str):
 			addresses = addresses.split(',')
 		
 		elif isinstance(addresses, tuple):
@@ -148,14 +142,8 @@ class AddressList(list):
 	def __bytes__(self):
 		return self.encode()
 	
-	def __unicode__(self):
-		return ", ".join(unicode(i) for i in self)
-	
-	if sys.version_info < (3, 0):
-		__str__ = __bytes__
-	
-	else:  # pragma: no cover
-		__str__ = __unicode__
+	def __str__(self):
+		return ", ".join(str(i) for i in self)
 	
 	def __setitem__(self, k, value):
 		if isinstance(k, slice):
@@ -164,7 +152,7 @@ class AddressList(list):
 		elif not isinstance(value, Address):
 			value = Address(value)
 		
-		super(AddressList, self).__setitem__(k, value)
+		super().__setitem__(k, value)
 	
 	def __setslice__(self, i, j, sequence):
 		self.__setitem__(slice(i, j), sequence)
@@ -175,7 +163,7 @@ class AddressList(list):
 	
 	def extend(self, sequence):
 		values = [Address(val) if not isinstance(val, Address) else val for val in sequence]
-		super(AddressList, self).extend(values)
+		super().extend(values)
 	
 	def append(self, value):
 		self.extend([value])
@@ -202,7 +190,7 @@ class AutoConverter:
 	def __init__(self, attr, cls, can=True):
 		self.cls = cls
 		self.can = can
-		self.attr = native(attr)
+		self.attr = str(attr)
 	
 	def __get__(self, instance, owner):
 		value = getattr(instance, self.attr, None)
