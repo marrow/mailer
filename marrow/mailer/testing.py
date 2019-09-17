@@ -1,13 +1,13 @@
 """Utilities for testing Marrow Mailer and applications that use it."""
 
-from threading import Thread
+from asyncore import loop
+from collections import namedtuple, deque
+from datetime import datetime
+from email.parser import Parser
+from smtpd import SMTPServer
 from socket import socket
 from threading import Event, RLock
-from datetime import datetime
-from collections import namedtuple, deque
-from smtpd import SMTPServer
-from email.parser import Parser
-from asyncore import loop
+from threading import Thread
 
 try:
 	from pytest import fixture

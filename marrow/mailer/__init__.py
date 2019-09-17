@@ -6,10 +6,9 @@ import pkg_resources
 from email import charset
 from functools import partial
 
+from .message import Message
+from .exc import MailerNotRunning
 from ..package import load
-
-from marrow.mailer.message import Message
-from marrow.mailer.exc import MailerNotRunning
 
 
 __all__ = ['Mailer', 'Delivery', 'Message']

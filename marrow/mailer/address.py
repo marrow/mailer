@@ -1,12 +1,10 @@
 """Marrow Mailer utility functions and support classes."""
 
-import sys
-
 from email.utils import formataddr, parseaddr
 from email.header import Header
 
-from marrow.mailer.validator import EmailValidator
-from marrow.util.compat import basestring, unicode, unicodestr, native
+from .validator import EmailValidator
+
 
 __all__ = ['Address', 'AddressList']
 
