@@ -111,6 +111,7 @@ class Message:
 		if not self._id or (self._processed and self._dirty):
 			self._id = make_msgid()
 			self._processed = False
+		
 		return self._id
 	
 	@property
@@ -165,9 +166,11 @@ class Message:
 			date_value = time.mktime(date_value.timetuple())
 		if not isinstance(date_value, basestring):
 			date_value = formatdate(date_value, localtime=True)
+		
 		# Encode it here to avoid this:
 		# Date: =?utf-8?q?Sat=2C_01_Sep_2012_13=3A08=3A29_-0300?=
-		return native(date_value)
+		
+		return str(date_value)
 	
 	def _build_header_list(self, author, sender):
 		date_value = self._build_date_header_string(self.date)
@@ -217,6 +220,7 @@ class Message:
 	@property
 	def mime(self):
 		"""Produce the final MIME message."""
+		
 		author = self.author
 		sender = self.sender
 		
