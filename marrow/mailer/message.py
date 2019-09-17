@@ -102,6 +102,12 @@ class Message:
 	
 	@property
 	def id(self):
+		"""Access the ID of the message.
+		
+		If no ID is currently assigned, or if the message has already been "sent", but has modifications, a new ID
+		will be generated automatically.
+		"""
+		
 		if not self._id or (self._processed and self._dirty):
 			self._id = make_msgid()
 			self._processed = False
@@ -109,8 +115,8 @@ class Message:
 	
 	@property
 	def envelope(self):
-		"""Returns the address of the envelope sender address (SMTP from, if
-		not set the sender, if this one isn't set too, the author)."""
+		"""The address of the "envelope sender", explicitly defined or defaulting to the message author."""
+		
 		if not self.sender and not self.author:
 			raise ValueError("Unable to determine message sender; no author or sender defined.")
 		
@@ -118,9 +124,13 @@ class Message:
 	
 	@property
 	def recipients(self):
+		"""The AddressList representing all recipients of this message, regardless of method of address."""
+		
 		return AddressList(self.to + self.cc + self.bcc)
 	
 	def _mime_document(self, plain, rich=None):
+		"""Generate a MIMEMultipart message if needed."""
+		
 		if not rich:
 			message = plain
 		
@@ -148,9 +158,9 @@ class Message:
 		return message
 	
 	def _build_date_header_string(self, date_value):
-		"""Gets the date_value (may be None, basestring, float or
-		datetime.datetime instance) and returns a valid date string as per
-		RFC 2822."""
+		"""Gets the date_value (may be None, basestring, float or datetime.datetime instance) and returns a valid date
+		string as per RFC 2822."""
+		
 		if isinstance(date_value, datetime):
 			date_value = time.mktime(date_value.timetuple())
 		if not isinstance(date_value, basestring):
@@ -367,6 +377,8 @@ class Message:
 		return var
 	
 	def send(self):
+		"""Attempt to deliver this message using the mailer instance it is bound to."""
+		
 		if not self.mailer:
 			raise NotImplementedError("Message instance is not bound to " \
 				"a Mailer. Use mailer.send() instead.")
