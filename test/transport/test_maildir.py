@@ -6,8 +6,6 @@ import mailbox
 import tempfile
 
 from unittest import TestCase
-from nose.tools import ok_, eq_, raises
-from nose.plugins.skip import Skip, SkipTest
 
 from marrow.mailer import Message
 from marrow.mailer.transport.maildir import MaildirTransport
