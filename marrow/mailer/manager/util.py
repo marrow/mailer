@@ -43,11 +43,11 @@ class TransportPool:
 					# By consuming transports this way, we maintain thread safety.
 					# Transports are only accessed by a single thread at a time.
 					transport = pool.transports.get(False)
-					log.debug("Acquired existing transport instance.")
+					if __debug__: log.debug("Acquired existing transport instance.")
 				
 				except queue.Empty:
 					# No transport is available, so we initialize another one.
-					log.debug("Unable to acquire existing transport, initalizing new instance.")
+					if __debug__: log.debug("Unable to acquire existing transport, initalizing new instance.")
 					transport = pool.factory()
 					transport.startup()
 			
@@ -64,11 +64,11 @@ class TransportPool:
 				return
 			
 			if not ephemeral:
-				log.debug("Scheduling transport instance for re-use.")
+				if __debug__: log.debug("Scheduling transport instance for re-use.")
 				self.pool.transports.put(transport)
 			
 			else:
-				log.debug("Transport marked as ephemeral, shutting down instance.")
+				if __debug__: log.debug("Transport marked as ephemeral, shutting down instance.")
 				transport.shutdown()
 	
 	def __call__(self):

@@ -146,7 +146,7 @@ class Mailer:
 			log.error("Delivery of message %s failed.", message.id)
 			raise
 		
-		log.debug("Message %s delivered.", message.id)
+		if __debug__: log.debug("Message %s delivered.", message.id)
 		return result
 	
 	def new(self, author=None, to=None, subject=None, **kw):
