@@ -93,11 +93,11 @@ class Message:
 			object.__setattr__(self, '_dirty', True)
 	
 	def __str__(self):
+		"""Generate the MIME representation of this message to cast to a textual string."""
 		return self.mime.as_string()
 	
-	__unicode__ = __str__
-	
 	def __bytes__(self):
+		"""Generate the ASCII MIME representation of this message as a binary string."""
 		return self.mime.as_string().encode('ascii')
 	
 	@property
@@ -380,6 +380,6 @@ class Message:
 		"""Attempt to deliver this message using the mailer instance it is bound to."""
 		
 		if not self.mailer:
-			raise NotImplementedError("Message instance is not bound to " \
-				"a Mailer. Use mailer.send() instead.")
+			raise NotImplementedError("Message instance is not bound to a Mailer. Use mailer.send() instead.")
+		
 		return self.mailer.send(self)

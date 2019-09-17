@@ -168,7 +168,7 @@ class Mailer:
 class Delivery(Mailer):
 	def __init__(self, *args, **kw):
 		warnings.warn("Use of the Delivery class is deprecated; use Mailer instead.", DeprecationWarning)
-		super(Delivery, self).__init__(*args, **kw)
+		super().__init__(*args, **kw)
 
 
 # Import-time side-effect: un-fscking the default use of base-64 encoding for UTF-8 e-mail.

@@ -74,7 +74,7 @@ class Address:
 		return len(str(self))
 	
 	def __repr__(self):
-		return 'Address("{0}")'.format(unicode(self).encode('ascii', 'backslashreplace').decode('ascii'))
+		return 'Address("{0}")'.format(str(self).encode('ascii', 'backslashreplace').decode('ascii'))
 	
 	def __str__(self):
 		return self.encode('utf8').decode('utf8')
