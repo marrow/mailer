@@ -25,7 +25,7 @@ class MailHandler(logging.Handler):
         
         To get around limitations of the INI parser, you can pass in a tuple
         of name, value pairs to populate the dictionary.  (Use `{}` dict
-        notation in produciton, though.)
+        notation in production, though.)
         """
         
         logging.Handler.__init__(self)
