@@ -55,7 +55,7 @@ setup(
 				"Topic :: Utilities",
 			],
 		
-		packages = find_packages(exclude=['examples', 'tests']),
+		packages = find_packages(exclude=['example', 'test', 'test.*']),
 		include_package_data = True,
 		package_data = {'': ['README.textile', 'LICENSE.txt']},
 		namespace_packages = ['marrow'],
