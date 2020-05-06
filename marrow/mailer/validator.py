@@ -259,7 +259,7 @@ class EmailValidator(DomainValidator):
 	# TODO: Quoted-printable local part?
 
 	def __init__(self, local_part_chars=".-+_!#$%&'/=`|~?^{}*", **k):
-		super(EmailValidator, self).__init__(**k)
+		super().__init__(**k)
 		# Add a backslash before the dash so it can go into the regex:
 		self.local_part_pattern = '[a-z0-9' + local_part_chars.replace('-', r'\-') + ']+'
 		# Regular expression for validation:
@@ -303,7 +303,7 @@ class EmailValidator(DomainValidator):
 
 class EmailHarvester(EmailValidator):
 	def __init__(self, *a, **k):
-		super(EmailHarvester, self).__init__(*a, **k)
+		super().__init__(*a, **k)
 		# Regular expression for harvesting:
 		self.harvest_regex = \
 			re.compile(self.local_part_pattern + '@' + self.domain_pattern,

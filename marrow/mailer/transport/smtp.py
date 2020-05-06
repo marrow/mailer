@@ -1,11 +1,10 @@
 """Deliver messages using (E)SMTP."""
 
-import socket
-
 from smtplib import SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused, SMTPSenderRefused, SMTPServerDisconnected
+from socket import error as SocketError
 
-from marrow.mailer.exc import TransportExhaustedException, TransportException, TransportFailedException, MessageFailedException
-
+from ..exc import TransportExhaustedException, TransportException, TransportFailedException, MessageFailedException
+from ..manager.util import boolean
 
 log = __import__('logging').getLogger(__name__)
 
@@ -21,7 +20,7 @@ class SMTPTransport:
 		self.certfile = config.get('certfile', None)
 		self.keyfile = config.get('keyfile', None)
 		self.port = int(config.get('port', 465 if self.tls == 'ssl' else 25))
-		self.local_hostname = (config.get('local_hostname', '')) or None
+		self.local_hostname = str(config.get('local_hostname', '')) or None
 		self.username = str(config.get('username', '')) or None
 		self.password = str(config.get('password', '')) or None
 		self.timeout = config.get('timeout', None)
@@ -53,7 +52,7 @@ class SMTPTransport:
 				except SMTPServerDisconnected: # pragma: no cover
 					pass
 				
-				except (SMTPException, socket.error): # pragma: no cover
+				except (SMTPException, SocketError): # pragma: no cover
 					log.exception("Unhandled error while closing connection.")
 			
 			finally:

@@ -2,7 +2,8 @@ import urllib2
 import json
 import base64
 
-from marrow.mailer.exc import DeliveryFailedException, MessageFailedException
+from ..exc import DeliveryFailedException, MessageFailedException
+
 
 __all__ = ['PostmarkTransport']
 

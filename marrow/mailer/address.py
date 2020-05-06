@@ -9,6 +9,15 @@ from .validator import EmailValidator
 __all__ = ['Address', 'AddressList']
 
 
+def unicode(value, encoding='utf-8', fallback='iso-8859-1'):
+	if isinstance(value, str): return value
+	
+	try:
+		return value.decode(encoding)
+	except UnicodeError:
+		return value.decode(fallback)
+
+
 class Address:
 	"""Validated electronic mail address class.
 	
@@ -40,9 +49,8 @@ class Address:
 				self.name, self.address = parseaddr(name_or_email)
 			
 			else:
-				raise TypeError('Expected string, tuple or list, got {0} instead'.format(
-						repr(type(name_or_email))
-					))
+				raise TypeError(f'Expected string, tuple or list, got {type(name_or_email)} instead')
+		
 		else:
 			self.name = str(name_or_email, encoding)
 			self.address = str(email, encoding)
@@ -50,7 +58,7 @@ class Address:
 		email, err = EmailValidator().validate_email(self.address)
 		
 		if err:
-			raise ValueError('"{0}" is not a valid e-mail address: {1}'.format(email, err))
+			raise ValueError(f'"{email}" is not a valid e-mail address: {err}')
 	
 	def __eq__(self, other):
 		if isinstance(other, Address):
@@ -65,7 +73,7 @@ class Address:
 		elif isinstance(other, tuple):
 			return (self.name, self.address) == other
 		
-		raise NotImplementedError("Can not compare Address instance against {0} instance".format(type(other)))
+		raise NotImplementedError(f"Can not compare an Address instance against a: {type(other)}")
 	
 	def __ne__(self, other):
 		return not self == other
@@ -74,7 +82,7 @@ class Address:
 		return len(str(self))
 	
 	def __repr__(self):
-		return 'Address("{0}")'.format(str(self).encode('ascii', 'backslashreplace').decode('ascii'))
+		return f"Address(\"{str(self).encode('ascii', 'backslashreplace').decode('ascii')}\")'"
 	
 	def __str__(self):
 		return self.encode('utf8').decode('utf8')
@@ -129,15 +137,13 @@ class AddressList(list):
 			return
 		
 		if not isinstance(addresses, list):
-			raise ValueError("Invalid value for AddressList: {0}".format(repr(addresses)))
+			raise ValueError(f"Invalid value for AddressList: {adddresses!r}")
 		
 		self.extend(addresses)
 	
 	def __repr__(self):
-		if not self:
-			return "AddressList()"
-		
-		return "AddressList(\"{0}\")".format(", ".join([str(i) for i in self]))
+		if not self: return "AddressList()"
+		return f"AddressList(\"{", ".join([str(i) for i in self])}\")")
 	
 	def __bytes__(self):
 		return self.encode()

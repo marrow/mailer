@@ -9,7 +9,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class SendmailTransport: # pragma: no cover
+class SendmailTransport:  # pragma: no cover
 	__slots__ = ('ephemeral', 'executable')
 	
 	def __init__(self, config):

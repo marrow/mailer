@@ -1,6 +1,6 @@
 import random
 
-from marrow.mailer.exc import TransportFailedException, TransportExhaustedException
+from ..exc import TransportFailedException, TransportExhaustedException
 
 
 __all__ = ['MockTransport']
@@ -26,9 +26,7 @@ class MockTransport:
 	__slots__ = ('ephemeral', 'config')
 	
 	def __init__(self, config):
-		base = {'success': 1.0, 'failure': 0.0, 'exhaustion': 0.0}
-		base.update(dict(config))
-		self.config = dict(base)
+		self.config = {'success': 1.0, 'failure': 0.0, 'exhaustion': 0.0, **config}
 	
 	def startup(self):
 		pass
@@ -36,29 +34,19 @@ class MockTransport:
 	def deliver(self, message):
 		"""Concrete message delivery."""
 		
-		config = self.config
-		success = config.success
-		failure = config.failure
-		exhaustion = config.exhaustion
-		
 		if getattr(message, 'die', False):
 			1/0
 		
-		if failure:
-			chance = random.randint(0,100001) / 100000.0
-			if chance < failure:
-				raise TransportFailedException("Mock failure.")
-		
-		if exhaustion:
-			chance = random.randint(0,100001) / 100000.0
-			if chance < exhaustion:
-				raise TransportExhaustedException("Mock exhaustion.")
-		
-		if success == 1.0:
-			return True
+		chance = random.randint(0,100001) / 100000.0
+		if chance < self.config['failure']:
+			raise TransportFailedException("Mock failure.")
 		
 		chance = random.randint(0,100001) / 100000.0
-		if chance <= success:
+		if chance < self.config['exhaustion']:
+			raise TransportExhaustedException("Mock exhaustion.")
+		
+		chance = random.randint(0,100001) / 100000.0
+		if chance <= self.config['success']:
 			return True
 		
 		return False

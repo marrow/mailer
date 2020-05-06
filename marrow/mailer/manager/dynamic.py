@@ -1,11 +1,12 @@
 import atexit
 import math
-import queue
 import sys
+import threading
 import weakref
 
 from concurrent import futures
 from functools import partial
+from queue import Empty
 from threading import Thread, Lock, current_thread
 
 from .futures import worker
@@ -38,7 +39,7 @@ def thread_worker(executor, jobs, timeout, maximum):
 					del runner	# pragma: no cover
 					continue  # pragma: no cover
 				
-			except queue.Empty:  # pragma: no cover
+			except Empty:  # pragma: no cover
 				if __debug__: log.debug("Worker death from starvation.")
 				break
 			
@@ -81,17 +82,12 @@ class WorkItem:
 
 
 class ScalingPoolExecutor(futures.ThreadPoolExecutor):
-	def __init__(self, workers, divisor, timeout):
-		self._max_workers = workers
+	def __init__(self, workers, divisor, timeout, **kw):
 		self.divisor = divisor
 		self.timeout = timeout
+		self._management_lock = threading.Lock()
 		
-		self._work_queue = queue.Queue()
-		
-		self._threads = set()
-		self._shutdown = False
-		self._shutdown_lock = Lock()
-		self._management_lock = Lock()
+		super().__init__(workers, **kw)  # Permit pass-through of thread_name_prefix, initializer, and initargs.
 		
 		atexit.register(self._atexit)
 	
@@ -140,13 +136,13 @@ class DynamicManager:
 	
 	def __init__(self, config, transport):
 		self.workers = int(config.get('workers', 10))  # Maximum number of threads to create.
-		self.divisor = int(config.get('divisor', 10))  # Estimate the number of required threads by dividing the queue size by this.
+		self.divisor = int(config.get('divisor', 10))  # Estimate the number of required threads.
 		self.timeout = float(config.get('timeout', 60))  # Seconds before starvation.
 		
 		self.executor = None
 		self.transport = TransportPool(transport)
 		
-		super(DynamicManager, self).__init__()
+		super().__init__()
 	
 	def startup(self):
 		log.info("%s manager starting up.", self.name)

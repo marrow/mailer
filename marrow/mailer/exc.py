@@ -32,7 +32,7 @@ class DeliveryFailedException(DeliveryException):
 		self.msg = message
 		self.reason = reason
 		
-		super(DeliveryFailedException, self).__init__(message, reason)
+		super().__init__(message, reason)
 
 
 # Internal Exceptions

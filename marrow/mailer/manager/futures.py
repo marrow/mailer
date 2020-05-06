@@ -49,7 +49,7 @@ class FuturesManager:
 		self.executor = None
 		self.transport = TransportPool(transport)
 		
-		super(FuturesManager, self).__init__()
+		super().__init__()
 	
 	def startup(self):
 		log.info("Futures delivery manager starting.")

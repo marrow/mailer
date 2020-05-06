@@ -1,19 +1,18 @@
 """marrow.mailer mail delivery framework and MIME message abstraction."""
 
-import warnings
-import pkg_resources
-
 from email import charset
 from functools import partial
 
-from .message import Message
-from .exc import MailerNotRunning
-from ..package import load
+from ..package import load, name
+from .mailer.exc import MailerNotRunning
+from .mailer.message import Message
 
 
 __all__ = ['Mailer', 'Delivery', 'Message']
 
 log = __import__('logging').getLogger(__name__)
+
+subset = lambda pre, D: {key[len(pre)+1:]: D[key]) for key in D if key.startswith(pre + '.')}
 
 
 class Mailer:
@@ -26,84 +25,26 @@ class Mailer:
 	"""
 	
 	def __repr__(self):
-		return "Mailer(manager=%s, transport=%s)" % (self.Manager.__name__, self.Transport.__name__)
+		return f"Mailer(manager={name(self.Manager)}, transport={name(self.Transport)})"
 	
 	def __init__(self, config, prefix=None):
 		self.manager, self.Manager = None, None
 		self.Transport = None
 		self.running = False
-		self.config = config = Bunch(config)
-		
-		if prefix is not None:
-			self.config = config = Bunch.partial(prefix, config)
-		
-		if 'manager' in config and isinstance(config.manager, dict):
-			self.manager_config = manager_config = config.manager
-		elif 'manager' in config:
-			self.manager_config = manager_config = dict(manager_config)
-		else:
-			try:
-				self.manager_config = manager_config = Bunch.partial('manager', config)
-			except ValueError:
-				self.manager_config = manager_config = dict()
-		
-		if 'manager' in config and isinstance(config.manager, str):
-			warnings.warn("Use of the manager directive is deprecated; use manager.use instead.", DeprecationWarning)
-			manager_config.use = config.manager
-		
-		try:
-			if 'transport' in config and isinstance(config.transport, dict):
-				self.transport_config = transport_config = Bunch(config.transport)
-			else:
-				self.transport_config = transport_config = Bunch.partial('transport', config)
-		except (AttributeError, ValueError): # pragma: no cover
-			self.transport_config = transport_config = Bunch()
-		
-		if 'transport' in config and isinstance(config.transport, str):
-			warnings.warn("Use of the transport directive is deprecated; use transport.use instead.", DeprecationWarning)
-			transport_config.use = config.transport
-		
-		try:
-			if 'message' in config and isinstance(config.message, dict):
-				self.message_config = Bunch(config.message)
-			else:
-				self.message_config = Bunch.partial('message', config)
-		except (AttributeError, ValueError):
-			self.message_config = Bunch()
-
-		self.Manager = Manager = self._load(manager_config.use if 'use' in manager_config else 'immediate', 'marrow.mailer.manager')
+		self.config = subset(prefix, config) if prefix else config
+		self.manager_config = manager_config = config.get('manager', subset('manager', config))
+		self.transport_config = transport_config = config.get('transport', subset('transport', config))
+		self.message_config = config.get('message', subset('message', config))
+		self.Manager = Manager = load(manager_config.get('use', 'immediate'), 'marrow.mailer.manager')
+		self.Transport = Transport = load(transport_config['use'], 'marrow.mailer.transport')
 		
 		if not Manager:
-			raise LookupError("Unable to determine manager from specification: %r" % (config.manager, ))
-		
-		# Removed until marrow.interface is updated to use marrow.schema.
-		#if not isinstance(Manager, IManager):
-		#	raise TypeError("Chosen manager does not conform to the manager API.")
-		
-		self.Transport = Transport = self._load(transport_config.use, 'marrow.mailer.transport')
+			raise LookupError(f"Unable to determine manager from specification: {manager_config['use']}")
 		
 		if not Transport:
-			raise LookupError("Unable to determine transport from specification: %r" % (config.transport, ))
-		
-		# Removed until marrow.interface is updated to use marrow.schema.
-		#if not isinstance(Transport, ITransport):
-		#	raise TypeError("Chosen transport does not conform to the transport API.")
+			raise LookupError(f"Unable to determine transport from specification: {transport_config['use']}")
 		
 		self.manager = Manager(manager_config, partial(Transport, transport_config))
-	
-	@staticmethod
-	def _load(spec, group):
-		if not isinstance(spec, str):
-			# It's already an object, just use it.
-			return spec
-		
-		if ':' in spec:
-			# Load the Python package(s) and target object.
-			return load(spec)
-		
-		# Load the entry point.
-		for entrypoint in pkg_resources.iter_entry_points(group, spec):
-			return entrypoint.load()
 	
 	def start(self):
 		if self.running:
@@ -137,16 +78,16 @@ class Mailer:
 		if not self.running:
 			raise MailerNotRunning("Mail service not running.")
 		
-		log.info("Attempting delivery of message %s.", message.id)
+		log.info(f"Attempting delivery of message: {message.id}")
 		
 		try:
 			result = self.manager.deliver(message)
 		
 		except:
-			log.error("Delivery of message %s failed.", message.id)
+			log.error(f"Delivery failed for message: {message.id}")
 			raise
 		
-		if __debug__: log.debug("Message %s delivered.", message.id)
+		if __debug__: log.debug(f"Delivery success for message: {message.id}")
 		return result
 	
 	def new(self, author=None, to=None, subject=None, **kw):
@@ -163,12 +104,6 @@ class Mailer:
 		data.update(kw)
 		
 		return Message(**data)
-
-
-class Delivery(Mailer):
-	def __init__(self, *args, **kw):
-		warnings.warn("Use of the Delivery class is deprecated; use Mailer instead.", DeprecationWarning)
-		super().__init__(*args, **kw)
 
 
 # Import-time side-effect: un-fscking the default use of base-64 encoding for UTF-8 e-mail.

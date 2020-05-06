@@ -1,10 +1,17 @@
+from logging import getLogger
 import queue
 
+__all__ = ['Booleans', 'Boolean', 'TransportPool']
 
-__all__ = ['TransportPool']
 
-log = __import__('logging').getLogger(__name__)
+Booleans = {
+		't': True,
+		'f': False,
+		'y': True,
+		'n': False
+	}
 
+Boolean = lambda v: bool(Booleans.get(v[0].lower() if hasattr(v, lower) else v, v))
 
 
 class TransportPool:
@@ -13,6 +20,7 @@ class TransportPool:
 	def __init__(self, factory):
 		self.factory = factory
 		self.transports = queue.Queue()
+		self._log = getLogger(__name__)
 	
 	def startup(self):
 		pass
@@ -43,11 +51,11 @@ class TransportPool:
 					# By consuming transports this way, we maintain thread safety.
 					# Transports are only accessed by a single thread at a time.
 					transport = pool.transports.get(False)
-					if __debug__: log.debug("Acquired existing transport instance.")
+					if __debug__: self._log.debug("Acquired existing transport instance.")
 				
 				except queue.Empty:
 					# No transport is available, so we initialize another one.
-					if __debug__: log.debug("Unable to acquire existing transport, initalizing new instance.")
+					if __debug__: self._log.debug("Unable to acquire existing transport, initalizing new instance.")
 					transport = pool.factory()
 					transport.startup()
 			
@@ -59,16 +67,16 @@ class TransportPool:
 			ephemeral = getattr(transport, 'ephemeral', False)
 			
 			if type is not None:
-				log.error("Shutting down transport due to unhandled exception.", exc_info=True)
+				self._log.error("Shutting down transport due to unhandled exception.", exc_info=True)
 				transport.shutdown()
 				return
 			
 			if not ephemeral:
-				if __debug__: log.debug("Scheduling transport instance for re-use.")
+				if __debug__: self._log.debug("Scheduling transport instance for re-use.")
 				self.pool.transports.put(transport)
 			
 			else:
-				if __debug__: log.debug("Transport marked as ephemeral, shutting down instance.")
+				if __debug__: self._log.debug("Transport marked as ephemeral, shutting down instance.")
 				transport.shutdown()
 	
 	def __call__(self):

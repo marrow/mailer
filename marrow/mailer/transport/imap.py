@@ -11,7 +11,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class IMAPTransport: # pragma: no cover
+class IMAPTransport:  # pragma: no cover
 	__slots__ = ('ephemeral', 'host', 'ssl', 'port', 'username', 'password', 'folder', 'connection')
 	
 	def __init__(self, config):

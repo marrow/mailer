@@ -14,10 +14,10 @@ class ImmediateManager:
 	def __init__(self, config, Transport):
 		"""Initialize the immediate delivery manager."""
 		
-		# Create a transport pool; this will encapsulate the recycling logic.
+		# Create a transport pool; this encapsulates the recycling logic.
 		self.transport = TransportPool(Transport)
 		
-		super(ImmediateManager, self).__init__()
+		super().__init__()
 	
 	def startup(self):
 		"""Perform startup actions.

@@ -1,15 +1,15 @@
 """MIME-encoded electronic mail message class."""
 
+import base64
 import imghdr
 import os
 import sys
 import time
-import base64
 
 from datetime import datetime
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
+from email.mime.text import MIMEText
 from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
 from typing import Optional
@@ -158,11 +158,12 @@ class Message:
 		return message
 	
 	def _build_date_header_string(self, date_value):
-		"""Gets the date_value (may be None, str, float or datetime.datetime instance) and returns a valid date
-		string as per RFC 2822."""
+		"""Gets the date_value (may be None, a string, float or datetime instance) and returns a valid date string as
+		per RFC 2822."""
 		
 		if isinstance(date_value, datetime):
 			date_value = time.mktime(date_value.timetuple())
+		
 		if not isinstance(date_value, str):
 			date_value = formatdate(date_value, localtime=True)
 		
@@ -326,7 +327,7 @@ class Message:
 			# See https://docs.python.org/2/library/email.message.html#email.message.Message.add_header
 			# for more information.
 			# add_header() in the email module expects its arguments to be ASCII strings. Go ahead and handle
-			# the case where these arguments come in as str strings, since encoding ASCII strings
+			# the case where these arguments come in as Unicode strings, since encoding ASCII strings
 			# as UTF-8 can't hurt.
 			if sys.version_info < (3, 0):
 				filename=(filename_charset.encode('utf-8'), filename_language.encode('utf-8'), filename.encode('utf-8'))

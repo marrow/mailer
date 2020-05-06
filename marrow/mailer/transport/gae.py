@@ -7,7 +7,7 @@ log = __import__('logging').getLogger(__name__)
 
 
 
-class AppEngineTransport: # pragma: no cover
+class AppEngineTransport:  # pragma: no cover
 	__slots__ = ('ephemeral', )
 	
 	def __init__(self, config):
