@@ -44,7 +44,7 @@ class FuturesManager:
 	__slots__ = ('workers', 'executor', 'transport')
 	
 	def __init__(self, config, transport):
-		self.workers = config.get('workers', 1)
+		self.workers = int(config.get('workers', 1))
 		
 		self.executor = None
 		self.transport = TransportPool(transport)
