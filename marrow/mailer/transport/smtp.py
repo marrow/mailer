@@ -2,6 +2,7 @@
 
 """Deliver messages using (E)SMTP."""
 
+import sys
 import socket
 
 from smtplib import (SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused,
@@ -16,6 +17,7 @@ from marrow.mailer.exc import (
 
 log = __import__('logging').getLogger(__name__)
 
+PY35_OR_LATER = (sys.version_info >= (3,5))
 
 class SMTPTransport(object):
     """An (E)SMTP pipelining transport."""
@@ -68,10 +70,17 @@ class SMTPTransport(object):
 
     def connect_to_server(self):
         if self.tls == 'ssl': # pragma: no cover
-            connection = SMTP_SSL(self.host, port=self.port, local_hostname=self.local_hostname, keyfile=self.keyfile,
-                                  certfile=self.certfile, timeout=self.timeout)
+            if PY35_OR_LATER:
+                connection = SMTP_SSL(local_hostname=self.local_hostname, keyfile=self.keyfile,
+                                      certfile=self.certfile, timeout=self.timeout)
+            else:
+                connection = SMTP_SSL(local_hostname=self.local_hostname, keyfile=self.keyfile,
+                                      certfile=self.certfile, timeout=self.timeout)
         else:
-            connection = SMTP(self.host, port=self.port, local_hostname=self.local_hostname, timeout=self.timeout)
+            if PY35_OR_LATER:
+                connection = SMTP(self.host, port=self.port, local_hostname=self.local_hostname, timeout=self.timeout)
+            else:
+                connection = SMTP(local_hostname=self.local_hostname, timeout=self.timeout)
 
         log.info("Connecting to SMTP server %s:%s", self.host, self.port)
         connection.set_debuglevel(self.debug)
