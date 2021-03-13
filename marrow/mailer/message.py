@@ -301,8 +301,11 @@ class Message(object):
 			value = data.read()
 		else:
 			raise TypeError("Unable to read attachment contents")
-		
-		part.set_payload(base64.encodestring(value))
+
+		if sys.version_info < (3, 0):
+			part.set_payload(base64.encodestring(value))
+		else:
+			part.set_payload(base64.encodebytes(value))
 
 		if not filename:
 			filename = name
