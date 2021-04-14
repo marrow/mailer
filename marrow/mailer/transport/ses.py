@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 try:
-    import boto.ses 
-    from boto.ses import SESConnection
+    import boto3
+    from botocore.exceptions import ClientError
 
 except ImportError:
     raise ImportError("You must install the boto package to deliver mail via Amazon SES.")
@@ -24,28 +24,36 @@ class AmazonTransport(object): # pragma: no cover
         
         self.region = config.pop('region', "us-east-1")
         config.pop('use') #boto throws an error if we leave this in the next line
+        config.pop('debug')
         self.config = config  # All other configuration directives are passed to connect_to_region.
         self.connection = None
     
     def startup(self):
-        self.connection = boto.ses.connect_to_region(self.region, **self.config)
+        self.connection = boto3.client('ses',region_name=self.region, **self.config)
     
     def deliver(self, message):
         try:
-            destinations = [r.encode(encoding='utf-8') for r in message.recipients]
-            response = self.connection.send_raw_email(str(message), message.author.encode(), destinations)
+            destinations = [str(r) for r in message.recipients]
+            response = self.connection.send_raw_email(
+                                    Destinations=destinations,
+                                    RawMessage={
+                                        'Data': str(message)
+                                    },
+                                    Source=str(message.author),
+                                )
+                                
             
             return (
-                    response['SendRawEmailResponse']['SendRawEmailResult']['MessageId'],
-                    response['SendRawEmailResponse']['ResponseMetadata']['RequestId']
+                    response.get('MessageId', 'messageId NOT FOUND'),
+                    response.get('RequestId', {}).get('ResponseMetadata')
                 )
         
-        except SESConnection.ResponseError:
+        except ClientError as e:
             raise # TODO: Raise appropriate internal exception.
             # ['status', 'reason', 'body', 'request_id', 'error_code', 'error_message']
     
     def shutdown(self):
-        if self.connection:
-            self.connection.close()
+        # if self.connection:
+        #     self.connection.close()
         
         self.connection = None
