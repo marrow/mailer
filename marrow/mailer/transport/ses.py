@@ -5,8 +5,7 @@ try:
     from botocore.exceptions import ClientError
 
 except ImportError:
-    raise ImportError(
-        "You must install the boto package to deliver mail via Amazon SES.")
+    raise ImportError("You must install the boto package to deliver mail via Amazon SES.")
 
 
 __all__ = ['AmazonTransport']
@@ -31,8 +30,7 @@ class AmazonTransport(object):  # pragma: no cover
         self.connection = None
 
     def startup(self):
-        self.connection = boto3.client(
-            'ses', region_name=self.region, **self.config)
+        self.connection = boto3.client('ses', region_name=self.region, **self.config)
 
     def deliver(self, message):
         try:
