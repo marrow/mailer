@@ -5,7 +5,7 @@ try:
     from botocore.exceptions import ClientError
 
 except ImportError:
-    raise ImportError("You must install the boto package to deliver mail via Amazon SES.")
+    raise ImportError("You must install the boto3 package to deliver mail via Amazon SES.")
 
 
 __all__ = ['AmazonTransport']
