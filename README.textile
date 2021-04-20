@@ -22,7 +22,7 @@ By using Marrow Mailer you can:
 * Deliver e-mail through a number of alternative transports including SMTP, Amazon SES, sendmail, or even via direct on-disk mbox/maildir.
 * Multiple simultaneous configurations for more targeted delivery.
 
-Mailer supports Python 2.6+ and 3.2+ and there are only light-weight dependencies: @marrow.util@, @marrow.interface@, and @boto@ if using Amazon SES.
+Mailer supports Python 2.6+ and 3.2+ and there are only light-weight dependencies: @marrow.util@, @marrow.interface@, and @boto3@ if using Amazon SES.
 
 
 h3(#goals). %1.1.% Goals
@@ -345,7 +345,7 @@ table(configuration).
 
 h4(#amazon-transport). %6.3.1.% Amazon Simple E-Mail Service (SES)
 
-Deliver your messages via the Amazon Simple E-Mail Service with the @amazon@ transport.  While Amazon allows you to utilize SMTP for communication, using the correct API allows you to get much richer information back from delivery upon both success *and* failure.  To utilize this transport you must have the @boto@ package installed.
+Deliver your messages via the Amazon Simple E-Mail Service with the @amazon@ transport.  While Amazon allows you to utilize SMTP for communication, using the correct API allows you to get much richer information back from delivery upon both success *and* failure.  To utilize this transport you must have the @boto3@ package installed.
 
 table(configuration).
 |_. Directive |_. Default |_. Description |
