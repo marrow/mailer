@@ -12,7 +12,7 @@ __all__ = ['Mailer', 'Delivery', 'Message']
 
 log = __import__('logging').getLogger(__name__)
 
-subset = lambda pre, D: {key[len(pre)+1:]: D[key]) for key in D if key.startswith(pre + '.')}
+subset = lambda pre, D: {key[len(pre)+1:]: D[key] for key in D if key.startswith(pre + '.')}
 
 
 class Mailer:
