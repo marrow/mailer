@@ -4,8 +4,8 @@ from email import charset
 from functools import partial
 
 from ..package import load, name
-from .mailer.exc import MailerNotRunning
-from .mailer.message import Message
+from .exc import MailerNotRunning
+from .message import Message
 
 
 __all__ = ['Mailer', 'Delivery', 'Message']
