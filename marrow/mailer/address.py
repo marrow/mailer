@@ -143,7 +143,8 @@ class AddressList(list):
 	
 	def __repr__(self):
 		if not self: return "AddressList()"
-		return f"AddressList(\"{", ".join([str(i) for i in self])}\")")
+		parts = ", ".join(str(i) for i in self)
+		return f"AddressList(\"{parts}\")"
 	
 	def __bytes__(self):
 		return self.encode()

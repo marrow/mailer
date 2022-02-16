@@ -4,15 +4,15 @@ from email import charset
 from functools import partial
 
 from ..package import load, name
-from .mailer.exc import MailerNotRunning
-from .mailer.message import Message
+from .exc import MailerNotRunning
+from .message import Message
 
 
 __all__ = ['Mailer', 'Delivery', 'Message']
 
 log = __import__('logging').getLogger(__name__)
 
-subset = lambda pre, D: {key[len(pre)+1:]: D[key]) for key in D if key.startswith(pre + '.')}
+subset = lambda pre, D: {key[len(pre)+1:]: D[key] for key in D if key.startswith(pre + '.')}
 
 
 class Mailer:
