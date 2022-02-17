@@ -15,7 +15,7 @@ Boolean = lambda v: bool(Booleans.get(v[0].lower() if hasattr(v, lower) else v, 
 
 
 class TransportPool:
-	__slots__ = ('factory', 'transports')
+	__slots__ = ('factory', 'transports', '_log')
 	
 	def __init__(self, factory):
 		self.factory = factory
