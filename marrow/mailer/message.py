@@ -272,7 +272,7 @@ class Message(object):
 					   "inline" (True) or "attachment" (False)
 		:param filename: The file name of the attached file as seen
 									by the user in his/her mail client.
-		:param filename_charset: Charset used for the filename paramenter. Allows for 
+		:param filename_charset: Charset used for the filename parameter. Allows for 
 						attachment names with characters from UTF-8 or Latin 1. See RFC 2231.
 		:param filename_language: Used to specify what language the filename is in. See RFC 2231.
 		:param encoding: Value of the Content-Encoding MIME header (e.g. "gzip"
