@@ -1,13 +1,9 @@
 #!/usr/bin/env python
-# encoding: utf-8
 
 import os
 import sys
 
-try:
-	from setuptools.core import setup, find_packages
-except ImportError:
-	from setuptools import setup, find_packages
+from setuptools import setup, find_packages
 
 if sys.version_info < (2, 6):
 	raise SystemExit("Python 2.6 later is required.")
@@ -55,7 +51,7 @@ setup(
 				"Topic :: Utilities",
 			],
 		
-		packages = find_packages(exclude=['example', 'test', 'test.*']),
+		packages = ('marrow.mailer', ),
 		include_package_data = True,
 		package_data = {'': ['README.textile', 'LICENSE.txt']},
 		namespace_packages = ['marrow'],
