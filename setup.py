@@ -54,7 +54,6 @@ setup(
 		packages = ('marrow.mailer', ),
 		include_package_data = True,
 		package_data = {'': ['README.textile', 'LICENSE.txt']},
-		namespace_packages = ['marrow'],
 		
 		# ## Dependency Declaration
 		
