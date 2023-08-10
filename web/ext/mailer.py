@@ -1,9 +1,12 @@
 from os import getcwd, getenv, getlogin
-from socket import getfqdn
+from socket import gethostname
 from urllib.parse import unquote
 
 from marrow.mailer import Mailer
-from uri.typing import URILike
+from uri import URI
+
+
+log = __import__('logging').getLogger(__name__)
 
 
 class MailerExtension:
@@ -32,33 +35,35 @@ class MailerExtension:
 	
 	provides = ('mail', 'email', 'mailer')
 	
-	def __init__(self, uri:URILike):
+	def __init__(self, uri:str):
 		self.__uri = uri = URI(str(uri).format(cwd=getcwd().lstrip('/')))
 		
 		self.configuration = {  # Mailer already includes mechanisms to resolve and instantiate the plugins.
 				'manager.use': uri.query.pop('manager', 'immediate' if __debug__ else 'dynamic'),
 				'transport.use': str(uri.scheme),  # smtp://, maildir://, ...
-				'transport.directory': str(uri.path) if str(uri.path) != '.' else '',
 				'transport.host': uri.host,
 				'transport.port': uri.port,
 				'transport.username': unquote(uri.username or ''),
-				'transport.password': unquote(getenv('MAIL_PASSWORD', uri.password)),
+				'transport.password': unquote(getenv('MAIL_PASSWORD', uri.password)) if getenv('MAIL_PASSWORD', uri.password) else '',
 			}
+		
+		if uri.path and str(uri.path) != '.':
+			self.configuration['transport.directory'] = str(uri.path)
 		
 		# Potentially sensitive default, emit a warning when used.
 		if 'author' in uri.query: self.configuration['message.author': uri.query.pop('author')]
 		else:
 			__import__('warnings').warn("Utilizing active user's name and hostname as default message author.", UserWarning, 2)
-			self.configuration['message.author'] = f"{getlogin()}@{getfqdn()}"
+			self.configuration['message.author'] = f"{getlogin()}@{gethostname()}"
 		
 		if 'organization' in uri.query: self.configuration['message.organization'] = uri.query.pop('organization')
 		
 		# Remaining arguments are additional configuration.
-		for n for n in uri.query.items(): self.configuration[n[0]] = True if len(n) == 1 else n[1]
+		for n in uri.query.items(): self.configuration[n[0]] = True if len(n) == 1 else n[1]
 		
 		# Remove empty configuration directives.
 		for k, v in list(self.configuration.items()):
-			if v == '': del self.configuration[k]
+			if v in ('', None): del self.configuration[k]
 	
 	def start(self, context):
 		safe = self.configuration.copy()
@@ -67,7 +72,7 @@ class MailerExtension:
 		
 		log.info(f"Preparing mail delivery infrastructure: {self.__uri.safe_uri}", extra=safe)
 		
-		context.mailer = MailerInterface(self.configuration)
+		context.mailer = Mailer(self.configuration)
 		context.mailer.start()
 	
 	def stop(self, context):
