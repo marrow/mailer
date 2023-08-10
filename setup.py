@@ -51,7 +51,7 @@ setup(
 				"Topic :: Utilities",
 			],
 		
-		packages = ('marrow.mailer', ),
+		packages = ('marrow.mailer', 'web.ext'),
 		include_package_data = True,
 		package_data = {'': ['README.textile', 'LICENSE.txt']},
 		
@@ -74,6 +74,11 @@ setup(
 		# ## Plugin Registration
 		
 		entry_points = {
+				'web.extension': [
+						'mail': 'web.ext.mailer:MailerExtension',
+						'email': 'web.ext.mailer:MailerExtension',
+						'mailer': 'web.ext.mailer:MailerExtension',
+					],
 				'marrow.mailer.manager': [
 						'immediate = marrow.mailer.manager.immediate:ImmediateManager',
 						'futures = marrow.mailer.manager.futures:FuturesManager',
