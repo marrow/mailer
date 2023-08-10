@@ -75,9 +75,9 @@ setup(
 		
 		entry_points = {
 				'web.extension': [
-						'mail': 'web.ext.mailer:MailerExtension',
-						'email': 'web.ext.mailer:MailerExtension',
-						'mailer': 'web.ext.mailer:MailerExtension',
+						'mail = web.ext.mailer:MailerExtension',
+						'email = web.ext.mailer:MailerExtension',
+						'mailer = web.ext.mailer:MailerExtension',
 					],
 				'marrow.mailer.manager': [
 						'immediate = marrow.mailer.manager.immediate:ImmediateManager',
