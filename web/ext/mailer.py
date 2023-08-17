@@ -51,7 +51,7 @@ class MailerExtension:
 			self.configuration['transport.directory'] = str(uri.path)
 		
 		# Potentially sensitive default, emit a warning when used.
-		if 'author' in uri.query: self.configuration['message.author': uri.query.pop('author')]
+		if 'author' in uri.query: self.configuration['message.author'] = uri.query.pop('author')
 		else:
 			__import__('warnings').warn("Utilizing active user's name and hostname as default message author.", UserWarning, 2)
 			self.configuration['message.author'] = f"{getlogin()}@{gethostname()}"
