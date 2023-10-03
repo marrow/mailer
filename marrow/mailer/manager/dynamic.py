@@ -91,6 +91,8 @@ class WorkItem(object):
 
 
 class ScalingPoolExecutor(futures.ThreadPoolExecutor):
+    _broken = None
+
     def __init__(self, workers, divisor, timeout):
         self._max_workers = workers
         self.divisor = divisor
