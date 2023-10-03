@@ -71,8 +71,8 @@ class SMTPTransport(object):
     def connect_to_server(self):
         if self.tls == 'ssl': # pragma: no cover
             if PY35_OR_LATER:
-                connection = SMTP_SSL(local_hostname=self.local_hostname, keyfile=self.keyfile,
-                                      certfile=self.certfile, timeout=self.timeout)
+                connection = SMTP_SSL(self.host, port=self.port, local_hostname=self.local_hostname,
+                                      keyfile=self.keyfile, certfile=self.certfile, timeout=self.timeout)
             else:
                 connection = SMTP_SSL(local_hostname=self.local_hostname, keyfile=self.keyfile,
                                       certfile=self.certfile, timeout=self.timeout)
