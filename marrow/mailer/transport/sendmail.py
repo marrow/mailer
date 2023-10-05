@@ -26,7 +26,7 @@ class SendmailTransport(object): # pragma: no cover
         # proc = Popen('%s -t -i' % (self.executable,), shell=True, stdin=PIPE)
         args = [self.executable, '-t', '-i']
 
-        if message.sendmail_f:
+        if getattr(message, 'sendmail_f', None):  # May be dynamic property; attribute presence is insufficient.
             log.info("sendmail_f : {}".format(message.sendmail_f))
             args.extend(['-f', message.sendmail_f])
 
