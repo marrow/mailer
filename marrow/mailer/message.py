@@ -10,7 +10,7 @@ import sys
 import time
 
 try:
-	from base64 import encode as encodestring
+	from base64 import standard_b64encode as encodestring
 except ImportError:
 	from base64 import encodestring
 
@@ -309,7 +309,7 @@ class Message(object):
 		else:
 			raise TypeError("Unable to read attachment contents")
 		
-		part.set_payload(encodestring(value))
+		part.set_payload(encodestring(value.encode('utf-8') if isinstance(value, str) else value))
 
 		if not filename:
 			filename = name
