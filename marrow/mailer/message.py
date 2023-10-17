@@ -8,7 +8,11 @@ import imghdr
 import os
 import sys
 import time
-import base64
+
+try:
+	from base64 import encode as encodestring
+except ImportError:
+	from base64 import encodestring
 
 from datetime import datetime
 from email.mime.text import MIMEText
@@ -305,7 +309,7 @@ class Message(object):
 		else:
 			raise TypeError("Unable to read attachment contents")
 		
-		part.set_payload(base64.encodestring(value))
+		part.set_payload(encodestring(value))
 
 		if not filename:
 			filename = name
