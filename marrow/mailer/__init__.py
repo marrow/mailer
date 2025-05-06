@@ -16,6 +16,11 @@ from marrow.util.compat import basestring
 from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
+try:
+    from concurrent import futures
+except ImportError: # pragma: no cover
+    futures = None
+
 
 __all__ = ['Mailer', 'Delivery', 'Message']
 
@@ -147,14 +152,29 @@ class Mailer(object):
 		
 		try:
 			result = self.manager.deliver(message)
-		
 		except:
-			log.error("Delivery of message %s failed.", message.id)
+			log.exception("Delivery of message %s failed.", message.id)
 			raise
-		
-		log.debug("Message %s delivered.", message.id)
+		if futures and isinstance(result, futures.Future):
+			log.debug("Message %s passed to delivery manager.", message.id)
+			result.add_done_callback(partial(self.future_done, message))
+		else:
+			log.debug("Message %s delivered.", message.id)
 		return result
-	
+
+	def future_done(self, message, future):
+		if future.cancelled():
+			log.debug("Delivery of message %s cancelled.", message.id)
+		elif future.exception() is not None:
+			exc = future.exception()
+			log.error(
+				"Delivery of message %s failed.",
+				message.id,
+				exc_info=exc,
+			)
+		else:
+			log.debug("Message %s delivered.", message.id)
+
 	def new(self, author=None, to=None, subject=None, **kw):
 		data = dict(self.message_config)
 		data['mailer'] = self
