@@ -8,7 +8,6 @@ import imghdr
 import os
 import sys
 import time
-import base64
 
 from datetime import datetime
 from email.mime.text import MIMEText
@@ -16,6 +15,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 from email.utils import make_msgid, formatdate
 from mimetypes import guess_type
+
+try:
+    from base64 import encodebytes
+except ImportError: # Python 2
+    from base64 import encodestring as encodebytes
 
 from marrow.mailer import release
 from marrow.mailer.address import Address, AddressList, AutoConverter
@@ -305,7 +309,7 @@ class Message(object):
 		else:
 			raise TypeError("Unable to read attachment contents")
 		
-		part.set_payload(base64.encodestring(value))
+		part.set_payload(encodebytes(value))
 
 		if not filename:
 			filename = name
