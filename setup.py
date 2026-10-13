@@ -68,6 +68,7 @@ setup(
 		
 		extras_require = {
 				":python_version<'3.0.0'": ['futures'],
+				":python_version>='3.13'": ['standard-imghdr'],
 				'develop': tests_require,
 				'requests': ['requests'],
 			},
