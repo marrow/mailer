@@ -1,14 +1,25 @@
 # -*- coding: utf-8 -*-
 
-import urllib2
 import json
 import base64
+
+try:
+    from urllib.request import Request, urlopen
+    from urllib.error import HTTPError, URLError
+except ImportError:  # Python 2
+    from urllib2 import Request, urlopen, HTTPError, URLError
 
 from marrow.mailer.exc import DeliveryFailedException, MessageFailedException
 
 __all__ = ['PostmarkTransport']
 
 log = __import__('logging').getLogger(__name__)
+
+
+def _encode(value, encoding):
+    """Encode a value for the JSON payload: bytes on Python 2, text on Python 3."""
+    value = value.encode(encoding)
+    return value if str is bytes else value.decode(encoding)
 
 
 class PostmarkTransport(object):
@@ -20,23 +31,23 @@ class PostmarkTransport(object):
     
     def _mapmessage(self, message):
         args = dict({
-            'From': message.author.encode(message.encoding),
-            'To': message.to.encode(message.encoding),
-            'Subject': message.subject.encode(message.encoding),
-            'TextBody': message.plain.encode(message.encoding),
+            'From': _encode(message.author, message.encoding),
+            'To': _encode(message.to, message.encoding),
+            'Subject': _encode(message.subject, message.encoding),
+            'TextBody': _encode(message.plain, message.encoding),
         })
             
         if message.cc:
-            args['Cc'] = message.cc.encode()
+            args['Cc'] = _encode(message.cc, message.encoding)
 
         if message.bcc:
-            args['Bcc'] = message.bcc.encode(message.encoding)
+            args['Bcc'] = _encode(message.bcc, message.encoding)
         
         if message.reply:
-            args['ReplyTo'] = message.reply.encode(message.encoding)
+            args['ReplyTo'] = _encode(message.reply, message.encoding)
         
         if message.rich:
-            args['HtmlBody'] = message.rich.encode(message.encoding)
+            args['HtmlBody'] = _encode(message.rich, message.encoding)
         
         if message.attachments:
             args['Attachments'] = []
@@ -45,7 +56,7 @@ class PostmarkTransport(object):
                 args['Attachments'].append(
                     {
                         "Name": attachment.get_filename(),
-                        "Content": base64.b64encode(attachment.get_payload(decode=True)),
+                        "Content": base64.b64encode(attachment.get_payload(decode=True)).decode('ascii'),
                         "ContentType": attachment.get_content_type()
                     }
                 )
@@ -53,9 +64,9 @@ class PostmarkTransport(object):
         return args
 
     def _batchsend(self):
-        request = urllib2.Request(
+        request = Request(
             "https://api.postmarkapp.com/email/batch",
-            json.dumps(self.messages),
+            json.dumps(self.messages).encode('utf-8'),
             {
                 'Accept': "application/json",
                 'Content-Type': "application/json",
@@ -64,8 +75,8 @@ class PostmarkTransport(object):
         )
 
         try:
-            response = urllib2.urlopen(request)
-        except (urllib2.HTTPError, urllib2.URLError) as e:
+            response = urlopen(request)
+        except (HTTPError, URLError) as e:
             raise DeliveryFailedException(e, "Could not connect to Postmark.")
         else:
             respcode = response.getcode()

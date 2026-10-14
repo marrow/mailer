@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import urllib
-import urllib2
+try:
+    from urllib.request import Request, urlopen
+    from urllib.error import HTTPError, URLError
+    from urllib.parse import urlencode
+except ImportError:  # Python 2
+    from urllib2 import Request, urlopen, HTTPError, URLError
+    from urllib import urlencode
 
 from marrow.mailer.exc import MailConfigurationException, DeliveryFailedException, MessageFailedException
 
@@ -69,17 +74,17 @@ class SendgridTransport(object):
             args['api_user'] = self.user
             args['api_key'] = self.key
 
-        request = urllib2.Request(
+        request = Request(
                 "https://sendgrid.com/api/mail.send.json",
-                urllib.urlencode(args, True)
+                urlencode(args, True).encode('ascii')
             )
 
         if self.bearer:
             request.add_header("Authorization", "Bearer %s" % self.key)
         
         try:
-            response = urllib2.urlopen(request)
-        except (urllib2.HTTPError, urllib2.URLError):
+            response = urlopen(request)
+        except (HTTPError, URLError):
             raise DeliveryFailedException(message, "Could not connect to Sendgrid.")
         else:
             respcode = response.getcode()
