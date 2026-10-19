@@ -4,7 +4,12 @@
 
 
 import warnings
-import pkg_resources
+
+try:
+	from importlib.metadata import entry_points
+except ImportError: # pragma: no cover
+	import pkg_resources
+	entry_points = None
 
 from email import charset
 from functools import partial
@@ -113,7 +118,18 @@ class Mailer(object):
 			return load_object(spec)
 		
 		# Load the entry point.
-		for entrypoint in pkg_resources.iter_entry_points(group, spec):
+		if entry_points is None:
+			available = pkg_resources.iter_entry_points(group, spec)
+		else:
+			available = entry_points()
+			if hasattr(available, 'select'):
+				available = available.select(group=group, name=spec)
+			else: # pragma: no cover
+				available = [
+					point for point in available.get(group, ())
+					if point.name == spec
+				]
+		for entrypoint in available:
 			return entrypoint.load()
 	
 	def start(self):
