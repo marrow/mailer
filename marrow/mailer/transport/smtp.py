@@ -3,6 +3,7 @@
 """Deliver messages using (E)SMTP."""
 
 import socket
+import ssl
 
 from smtplib import (SMTP, SMTP_SSL, SMTPException, SMTPRecipientsRefused,
                      SMTPSenderRefused, SMTPServerDisconnected)
@@ -66,22 +67,44 @@ class SMTPTransport(object):
             finally:
                 self.connection = None
 
+    def _tls_arguments(self):
+        """Keyword arguments selecting the client certificate for SMTP_SSL() and starttls().
+
+        Python 3.12 removed their keyfile and certfile arguments; build the SSL context they used to build instead.
+        """
+
+        if not self.certfile:
+            return {}
+
+        if not hasattr(ssl, 'PROTOCOL_TLS_CLIENT'):  # pragma: no cover
+            # Python 2 and Python 3 before 3.6 still take keyfile and certfile.
+            return dict(keyfile=self.keyfile, certfile=self.certfile)
+
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        context.load_cert_chain(self.certfile, self.keyfile)
+        return dict(context=context)
+
     def connect_to_server(self):
         if self.tls == 'ssl': # pragma: no cover
-            connection = SMTP_SSL(host=None, local_hostname=self.local_hostname, keyfile=self.keyfile,
-                                  certfile=self.certfile, timeout=self.timeout)
+            connection = SMTP_SSL(host=None, local_hostname=self.local_hostname, timeout=self.timeout,
+                                  **self._tls_arguments())
         else:
             connection = SMTP(local_hostname=self.local_hostname, timeout=self.timeout)
 
         log.info("Connecting to SMTP server %s:%s", self.host, self.port)
         connection.set_debuglevel(self.debug)
+        # The TLS handshake sends _host as the server name, but connect() does not set it on every Python version
+        # (it is only set by the constructor), and an empty server name is rejected.
+        connection._host = self.host
         connection.connect(self.host, self.port)
 
         # Do TLS handshake if configured
         connection.ehlo()
         if self.tls in ('required', 'optional', True):
             if connection.has_extn('STARTTLS'): # pragma: no cover
-                connection.starttls(self.keyfile, self.certfile)
+                connection.starttls(**self._tls_arguments())
             elif self.tls == 'required':
                 raise TransportException('TLS is required but not available on the server -- aborting')
 

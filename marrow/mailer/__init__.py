@@ -4,7 +4,6 @@
 
 
 import warnings
-import pkg_resources
 
 from email import charset
 from functools import partial
@@ -17,6 +16,11 @@ from marrow.util.bunch import Bunch
 from marrow.util.object import load_object
 
 try:
+    from importlib.metadata import entry_points as _entry_points
+except ImportError: # Python < 3.8
+    _entry_points = None
+
+try:
     from concurrent import futures
 except ImportError: # pragma: no cover
     futures = None
@@ -25,6 +29,17 @@ except ImportError: # pragma: no cover
 __all__ = ['Mailer', 'Delivery', 'Message']
 
 log = __import__('logging').getLogger(__name__)
+
+
+def _iter_entry_points(group, name):
+	if _entry_points is None:
+		import pkg_resources
+		return pkg_resources.iter_entry_points(group, name)
+	
+	try:
+		return _entry_points(group=group, name=name)
+	except TypeError:  # Python 3.8 and 3.9 only return a dict of groups.
+		return [ep for ep in _entry_points().get(group, ()) if ep.name == name]
 
 
 class Mailer(object):
@@ -113,7 +128,7 @@ class Mailer(object):
 			return load_object(spec)
 		
 		# Load the entry point.
-		for entrypoint in pkg_resources.iter_entry_points(group, spec):
+		for entrypoint in _iter_entry_points(group, spec):
 			return entrypoint.load()
 	
 	def start(self):
